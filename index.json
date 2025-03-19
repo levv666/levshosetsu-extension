@@ -113,6 +113,13 @@
       "website": ""
     },
     {
+      "id": -1176248091,
+      "name": "OceaniaRose",
+      "desc": "Worked on Novel-Next",
+      "imageURL": "",
+      "website": ""
+    },
+    {
       "id": -228911304,
       "name": "Stepets",
       "desc": "Worked on utf8",
@@ -801,6 +808,17 @@
       "type": "LuaScript"
     },
     {
+      "id": 17692548,
+      "name": "Novel-Next",
+      "fileName": "Novel-next",
+      "imageURL": "https://novel-next.com/img/logo.png",
+      "lang": "en",
+      "ver": "1.0.0",
+      "libVer": "1.0.0",
+      "md5": "b00e0991762ebdb4d931443c7b1a8bc39f6db0794606828b3b4e5ee42897d14a",
+      "type": "LuaScript"
+    },
+    {
       "id": 28505740,
       "name": "NOVA",
       "fileName": "NOVA",
@@ -843,16 +861,6 @@
       "libVer": "1.0.0",
       "md5": "f5a6046d382310fe67ceb6a60f735e5418d5db211c8d85d1884eaf410bfb152a",
       "type": "LuaScript"
-    },
-    {
-      "name": "Novel-next",
-      "fileName": "Novel-next",
-      "imageURL": "https://novel-next.com/img/logo.png",
-      "id": 17692548,
-      "lang": "en",
-      "ver": "1.0.0",
-      "libVer": "1.0.0",
-      "md5": ""
     }
   ],
   "styles": [],

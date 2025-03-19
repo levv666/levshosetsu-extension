@@ -1,4 +1,4 @@
--- {"id":17692548,"ver":"1.0.0","libVer":"1.0.0","author":"OceaniaRose":,"dep"["NovelFull>=2.0.2"]}
+-- {"id":17692548,"ver":"1.0.0","libVer":"1.0.0","author":"OceaniaRose","dep":["NovelFull>=2.0.2"]}
 
 return Require("NovelFull")("http://novel-next.com", {
 	id = 17692548,
