@@ -843,6 +843,16 @@
       "libVer": "1.0.0",
       "md5": "f5a6046d382310fe67ceb6a60f735e5418d5db211c8d85d1884eaf410bfb152a",
       "type": "LuaScript"
+    },
+    {
+      "name": "danmeinovel",
+      "fileName": "danmeinovel",
+      "imageURL": "https://danmeinovel.com/wp-content/uploads/2017/10/logo.png",
+      "id": 95567285,
+      "lang": "en",
+      "ver": "1.0.0",
+      "libVer": "1.0.0",
+      "md5": ""
     }
   ],
   "styles": [],
