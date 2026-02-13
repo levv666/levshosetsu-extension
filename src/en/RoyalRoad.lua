@@ -28,7 +28,7 @@ local GENRES_FILTER_INT = { --individual, start from 1 to match ext
 	[GENRES_FILTER_KEY+14] = "one_shot",
 	[GENRES_FILTER_KEY+15] = "tragedy",
 }
-local TAGS_FILTER_EXT = {"Anti-Hero Lead", "Artificial Intelligence", "Attractive MC", "Cyberpunk", "Dungeon", "Dystopia", "Female Lead", "First Contact", "GameLit", "Gender Bender", "Genetically Engineered", "Grimdark", "Hard Sci-fi", "Harem", "High Fantasy", "LitRPG", "Loop", "Low Fantasy", "Magic", "Male Lead", "Martial Arts", "Multiple Lead Characters", "Mythos", "Non-Human lead", "Portal Fantasy / Isekai", "Post Apocalyptic", "Progression", "Reader interactive", "Reincarnation", "Ruling Class", "School Life", "Secret Identity", "Slice of Life", "Soft Sci-fi", "Space Opera", "Sports", "Steampunk", "Strategy", "Strong Lead", "Super Heroes", "Supernatural", "Technologically Engineered", "Time Travel", "Urban Fantasy", "Villainous Lead", "Virtual Reality", "War and Military", "Wuxia", "Xianxia"}
+local TAGS_FILTER_EXT = {"Anti-Hero Lead", "Artificial Intelligence", "Attractive MC", "Cyberpunk", "Dungeon", "Dystopia", "Female Lead", "First Contact", "GameLit", "Gender Bender", "Genetically Engineered", "Grimdark", "Hard Sci-fi", "Harem", "High Fantasy", "LitRPG", "Loop", "Low Fantasy", "Magic", "Male Lead", "Martial Arts", "Multiple Lead Characters", "Mythos", "Non-Human lead", "Portal Fantasy / Isekai", "Post Apocalyptic", "Progression", "Reader interactive", "Reincarnation", "Ruling Class", "School Life", "Secret Identity", "Slice of Life", "Soft Sci-fi", "Space Opera", "Sports", "Steampunk", "Strategy", "Strong Lead", "Super Heroes", "Supernatural", "Technologically Engineered", "Time Travel", "Urban Fantasy", "Villainous Lead", "Virtual Reality", "War and Military", "Wuxia", "Xianxia", "Lesbian Romance"}
 local TAGS_FILTER_KEY = 300
 local TAGS_FILTER_INT = { --individual, start from 1 to match ext
 	[TAGS_FILTER_KEY+01] = "anti-hero_lead",
@@ -80,6 +80,7 @@ local TAGS_FILTER_INT = { --individual, start from 1 to match ext
 	[TAGS_FILTER_KEY+47] = "war_and_military",
 	[TAGS_FILTER_KEY+48] = "wuxia",
 	[TAGS_FILTER_KEY+49] = "xianxia",
+	[TAGS_FILTER_KEY+50] = "lesbian_romance",
 }
 local CONTENT_WARNINGS_FILTER_EXT = {"Profanity", "Sexual Content", "Gore", "Traumatising content"}
 local CONTENT_WARNINGS_FILTER_KEY = 400
