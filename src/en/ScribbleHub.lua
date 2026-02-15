@@ -5,7 +5,9 @@ local qs = Require("url").querystring
 local css = Require("CommonCSS").table
 local HTMLToString = Require("unhtml").HTMLToString
 
--- --- Constants & Mappings ---
+-- --- Constants ---
+
+local QUERY = 1 -- Ensure QUERY constant exists
 
 local FILTER_SORT = 1
 local FILTER_ORDER = 2
@@ -15,7 +17,8 @@ local FILTER_WARNINGS = 5
 local FILTER_GENRES_INC = 6
 local FILTER_GENRES_EXC = 7
 
--- Genre Map (ID values extracted from ScribbleHub)
+-- --- Data Mappings ---
+
 local GENRES = {
 	["Action"] = 9, ["Adult"] = 902, ["Adventure"] = 8, ["Boys Love"] = 891,
 	["Comedy"] = 7, ["Drama"] = 903, ["Ecchi"] = 904, ["Fanfiction"] = 38,
@@ -27,7 +30,6 @@ local GENRES = {
 	["Sports"] = 916, ["Supernatural"] = 5, ["Tragedy"] = 901
 }
 
--- Sorted list for display
 local GENRE_LIST = {
 	"Action", "Adult", "Adventure", "Boys Love", "Comedy", "Drama", "Ecchi", "Fanfiction",
 	"Fantasy", "Gender Bender", "Girls Love", "Harem", "Historical", "Horror", "Isekai",
@@ -36,7 +38,6 @@ local GENRE_LIST = {
 	"Supernatural", "Tragedy"
 }
 
--- Warning Map (IDs confirmed via user URL)
 local WARNINGS = {
 	["Gore"] = 48,
 	["Sexual Content"] = 49,
@@ -45,10 +46,20 @@ local WARNINGS = {
 local WARNING_LIST = { "Gore", "Sexual Content", "Strong Language" }
 
 local SORT_KEYS = { "pageviews", "favorites", "activity", "readers", "rising" }
-local ORDER_KEYS = { "daily", "weekly", "monthly", "alltime" } 
--- Note: Series Finder uses different Order keys (desc/asc), handled in search function.
 
 -- --- Helper Functions ---
+
+-- Define local map function to ensure availability
+local function map(list, func)
+	local new_list = {}
+	for i, v in ipairs(list) do
+		local res = func(v, i)
+		if res ~= nil then
+			table.insert(new_list, res)
+		end
+	end
+	return new_list
+end
 
 local function shrinkURL(url)
 	return url:gsub("^.-scribblehub%.com/?", "")
@@ -62,8 +73,6 @@ local MTYPE = MediaType("application/x-www-form-urlencoded; charset=UTF-8")
 local USERAGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0"
 local HEADERS = HeadersBuilder():add("User-Agent", USERAGENT):build()
 
----@param shortNum string
----@return number
 local function expandNumber(shortNum)
 	local number, suffix = shortNum:match("^(%d+%.?%d*)([kKmMbB]?)$")
 	if not number then return nil end
@@ -73,9 +82,6 @@ local function expandNumber(shortNum)
 	else return math.floor(number + 0.5) end
 end
 
----@param elements Elements
----@param stat string
----@return number | nil
 local function findStat(elements, stat)
 	local matchDesktop = " " .. stat .."$"
 	local matchMobile = "^" .. stat ..": "
@@ -96,18 +102,14 @@ end
 -- --- Parsers ---
 
 local function parse(doc)
-	-- Determine selector based on whether we are in Series Finder or Ranking/Search
-	-- Series Finder uses .search_main_box directly in the listing? 
-	-- Usually standard search is .wi_fic_wrap .search_main_box
 	local container = doc:selectFirst("#page")
 	local boxes = container:select(".wi_fic_wrap .search_main_box")
 	
-	-- Fallback for different page layouts if needed
 	if boxes:isEmpty() then
 		boxes = container:select(".search_main_box")
 	end
 
-	return map(boxes, function(v)
+	return map(AsList(boxes), function(v)
 		local body = v:selectFirst(".search_body")
 		if body == nil then body = v end
 		
@@ -118,7 +120,7 @@ local function parse(doc)
 		local chapters = findStat(stats, "Chapters")
 		local comments = findStat(stats, "Reviews")
 		local favorites = findStat(stats, "Favorites")
-		local genres = map(v:select(".search_genre .fic_genre"), function(g) return g:text() end)
+		local genres = map(AsList(v:select(".search_genre .fic_genre")), function(g) return g:text() end)
 		local authorElem = v:selectFirst(".a_un_st")
 		local author = authorElem and authorElem:text() or "Unknown"
 		
@@ -220,8 +222,8 @@ return {
 			title = novel:selectFirst(".fic_title"):text(),
 			imageURL = novel:selectFirst(".fic_image img"):attr("src"),
 			description = HTMLToString(wrap:selectFirst(".wi_fic_desc")),
-			genres = map(wrap:selectFirst(".wi_fic_genre"):select("a"), text),
-			tags = map(wrap:selectFirst(".wi_fic_showtags"):select("a"), text),
+			genres = map(AsList(wrap:selectFirst(".wi_fic_genre"):select("a")), text),
+			tags = map(AsList(wrap:selectFirst(".wi_fic_showtags"):select("a")), text),
 			authors = { novel:selectFirst("span[property=name] .auth_name_fic"):text() },
 			status = status
 		}
@@ -229,7 +231,7 @@ return {
 		if loadChapters then
 			local body = RequestBody("action=wi_getreleases_pagination&pagenum=-1&mypostid="..url, MTYPE)
 			local cdoc = RequestDocument(POST("https://www.scribblehub.com/wp-admin/admin-ajax.php", HEADERS, body))
-			local chapters = AsList(map(cdoc:selectFirst("ol"):select("li"), function(v, i)
+			local chapters = AsList(map(AsList(cdoc:selectFirst("ol"):select("li")), function(v, i)
 				local a = v:selectFirst("a")
 				return NovelChapter {
 					order = v:attr("order"),
@@ -267,26 +269,20 @@ return {
 		local tagInput = data[FILTER_TAG]
 
 		-- 1. TAG SEARCH MODE
-		-- If a tag is entered, we browse by tag. This overrides other filters because
-		-- ScribbleHub requires IDs for tags in Series Finder, which we can't guess from text.
 		if tagInput and tagInput ~= "" then
 			local tagSlug = tagInput:lower():gsub(" ", "-")
-			-- Append sorting if desired
 			local sortIdx = data[FILTER_SORT] and data[FILTER_SORT] + 1 or 1
 			local sortKey = SORT_KEYS[sortIdx]
 			
-			-- Tag pages support basic sorting
 			return parse(GETDocument(qs({
 				sort = sortKey,
-				order = "desc" -- Default to descending for tags
+				order = "desc"
 			}, baseURL .. "/tag/" .. tagSlug .. "/")))
 
-		-- 2. SERIES FINDER MODE (Advanced Filter)
-		-- If Tag input is empty, use the powerful Series Finder
+		-- 2. SERIES FINDER MODE
 		elseif (not query or query == "") and (data[FILTER_GENRES_INC] or data[FILTER_GENRES_EXC] or data[FILTER_WARNINGS] or data[FILTER_STATUS]) then
-			local params = { sf = 1 } -- Enable Series Finder
+			local params = { sf = 1 }
 			
-			-- Genres Include
 			if data[FILTER_GENRES_INC] then
 				local gi = {}
 				for i, name in ipairs(GENRE_LIST) do
@@ -294,11 +290,10 @@ return {
 				end
 				if #gi > 0 then 
 					params["gi"] = table.concat(gi, ",") 
-					params["mgi"] = "or" -- Match Genre Include: OR
+					params["mgi"] = "or"
 				end
 			end
 			
-			-- Genres Exclude
 			if data[FILTER_GENRES_EXC] then
 				local ge = {}
 				for i, name in ipairs(GENRE_LIST) do
@@ -310,7 +305,6 @@ return {
 				end
 			end
 			
-			-- Warnings (Content Tags Include)
 			if data[FILTER_WARNINGS] then
 				local cti = {}
 				for i, name in ipairs(WARNING_LIST) do
@@ -319,22 +313,19 @@ return {
 				if #cti > 0 then params["cti"] = table.concat(cti, ",") end
 			end
 
-			-- Status
 			local statusIdx = data[FILTER_STATUS]
 			if statusIdx == 1 then params["sto"] = "completed"
 			elseif statusIdx == 2 then params["sto"] = "ongoing"
 			elseif statusIdx == 3 then params["sto"] = "hiatus"
 			end
 
-			-- Sorting
 			local sortIdx = data[FILTER_SORT] and data[FILTER_SORT] + 1 or 1
 			params["sort"] = SORT_KEYS[sortIdx]
-			params["order"] = "desc" -- Series finder usually defaults to desc
+			params["order"] = "desc"
 
 			return parse(GETDocument(qs(params, baseURL .. "/series-finder/")))
 
 		-- 3. STANDARD SEARCH MODE
-		-- Fallback to basic text search if no advanced filters are used
 		else
 			return parse(GETDocument(qs({
 				s = query,
