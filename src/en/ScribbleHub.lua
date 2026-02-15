@@ -1,4 +1,4 @@
--- {"id":86802,"ver":"1.2.4","libVer":"1.0.0","author":"TechnoJo4, StormX4","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
+-- {"id":86802,"ver":"1.2.5","libVer":"1.0.0","author":"TechnoJo4, StormX4","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
 
 local baseURL = "https://www.scribblehub.com"
 
@@ -92,69 +92,6 @@ local function MultiTriStateFilter(offset, filter_ext, stop)
         f[#f+1] = TriStateFilter_(offset+i, filter_ext[i])
     end
     return f
-end
-
-local function hasActiveFilters(data)
-    if data[TAG_SEARCH_KEY] and data[TAG_SEARCH_KEY] ~= "" then return true end
-    if data[STATUS_FILTER_KEY] and data[STATUS_FILTER_KEY] ~= 0 then return true end
-    for i=1, #GENRES_FILTER_EXT do
-        if data[GENRES_FILTER_KEY+i] then return true end
-    end
-    for i=1, #WARNINGS_FILTER_EXT do
-        if data[WARNINGS_FILTER_KEY+i] then return true end
-    end
-    return false
-end
-
-local function createFilterString(data)
-    -- 1. TAG SEARCH
-    if data[TAG_SEARCH_KEY] and data[TAG_SEARCH_KEY] ~= "" then
-        local tag = data[TAG_SEARCH_KEY]:gsub(" ", "-")
-        local params = {}
-        if data[SORT_FILTER_KEY] then params["sort"] = SORT_FILTER_INT[data[SORT_FILTER_KEY]] end
-        if data[ORDER_FILTER_KEY] then params["order"] = "desc" end 
-        local queryString = ""
-        if next(params) then queryString = "?" .. qs(params) end
-        return "/tag/" .. tag .. "/" .. queryString
-    end
-
-    -- 2. SERIES FINDER
-    local params = { sf = 1 }
-
-    -- Genres
-    local gi, ge = {}, {}
-    for i=1, #GENRES_FILTER_EXT do
-        local val = data[GENRES_FILTER_KEY+i]
-        -- Handle TriState (1=Inc, 2=Exc) AND Checkbox (true=Inc)
-        if val == 1 or val == true then 
-            table.insert(gi, GENRES_FILTER_INT[GENRES_FILTER_KEY+i])
-        elseif val == 2 then 
-            table.insert(ge, GENRES_FILTER_INT[GENRES_FILTER_KEY+i])
-        end
-    end
-    if #gi > 0 then params["gi"] = table.concat(gi, ",") params["mgi"] = "or" end
-    if #ge > 0 then params["ge"] = table.concat(ge, ",") params["mge"] = "or" end
-
-    -- Warnings
-    local cti = {}
-    for i=1, #WARNINGS_FILTER_EXT do
-        local val = data[WARNINGS_FILTER_KEY+i]
-        if val == 1 or val == true then
-            table.insert(cti, WARNINGS_FILTER_INT[WARNINGS_FILTER_KEY+i])
-        end
-    end
-    if #cti > 0 then params["cti"] = table.concat(cti, ",") end
-
-    -- Status
-    if data[STATUS_FILTER_KEY] then
-        params["sto"] = STATUS_FILTER_INT[STATUS_FILTER_KEY + data[STATUS_FILTER_KEY] + 1]
-    end
-
-    -- Sort & Order
-    params["sort"] = data[SORT_FILTER_KEY] and SORT_FILTER_INT[data[SORT_FILTER_KEY]] or "pageviews"
-    params["order"] = data[ORDER_FILTER_KEY] and ORDER_FILTER_INT[data[ORDER_FILTER_KEY]] or "desc"
-
-    return "/series-finder/?" .. qs(params)
 end
 
 -- --- PARSING ---
@@ -347,16 +284,73 @@ return {
     end,
 
     search = function(data)
-        -- Only fallback to simple search if NO filters are active
-        if (data[QUERY] and data[QUERY] ~= "") and not hasActiveFilters(data) then
-             return parseListing(GETDocument(qs({
+        -- 1. Check for Tag Search first (highest priority if set)
+        if data[TAG_SEARCH_KEY] and data[TAG_SEARCH_KEY] ~= "" then
+            local tag = data[TAG_SEARCH_KEY]:gsub(" ", "-")
+            local params = {}
+            if data[SORT_FILTER_KEY] then params["sort"] = SORT_FILTER_INT[data[SORT_FILTER_KEY]] end
+            if data[ORDER_FILTER_KEY] then params["order"] = "desc" end 
+            local queryString = ""
+            if next(params) then queryString = "?" .. qs(params) end
+            return parseListing(GETDocument(baseURL .. "/tag/" .. tag .. "/" .. queryString))
+        end
+
+        -- 2. Build Series Finder Params & Count Active Filters
+        local params = { sf = 1 }
+        local activeFilterCount = 0
+
+        -- Genres
+        local gi, ge = {}, {}
+        for i=1, #GENRES_FILTER_EXT do
+            local val = data[GENRES_FILTER_KEY+i]
+            if val == 1 or val == true then 
+                table.insert(gi, GENRES_FILTER_INT[GENRES_FILTER_KEY+i])
+                activeFilterCount = activeFilterCount + 1
+            elseif val == 2 then 
+                table.insert(ge, GENRES_FILTER_INT[GENRES_FILTER_KEY+i])
+                activeFilterCount = activeFilterCount + 1
+            end
+        end
+        if #gi > 0 then params["gi"] = table.concat(gi, ",") params["mgi"] = "or" end
+        if #ge > 0 then params["ge"] = table.concat(ge, ",") params["mge"] = "or" end
+
+        -- Warnings
+        local cti = {}
+        for i=1, #WARNINGS_FILTER_EXT do
+            local val = data[WARNINGS_FILTER_KEY+i]
+            if val == 1 or val == true then
+                table.insert(cti, WARNINGS_FILTER_INT[WARNINGS_FILTER_KEY+i])
+                activeFilterCount = activeFilterCount + 1
+            end
+        end
+        if #cti > 0 then params["cti"] = table.concat(cti, ",") end
+
+        -- Status
+        if data[STATUS_FILTER_KEY] and data[STATUS_FILTER_KEY] ~= 0 then
+            params["sto"] = STATUS_FILTER_INT[STATUS_FILTER_KEY + data[STATUS_FILTER_KEY] + 1]
+            activeFilterCount = activeFilterCount + 1
+        end
+
+        -- Sort & Order
+        params["sort"] = data[SORT_FILTER_KEY] and SORT_FILTER_INT[data[SORT_FILTER_KEY]] or "pageviews"
+        params["order"] = data[ORDER_FILTER_KEY] and ORDER_FILTER_INT[data[ORDER_FILTER_KEY]] or "desc"
+
+        -- 3. DECISION LOGIC
+        -- If user selected ANY filter, force Series Finder.
+        if activeFilterCount > 0 then
+            return parseListing(GETDocument(baseURL .. "/series-finder/?" .. qs(params)))
+        
+        -- If NO filters are active, but Query exists, use Standard Text Search
+        elseif data[QUERY] and data[QUERY] ~= "" then
+            return parseListing(GETDocument(qs({
 				s = data[QUERY],
 				post_type = "fictionposts"
 			}, baseURL .. "/")))
+            
+        -- Fallback (e.g. empty search) -> Show Series Finder defaults (Popular/Latest)
+        else
+            return parseListing(GETDocument(baseURL .. "/series-finder/?" .. qs(params)))
         end
-
-        local filterString = createFilterString(data)
-        return parseListing(GETDocument(baseURL .. filterString))
     end,
     
     isSearchIncrementing = false,
