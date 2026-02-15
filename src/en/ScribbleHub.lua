@@ -16,7 +16,7 @@ local GENRES_FILTER_EXT = {
     "Supernatural", "Tragedy"
 }
 local GENRES_FILTER_KEY = 200
-local GENRES_FILTER_INT = { -- Map to ScribbleHub IDs
+local GENRES_FILTER_INT = { 
     [GENRES_FILTER_KEY+1] = 9,    [GENRES_FILTER_KEY+2] = 902,  [GENRES_FILTER_KEY+3] = 8,
     [GENRES_FILTER_KEY+4] = 891,  [GENRES_FILTER_KEY+5] = 7,    [GENRES_FILTER_KEY+6] = 903,
     [GENRES_FILTER_KEY+7] = 904,  [GENRES_FILTER_KEY+8] = 38,   [GENRES_FILTER_KEY+9] = 19,
@@ -50,7 +50,7 @@ local STATUS_FILTER_INT = {
 local SORT_FILTER_EXT = {"Popularity", "Favorites", "Activity", "Readers", "Rising"}
 local SORT_FILTER_KEY = 700
 local SORT_FILTER_INT = {
-    [0] = "pageviews", -- Default
+    [0] = "pageviews",
     "favorites",
     "activity",
     "readers",
@@ -66,9 +66,9 @@ local ORDER_FILTER_INT = {
     "alltime"
 }
 
-local TAG_SEARCH_KEY = 900 -- Text input for exact tag search
+local TAG_SEARCH_KEY = 900 
 
--- --- HELPER FUNCTIONS (RoyalRoad Style) ---
+-- --- HELPER FUNCTIONS ---
 
 local function shrinkURL(url)
     return url:gsub("^.-scribblehub%.com/?", "")
@@ -94,19 +94,47 @@ local function MultiTriStateFilter(offset, filter_ext, stop)
     return f
 end
 
+-- Checks if the user has touched ANY filter (Genres, Warnings, Status, Tag Text)
+local function hasActiveFilters(data)
+    -- Check Tag Text
+    if data[TAG_SEARCH_KEY] and data[TAG_SEARCH_KEY] ~= "" then return true end
+    
+    -- Check Status (If not 0/All)
+    if data[STATUS_FILTER_KEY] and data[STATUS_FILTER_KEY] ~= 0 then return true end
+    
+    -- Check Genres
+    for i=1, #GENRES_FILTER_EXT do
+        if data[GENRES_FILTER_KEY+i] then return true end
+    end
+    
+    -- Check Warnings
+    for i=1, #WARNINGS_FILTER_EXT do
+        if data[WARNINGS_FILTER_KEY+i] then return true end
+    end
+    
+    return false
+end
+
 local function createFilterString(data)
-    -- 1. Check for Tag Search (Overrides everything)
+    -- 1. Check for Tag Search (Overrides everything else because it's a separate page)
     if data[TAG_SEARCH_KEY] and data[TAG_SEARCH_KEY] ~= "" then
         local tag = data[TAG_SEARCH_KEY]:gsub(" ", "-")
-        return "/tag/" .. tag .. "/"
+        -- Append sort/order if possible
+        local params = {}
+        if data[SORT_FILTER_KEY] then params["sort"] = SORT_FILTER_INT[data[SORT_FILTER_KEY]] end
+        if data[ORDER_FILTER_KEY] then params["order"] = "desc" end -- Tag pages usually desc
+        
+        local queryString = ""
+        if next(params) then queryString = "?" .. qs(params) end
+        
+        return "/tag/" .. tag .. "/" .. queryString
     end
 
     -- 2. Build Series Finder Params
     local params = { sf = 1 }
 
-    -- Genres (Include/Exclude)
-    local gi = {}
-    local ge = {}
+    -- Genres
+    local gi, ge = {}, {}
     for i=1, #GENRES_FILTER_EXT do
         local val = data[GENRES_FILTER_KEY+i]
         if val == 1 then table.insert(gi, GENRES_FILTER_INT[GENRES_FILTER_KEY+i])
@@ -116,7 +144,7 @@ local function createFilterString(data)
     if #gi > 0 then params["gi"] = table.concat(gi, ",") params["mgi"] = "or" end
     if #ge > 0 then params["ge"] = table.concat(ge, ",") params["mge"] = "or" end
 
-    -- Warnings (Include only for now, mapped to ScribbleHub logic)
+    -- Warnings
     local cti = {}
     for i=1, #WARNINGS_FILTER_EXT do
         if data[WARNINGS_FILTER_KEY+i] == 1 then
@@ -127,32 +155,26 @@ local function createFilterString(data)
 
     -- Status
     if data[STATUS_FILTER_KEY] then
-        params["sto"] = STATUS_FILTER_INT[STATUS_FILTER_KEY + data[STATUS_FILTER_KEY] + 1] -- fix 0-index offset
+        params["sto"] = STATUS_FILTER_INT[STATUS_FILTER_KEY + data[STATUS_FILTER_KEY] + 1]
     end
 
     -- Sort & Order
-    if data[SORT_FILTER_KEY] then
-        params["sort"] = SORT_FILTER_INT[data[SORT_FILTER_KEY]]
-    else
-        params["sort"] = "pageviews"
-    end
-    
-    if data[ORDER_FILTER_KEY] then
-        params["order"] = ORDER_FILTER_INT[data[ORDER_FILTER_KEY]]
-    else
-         params["order"] = "desc" -- Series finder default
-    end
-
-    -- Query
-    if data[QUERY] and data[QUERY] ~= "" then
-         -- ScribbleHub Series Finder doesn't support text query easily + filters
-         -- We fallback to standard search if ONLY query is present, handled in search()
-    end
+    params["sort"] = data[SORT_FILTER_KEY] and SORT_FILTER_INT[data[SORT_FILTER_KEY]] or "pageviews"
+    params["order"] = data[ORDER_FILTER_KEY] and ORDER_FILTER_INT[data[ORDER_FILTER_KEY]] or "desc"
 
     return "/series-finder/?" .. qs(params)
 end
 
 -- --- PARSING ---
+
+local function map(list, func)
+    local new_list = {}
+    for i, v in ipairs(list) do
+        local res = func(v, i)
+        if res ~= nil then table.insert(new_list, res) end
+    end
+    return new_list
+end
 
 local function expandNumber(shortNum)
 	local number, suffix = shortNum:match("^(%d+%.?%d*)([kKmMbB]?)$")
@@ -181,12 +203,11 @@ local function removeElements(element, attr)
 end
 
 local function parseListing(doc)
-    -- Determine selector based on page type
 	local container = doc:selectFirst("#page")
 	local boxes = container:select(".wi_fic_wrap .search_main_box")
 	if boxes:isEmpty() then boxes = container:select(".search_main_box") end
 
-	return map(boxes, function(v)
+	return map(AsList(boxes), function(v)
 		local body = v:selectFirst(".search_body")
 		if body == nil then body = v end
 		
@@ -197,7 +218,7 @@ local function parseListing(doc)
 		local chapters = findStat(stats, "Chapters")
 		local comments = findStat(stats, "Reviews")
 		local favorites = findStat(stats, "Favorites")
-		local genres = map(v:select(".search_genre .fic_genre"), function(g) return g:text() end)
+		local genres = map(AsList(v:select(".search_genre .fic_genre")), function(g) return g:text() end)
 		local authorElem = v:selectFirst(".a_un_st")
 		local author = authorElem and authorElem:text() or "Unknown"
 		
@@ -283,8 +304,8 @@ return {
 			title = novel:selectFirst(".fic_title"):text(),
 			imageURL = novel:selectFirst(".fic_image img"):attr("src"),
 			description = HTMLToString(wrap:selectFirst(".wi_fic_desc")),
-			genres = map(wrap:selectFirst(".wi_fic_genre"):select("a"), text),
-			tags = map(wrap:selectFirst(".wi_fic_showtags"):select("a"), text),
+			genres = map(AsList(wrap:selectFirst(".wi_fic_genre"):select("a")), text),
+			tags = map(AsList(wrap:selectFirst(".wi_fic_showtags"):select("a")), text),
 			authors = { novel:selectFirst("span[property=name] .auth_name_fic"):text() },
 			status = status
 		}
@@ -326,14 +347,15 @@ return {
     end,
 
     search = function(data)
-        -- Fallback to standard search if just Query is present
-        if (data[QUERY] and data[QUERY] ~= "") and not (data[TAG_SEARCH_KEY] or data[GENRES_FILTER_KEY+1]) then
+        -- If user typed a query AND NO FILTERS are active, use Standard Search
+        if (data[QUERY] and data[QUERY] ~= "") and not hasActiveFilters(data) then
              return parseListing(GETDocument(qs({
 				s = data[QUERY],
 				post_type = "fictionposts"
 			}, baseURL .. "/")))
         end
 
+        -- Otherwise (Filters Active OR No Query), use Series Finder / Tags
         local filterString = createFilterString(data)
         return parseListing(GETDocument(baseURL .. filterString))
     end,
