@@ -107,6 +107,7 @@ local function hasActiveFilters(data)
 end
 
 local function createFilterString(data)
+    -- 1. TAG SEARCH (Overrides everything)
     if data[TAG_SEARCH_KEY] and data[TAG_SEARCH_KEY] ~= "" then
         local tag = data[TAG_SEARCH_KEY]:gsub(" ", "-")
         local params = {}
@@ -117,30 +118,40 @@ local function createFilterString(data)
         return "/tag/" .. tag .. "/" .. queryString
     end
 
+    -- 2. SERIES FINDER
     local params = { sf = 1 }
 
+    -- Genres
     local gi, ge = {}, {}
     for i=1, #GENRES_FILTER_EXT do
         local val = data[GENRES_FILTER_KEY+i]
-        if val == 1 then table.insert(gi, GENRES_FILTER_INT[GENRES_FILTER_KEY+i])
-        elseif val == 2 then table.insert(ge, GENRES_FILTER_INT[GENRES_FILTER_KEY+i])
+        -- FIX: Check for '1' (TriState) OR 'true' (Checkbox fallback)
+        if val == 1 or val == true then 
+            table.insert(gi, GENRES_FILTER_INT[GENRES_FILTER_KEY+i])
+        elseif val == 2 then 
+            table.insert(ge, GENRES_FILTER_INT[GENRES_FILTER_KEY+i])
         end
     end
     if #gi > 0 then params["gi"] = table.concat(gi, ",") params["mgi"] = "or" end
     if #ge > 0 then params["ge"] = table.concat(ge, ",") params["mge"] = "or" end
 
+    -- Warnings
     local cti = {}
     for i=1, #WARNINGS_FILTER_EXT do
-        if data[WARNINGS_FILTER_KEY+i] == 1 then
+        local val = data[WARNINGS_FILTER_KEY+i]
+        -- FIX: Check for '1' or 'true' here too
+        if val == 1 or val == true then
             table.insert(cti, WARNINGS_FILTER_INT[WARNINGS_FILTER_KEY+i])
         end
     end
     if #cti > 0 then params["cti"] = table.concat(cti, ",") end
 
+    -- Status
     if data[STATUS_FILTER_KEY] then
         params["sto"] = STATUS_FILTER_INT[STATUS_FILTER_KEY + data[STATUS_FILTER_KEY] + 1]
     end
 
+    -- Sort & Order
     params["sort"] = data[SORT_FILTER_KEY] and SORT_FILTER_INT[data[SORT_FILTER_KEY]] or "pageviews"
     params["order"] = data[ORDER_FILTER_KEY] and ORDER_FILTER_INT[data[ORDER_FILTER_KEY]] or "desc"
 
@@ -149,7 +160,6 @@ end
 
 -- --- PARSING ---
 
--- Helper to convert Java Elements (userdata) to Lua Table
 local function toArray(elements)
     local t = {}
     for i = 0, elements:size() - 1 do
@@ -179,7 +189,6 @@ end
 local function findStat(elements, stat)
 	local matchDesktop = " " .. stat .."$"
 	local matchMobile = "^" .. stat ..": "
-    -- elements is Java List, convert to table or loop manually
     for i = 0, elements:size() - 1 do
 		local part = elements:get(i):text()
 		if part:match(matchDesktop) ~= nil or part:match(matchMobile) ~= nil then
@@ -199,7 +208,6 @@ local function parseListing(doc)
 	local boxes = container:select(".wi_fic_wrap .search_main_box")
 	if boxes:isEmpty() then boxes = container:select(".search_main_box") end
 
-    -- FIX: Convert boxes (userdata) to Lua Table before mapping
 	return map(toArray(boxes), function(v)
 		local body = v:selectFirst(".search_body")
 		if body == nil then body = v end
@@ -211,11 +219,8 @@ local function parseListing(doc)
 		local chapters = findStat(stats, "Chapters")
 		local comments = findStat(stats, "Reviews")
 		local favorites = findStat(stats, "Favorites")
-        
-        -- Genres is also a list of elements, convert to table for map
 		local genres = map(toArray(v:select(".search_genre .fic_genre")), function(g) return g:text() end)
-		
-        local authorElem = v:selectFirst(".a_un_st")
+		local authorElem = v:selectFirst(".a_un_st")
 		local author = authorElem and authorElem:text() or "Unknown"
 		
 		local description = body:ownText()
@@ -300,7 +305,6 @@ return {
 			title = novel:selectFirst(".fic_title"):text(),
 			imageURL = novel:selectFirst(".fic_image img"):attr("src"),
 			description = HTMLToString(wrap:selectFirst(".wi_fic_desc")),
-            -- Convert to array here as well
 			genres = map(toArray(wrap:selectFirst(".wi_fic_genre"):select("a")), text),
 			tags = map(toArray(wrap:selectFirst(".wi_fic_showtags"):select("a")), text),
 			authors = { novel:selectFirst("span[property=name] .auth_name_fic"):text() },
@@ -310,7 +314,6 @@ return {
 		if loadChapters then
 			local body = RequestBody("action=wi_getreleases_pagination&pagenum=-1&mypostid="..url, MTYPE)
 			local cdoc = RequestDocument(POST("https://www.scribblehub.com/wp-admin/admin-ajax.php", HEADERS, body))
-            -- Convert to array here as well
 			local chapters = AsList(map(toArray(cdoc:selectFirst("ol"):select("li")), function(v, i)
 				local a = v:selectFirst("a")
 				return NovelChapter {
