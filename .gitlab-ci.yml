@@ -39,7 +39,7 @@ index:
         git config user.name "CI Bot"
         git add index.json
         git commit -m "chore: auto-update index.json [skip ci]"
-        git push "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" HEAD:${CI_COMMIT_REF_NAME}
+        git push "https://oauth2:${PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" HEAD:${CI_COMMIT_REF_NAME}
         echo "Successfully pushed updated index.json."
       else
         echo "Index is up to date."
