@@ -72,4 +72,10 @@ index:
 
 metadata:
   stage: validate
+  script:
+    - java -jar bin/extension-tester.jar --ci --metadata
+  only:
+    changes:
+      - src/**/*.lua
+      - index.json
 # ... (rest of your file remains the same) ...
