@@ -1,4 +1,4 @@
--- {"id":86802,"ver":"1.2.5","libVer":"1.0.0","author":"TechnoJo4, StormX4","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
+-- {"id":86802,"ver":"1.2.6","libVer":"1.0.0","author":"TechnoJo4, StormX4","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
 
 local baseURL = "https://www.scribblehub.com"
 
@@ -16,7 +16,7 @@ local GENRES_FILTER_EXT = {
     "Supernatural", "Tragedy"
 }
 local GENRES_FILTER_KEY = 200
-local GENRES_FILTER_INT = { 
+local GENRES_FILTER_INT = {
     [GENRES_FILTER_KEY+1] = 9,    [GENRES_FILTER_KEY+2] = 902,  [GENRES_FILTER_KEY+3] = 8,
     [GENRES_FILTER_KEY+4] = 891,  [GENRES_FILTER_KEY+5] = 7,    [GENRES_FILTER_KEY+6] = 903,
     [GENRES_FILTER_KEY+7] = 904,  [GENRES_FILTER_KEY+8] = 38,   [GENRES_FILTER_KEY+9] = 19,
@@ -66,7 +66,7 @@ local ORDER_FILTER_INT = {
     "alltime"
 }
 
-local TAG_SEARCH_KEY = 900 
+local TAG_SEARCH_KEY = 900
 
 -- --- HELPER FUNCTIONS ---
 
@@ -147,7 +147,7 @@ local function parseListing(doc)
 	return map(toArray(boxes), function(v)
 		local body = v:selectFirst(".search_body")
 		if body == nil then body = v end
-		
+
 		local t = v:selectFirst(".search_title a")
 		local stats = body:select(".search_stats .nl_stat")
 		local words = findStat(stats, "Words")
@@ -158,7 +158,7 @@ local function parseListing(doc)
 		local genres = map(toArray(v:select(".search_genre .fic_genre")), function(g) return g:text() end)
 		local authorElem = v:selectFirst(".a_un_st")
 		local author = authorElem and authorElem:text() or "Unknown"
-		
+
 		local description = body:ownText()
 		if description == nil or description:len() == 0 then
 			local element = body:selectFirst("> div:last-child")
@@ -224,12 +224,12 @@ return {
 		local wrap = novel:selectFirst(".box_fictionpage")
 		removeElements(wrap, ".dots")
 		removeElements(wrap, ".morelink")
-		
+
 		local s = doc:selectFirst(".copyright ul"):children()
 		s = s:get(s:size() - 1):children()
 		s = s:get(s:size() - 1)
 		s = s:ownText()
-		
+
 		local status = NovelStatus.UNKNOWN
 		if s:match("Ongoing") then status = NovelStatus.PUBLISHING
 		elseif s:match("Complete") then status = NovelStatus.COMPLETED
@@ -284,35 +284,42 @@ return {
     end,
 
     search = function(data)
-        -- 1. Check for Tag Search first (highest priority if set)
+        -- 1. TAG SEARCH
         if data[TAG_SEARCH_KEY] and data[TAG_SEARCH_KEY] ~= "" then
             local tag = data[TAG_SEARCH_KEY]:gsub(" ", "-")
             local params = {}
             if data[SORT_FILTER_KEY] then params["sort"] = SORT_FILTER_INT[data[SORT_FILTER_KEY]] end
-            if data[ORDER_FILTER_KEY] then params["order"] = "desc" end 
+            if data[ORDER_FILTER_KEY] then params["order"] = "desc" end
             local queryString = ""
             if next(params) then queryString = "?" .. qs(params) end
             return parseListing(GETDocument(baseURL .. "/tag/" .. tag .. "/" .. queryString))
         end
 
-        -- 2. Build Series Finder Params & Count Active Filters
-        local params = { sf = 1 }
+        -- 2. SERIES FINDER (Manual URL Build)
+        -- We manually concatenate strings to ensure commas are NOT encoded as %2C
+        local parts = { "sf=1" }
         local activeFilterCount = 0
 
         -- Genres
         local gi, ge = {}, {}
         for i=1, #GENRES_FILTER_EXT do
             local val = data[GENRES_FILTER_KEY+i]
-            if val == 1 or val == true then 
+            if val == 1 or val == true then
                 table.insert(gi, GENRES_FILTER_INT[GENRES_FILTER_KEY+i])
                 activeFilterCount = activeFilterCount + 1
-            elseif val == 2 then 
+            elseif val == 2 then
                 table.insert(ge, GENRES_FILTER_INT[GENRES_FILTER_KEY+i])
                 activeFilterCount = activeFilterCount + 1
             end
         end
-        if #gi > 0 then params["gi"] = table.concat(gi, ",") params["mgi"] = "or" end
-        if #ge > 0 then params["ge"] = table.concat(ge, ",") params["mge"] = "or" end
+        if #gi > 0 then
+            table.insert(parts, "gi=" .. table.concat(gi, ","))
+            table.insert(parts, "mgi=or")
+        end
+        if #ge > 0 then
+            table.insert(parts, "ge=" .. table.concat(ge, ","))
+            table.insert(parts, "mge=or")
+        end
 
         -- Warnings
         local cti = {}
@@ -323,33 +330,42 @@ return {
                 activeFilterCount = activeFilterCount + 1
             end
         end
-        if #cti > 0 then params["cti"] = table.concat(cti, ",") end
+        if #cti > 0 then
+            table.insert(parts, "cti=" .. table.concat(cti, ","))
+        end
 
         -- Status
         if data[STATUS_FILTER_KEY] and data[STATUS_FILTER_KEY] ~= 0 then
-            params["sto"] = STATUS_FILTER_INT[STATUS_FILTER_KEY + data[STATUS_FILTER_KEY] + 1]
+            table.insert(parts, "sto=" .. STATUS_FILTER_INT[STATUS_FILTER_KEY + data[STATUS_FILTER_KEY] + 1])
             activeFilterCount = activeFilterCount + 1
         end
 
         -- Sort & Order
-        params["sort"] = data[SORT_FILTER_KEY] and SORT_FILTER_INT[data[SORT_FILTER_KEY]] or "pageviews"
-        params["order"] = data[ORDER_FILTER_KEY] and ORDER_FILTER_INT[data[ORDER_FILTER_KEY]] or "desc"
+        local sortVal = data[SORT_FILTER_KEY] and SORT_FILTER_INT[data[SORT_FILTER_KEY]] or "pageviews"
+        local orderVal = data[ORDER_FILTER_KEY] and ORDER_FILTER_INT[data[ORDER_FILTER_KEY]] or "desc"
+        table.insert(parts, "sort=" .. sortVal)
+        table.insert(parts, "order=" .. orderVal)
+
+        -- Check if Sort/Order are non-default (which counts as "Using Series Finder")
+        if sortVal ~= "pageviews" or orderVal ~= "desc" then
+            activeFilterCount = activeFilterCount + 1
+        end
 
         -- 3. DECISION LOGIC
-        -- If user selected ANY filter, force Series Finder.
         if activeFilterCount > 0 then
-            return parseListing(GETDocument(baseURL .. "/series-finder/?" .. qs(params)))
-        
-        -- If NO filters are active, but Query exists, use Standard Text Search
+             -- Use Series Finder
+            return parseListing(GETDocument(baseURL .. "/series-finder/?" .. table.concat(parts, "&")))
+
         elseif data[QUERY] and data[QUERY] ~= "" then
+            -- Use Standard Search
             return parseListing(GETDocument(qs({
 				s = data[QUERY],
 				post_type = "fictionposts"
 			}, baseURL .. "/")))
-            
-        -- Fallback (e.g. empty search) -> Show Series Finder defaults (Popular/Latest)
+
         else
-            return parseListing(GETDocument(baseURL .. "/series-finder/?" .. qs(params)))
+            -- Default Fallback (Show default Series Finder results)
+            return parseListing(GETDocument(baseURL .. "/series-finder/?" .. table.concat(parts, "&")))
         end
     end,
     
