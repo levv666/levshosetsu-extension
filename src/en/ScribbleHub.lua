@@ -94,46 +94,31 @@ local function MultiTriStateFilter(offset, filter_ext, stop)
     return f
 end
 
--- Checks if the user has touched ANY filter (Genres, Warnings, Status, Tag Text)
 local function hasActiveFilters(data)
-    -- Check Tag Text
     if data[TAG_SEARCH_KEY] and data[TAG_SEARCH_KEY] ~= "" then return true end
-    
-    -- Check Status (If not 0/All)
     if data[STATUS_FILTER_KEY] and data[STATUS_FILTER_KEY] ~= 0 then return true end
-    
-    -- Check Genres
     for i=1, #GENRES_FILTER_EXT do
         if data[GENRES_FILTER_KEY+i] then return true end
     end
-    
-    -- Check Warnings
     for i=1, #WARNINGS_FILTER_EXT do
         if data[WARNINGS_FILTER_KEY+i] then return true end
     end
-    
     return false
 end
 
 local function createFilterString(data)
-    -- 1. Check for Tag Search (Overrides everything else because it's a separate page)
     if data[TAG_SEARCH_KEY] and data[TAG_SEARCH_KEY] ~= "" then
         local tag = data[TAG_SEARCH_KEY]:gsub(" ", "-")
-        -- Append sort/order if possible
         local params = {}
         if data[SORT_FILTER_KEY] then params["sort"] = SORT_FILTER_INT[data[SORT_FILTER_KEY]] end
-        if data[ORDER_FILTER_KEY] then params["order"] = "desc" end -- Tag pages usually desc
-        
+        if data[ORDER_FILTER_KEY] then params["order"] = "desc" end 
         local queryString = ""
         if next(params) then queryString = "?" .. qs(params) end
-        
         return "/tag/" .. tag .. "/" .. queryString
     end
 
-    -- 2. Build Series Finder Params
     local params = { sf = 1 }
 
-    -- Genres
     local gi, ge = {}, {}
     for i=1, #GENRES_FILTER_EXT do
         local val = data[GENRES_FILTER_KEY+i]
@@ -144,7 +129,6 @@ local function createFilterString(data)
     if #gi > 0 then params["gi"] = table.concat(gi, ",") params["mgi"] = "or" end
     if #ge > 0 then params["ge"] = table.concat(ge, ",") params["mge"] = "or" end
 
-    -- Warnings
     local cti = {}
     for i=1, #WARNINGS_FILTER_EXT do
         if data[WARNINGS_FILTER_KEY+i] == 1 then
@@ -153,12 +137,10 @@ local function createFilterString(data)
     end
     if #cti > 0 then params["cti"] = table.concat(cti, ",") end
 
-    -- Status
     if data[STATUS_FILTER_KEY] then
         params["sto"] = STATUS_FILTER_INT[STATUS_FILTER_KEY + data[STATUS_FILTER_KEY] + 1]
     end
 
-    -- Sort & Order
     params["sort"] = data[SORT_FILTER_KEY] and SORT_FILTER_INT[data[SORT_FILTER_KEY]] or "pageviews"
     params["order"] = data[ORDER_FILTER_KEY] and ORDER_FILTER_INT[data[ORDER_FILTER_KEY]] or "desc"
 
@@ -166,6 +148,15 @@ local function createFilterString(data)
 end
 
 -- --- PARSING ---
+
+-- Helper to convert Java Elements (userdata) to Lua Table
+local function toArray(elements)
+    local t = {}
+    for i = 0, elements:size() - 1 do
+        table.insert(t, elements:get(i))
+    end
+    return t
+end
 
 local function map(list, func)
     local new_list = {}
@@ -188,7 +179,8 @@ end
 local function findStat(elements, stat)
 	local matchDesktop = " " .. stat .."$"
 	local matchMobile = "^" .. stat ..": "
-	for i = 0, elements:size() - 1 do
+    -- elements is Java List, convert to table or loop manually
+    for i = 0, elements:size() - 1 do
 		local part = elements:get(i):text()
 		if part:match(matchDesktop) ~= nil or part:match(matchMobile) ~= nil then
 			local number = part:gsub(matchDesktop, ""):gsub(matchMobile, ""):gsub(",", ""):gsub(" ", "")
@@ -207,7 +199,8 @@ local function parseListing(doc)
 	local boxes = container:select(".wi_fic_wrap .search_main_box")
 	if boxes:isEmpty() then boxes = container:select(".search_main_box") end
 
-	return map(AsList(boxes), function(v)
+    -- FIX: Convert boxes (userdata) to Lua Table before mapping
+	return map(toArray(boxes), function(v)
 		local body = v:selectFirst(".search_body")
 		if body == nil then body = v end
 		
@@ -218,8 +211,11 @@ local function parseListing(doc)
 		local chapters = findStat(stats, "Chapters")
 		local comments = findStat(stats, "Reviews")
 		local favorites = findStat(stats, "Favorites")
-		local genres = map(AsList(v:select(".search_genre .fic_genre")), function(g) return g:text() end)
-		local authorElem = v:selectFirst(".a_un_st")
+        
+        -- Genres is also a list of elements, convert to table for map
+		local genres = map(toArray(v:select(".search_genre .fic_genre")), function(g) return g:text() end)
+		
+        local authorElem = v:selectFirst(".a_un_st")
 		local author = authorElem and authorElem:text() or "Unknown"
 		
 		local description = body:ownText()
@@ -304,8 +300,9 @@ return {
 			title = novel:selectFirst(".fic_title"):text(),
 			imageURL = novel:selectFirst(".fic_image img"):attr("src"),
 			description = HTMLToString(wrap:selectFirst(".wi_fic_desc")),
-			genres = map(AsList(wrap:selectFirst(".wi_fic_genre"):select("a")), text),
-			tags = map(AsList(wrap:selectFirst(".wi_fic_showtags"):select("a")), text),
+            -- Convert to array here as well
+			genres = map(toArray(wrap:selectFirst(".wi_fic_genre"):select("a")), text),
+			tags = map(toArray(wrap:selectFirst(".wi_fic_showtags"):select("a")), text),
 			authors = { novel:selectFirst("span[property=name] .auth_name_fic"):text() },
 			status = status
 		}
@@ -313,7 +310,8 @@ return {
 		if loadChapters then
 			local body = RequestBody("action=wi_getreleases_pagination&pagenum=-1&mypostid="..url, MTYPE)
 			local cdoc = RequestDocument(POST("https://www.scribblehub.com/wp-admin/admin-ajax.php", HEADERS, body))
-			local chapters = AsList(map(cdoc:selectFirst("ol"):select("li"), function(v, i)
+            -- Convert to array here as well
+			local chapters = AsList(map(toArray(cdoc:selectFirst("ol"):select("li")), function(v, i)
 				local a = v:selectFirst("a")
 				return NovelChapter {
 					order = v:attr("order"),
@@ -347,15 +345,12 @@ return {
     end,
 
     search = function(data)
-        -- If user typed a query AND NO FILTERS are active, use Standard Search
         if (data[QUERY] and data[QUERY] ~= "") and not hasActiveFilters(data) then
              return parseListing(GETDocument(qs({
 				s = data[QUERY],
 				post_type = "fictionposts"
 			}, baseURL .. "/")))
         end
-
-        -- Otherwise (Filters Active OR No Query), use Series Finder / Tags
         local filterString = createFilterString(data)
         return parseListing(GETDocument(baseURL .. filterString))
     end,
