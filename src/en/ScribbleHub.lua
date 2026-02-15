@@ -1,4 +1,4 @@
--- {"id":86802,"ver":"1.2.0","libVer":"1.0.0","author":"TechnoJo4, StormX4","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
+-- {"id":86802,"ver":"1.2.04","libVer":"1.0.0","author":"TechnoJo4, StormX4","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
 
 local baseURL = "https://www.scribblehub.com"
 
@@ -107,7 +107,7 @@ local function hasActiveFilters(data)
 end
 
 local function createFilterString(data)
-    -- 1. TAG SEARCH (Overrides everything)
+    -- 1. TAG SEARCH
     if data[TAG_SEARCH_KEY] and data[TAG_SEARCH_KEY] ~= "" then
         local tag = data[TAG_SEARCH_KEY]:gsub(" ", "-")
         local params = {}
@@ -125,7 +125,7 @@ local function createFilterString(data)
     local gi, ge = {}, {}
     for i=1, #GENRES_FILTER_EXT do
         local val = data[GENRES_FILTER_KEY+i]
-        -- FIX: Check for '1' (TriState) OR 'true' (Checkbox fallback)
+        -- Handle TriState (1=Inc, 2=Exc) AND Checkbox (true=Inc)
         if val == 1 or val == true then 
             table.insert(gi, GENRES_FILTER_INT[GENRES_FILTER_KEY+i])
         elseif val == 2 then 
@@ -139,7 +139,6 @@ local function createFilterString(data)
     local cti = {}
     for i=1, #WARNINGS_FILTER_EXT do
         local val = data[WARNINGS_FILTER_KEY+i]
-        -- FIX: Check for '1' or 'true' here too
         if val == 1 or val == true then
             table.insert(cti, WARNINGS_FILTER_INT[WARNINGS_FILTER_KEY+i])
         end
@@ -348,12 +347,14 @@ return {
     end,
 
     search = function(data)
+        -- Only fallback to simple search if NO filters are active
         if (data[QUERY] and data[QUERY] ~= "") and not hasActiveFilters(data) then
              return parseListing(GETDocument(qs({
 				s = data[QUERY],
 				post_type = "fictionposts"
 			}, baseURL .. "/")))
         end
+
         local filterString = createFilterString(data)
         return parseListing(GETDocument(baseURL .. filterString))
     end,
