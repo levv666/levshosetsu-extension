@@ -15,6 +15,7 @@ local function expandURL(url)
 	return baseURL .. "/" .. url
 end
 
+
 local default_order = {
 	[1] = 2, -- Popularity -> Weekly
 	[2] = 4, -- Favorites -> All Time
@@ -25,6 +26,12 @@ local default_order = {
 
 local FILTER_SORT = 2
 local FILTER_ORDER = 3
+
+local FILTER_QUERY = 1
+local FILTER_STATUS = 2
+local FILTER_GENRE_ANDOR = 3
+local FILTER_SORT_BY = 4
+local FILTER_ORDER_BY = 5
 
 local MTYPE = MediaType("application/x-www-form-urlencoded; charset=UTF-8")
 local USERAGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0"
@@ -231,4 +238,94 @@ return {
 		}, baseURL .. "/")))
 	end,
 	isSearchIncrementing = false
+
+    searchFilters = {
+        TextFilter(FILTER_QUERY, "Title Contains"),
+        DropdownFilter(FILTER_STATUS, "Story Status", { "All", "Completed", "Ongoing", "Hiatus" }),
+        DropdownFilter(FILTER_GENRE_ANDOR, "Genre Mode", { "OR", "AND" }),
+        DropdownFilter(FILTER_SORT_BY, "Sort By", { 
+            "Pageviews", "Ratings", "Chapters", "Favorites", "Reviews", "Total Words", "Date Added" 
+        }),
+        DropdownFilter(FILTER_ORDER_BY, "Order", { "Descending", "Ascending" }),
+        
+        -- Genres Section
+        SeparatorFilter("Genres"),
+        CheckBoxFilter(10, "Action"), -- ID 9
+        CheckBoxFilter(11, "Adult"), -- ID 902
+        CheckBoxFilter(12, "Adventure"), -- ID 8
+        CheckBoxFilter(13, "Boys Love"), -- ID 891
+        CheckBoxFilter(14, "Comedy"), -- ID 7
+        CheckBoxFilter(15, "Drama"), -- ID 903
+        CheckBoxFilter(16, "Ecchi"), -- ID 904
+        CheckBoxFilter(17, "Fanfiction"), -- ID 38
+        CheckBoxFilter(18, "Fantasy"), -- ID 19
+        CheckBoxFilter(19, "Gender Bender"), -- ID 905
+        CheckBoxFilter(20, "Girls Love"), -- ID 892
+        CheckBoxFilter(21, "Harem"), -- ID 1015
+        CheckBoxFilter(22, "Historical"), -- ID 21
+        CheckBoxFilter(23, "Horror"), -- ID 22
+        CheckBoxFilter(24, "Isekai"), -- ID 37
+        CheckBoxFilter(25, "Josei"), -- ID 906
+        CheckBoxFilter(26, "LitRPG"), -- ID 1180
+        CheckBoxFilter(27, "Martial Arts"), -- ID 907
+        CheckBoxFilter(28, "Mature"), -- ID 20
+        CheckBoxFilter(29, "Mystery"), -- ID 909
+        CheckBoxFilter(30, "Psychological"), -- ID 910
+        CheckBoxFilter(31, "Romance"), -- ID 6
+        CheckBoxFilter(32, "School Life"), -- ID 911
+        CheckBoxFilter(33, "Sci-fi"), -- ID 912
+        CheckBoxFilter(34, "Seinen"), -- ID 913
+        CheckBoxFilter(35, "Slice of Life"), -- ID 914
+        CheckBoxFilter(36, "Sports"), -- ID 916
+        CheckBoxFilter(37, "Supernatural"), -- ID 5
+        CheckBoxFilter(38, "Tragedy"), -- ID 901
+    },
+
+    search = function(data)
+        local queryParams = {}
+        
+        -- Basic Filters
+        queryParams["seriescontains"] = data[FILTER_QUERY]
+        
+        local statusMap = { [1] = "all", [2] = "completed", [3] = "ongoing", [4] = "hiatus" }
+        queryParams["fic_storystatus"] = statusMap[data[FILTER_STATUS] or 1]
+        
+        queryParams["gi_mm"] = (data[FILTER_GENRE_ANDOR] == 2) and "and" or "or"
+        
+        local sortMap = { 
+            [1] = "pageviews", [2] = "ratings", [3] = "chapters", 
+            [4] = "favorites", [5] = "reviews", [6] = "totalwords", [7] = "dateadded"
+        }
+        queryParams["sort"] = sortMap[data[FILTER_SORT_BY] or 1]
+        queryParams["order"] = (data[FILTER_ORDER_BY] == 2) and "asc" or "desc"
+
+        -- Genre Logic (gi[] parameter)
+        local genres = {}
+        local genreMap = {
+            [10]=9, [11]=902, [12]=8, [13]=891, [14]=7, [15]=903, [16]=904,
+            [17]=38, [18]=19, [19]=905, [20]=892, [21]=1015, [22]=21, [23]=22,
+            [24]=37, [25]=906, [26]=1180, [27]=907, [28]=20, [29]=909, [30]=910,
+            [31]=6, [32]=911, [33]=912, [34]=913, [35]=914, [36]=916, [37]=5, [38]=901
+        }
+
+        for filterId, siteId in pairs(genreMap) do
+            if data[filterId] then
+                table.insert(genres, tostring(siteId))
+            end
+        end
+
+        -- Construct the URL
+        local url = baseURL .. "/series-finder/?sf=1"
+        if #genres > 0 then
+            -- ScribbleHub needs multiple gi[] keys for multiple genres
+            for _, gId in ipairs(genres) do
+                url = url .. "&gi[]=" .. gId
+            end
+        end
+        
+        -- Append the rest of the query string
+        url = url .. "&" .. qs(queryParams)
+
+        return parse(GETDocument(url))
+    end,
 }
