@@ -285,24 +285,17 @@ return {
     end,
 
     search = function(data)
-        -- 1. Check for Tag Search (Overrides everything else)
+        -- 1. TAG SEARCH
         if data[TAG_SEARCH_KEY] and data[TAG_SEARCH_KEY] ~= "" then
-            local tag = data[TAG_SEARCH_KEY]:gsub(" ", "-")
-            local params = {}
-            if data[SORT_FILTER_KEY] then params["sort"] = SORT_FILTER_INT[data[SORT_FILTER_KEY]] end
-            if data[ORDER_FILTER_KEY] then params["order"] = "desc" end 
-            local queryString = ""
-            if next(params) then queryString = "?" .. qs(params) end
-            return parseListing(GETDocument(baseURL .. "/tag/" .. tag .. "/" .. queryString))
+            local tag = data[TAG_SEARCH_KEY]:gsub(" ", "-"):lower()
+            return parseListing(GETDocument(baseURL .. "/tag/" .. tag .. "/"))
         end
 
-        -- 2. SERIES FINDER (ALWAYS USED)
-        -- We manually concatenate strings to ensure commas are NOT encoded as %2C
+        -- 2. SERIES FINDER (Manual Build to keep commas unencoded)
         local parts = { "sf=1" }
 
-        -- Include Keyword Search
+        -- Include Keyword
         if data[QUERY] and data[QUERY] ~= "" then
-            -- Note: ScribbleHub Series Finder accepts 's=' for search terms
             table.insert(parts, "s=" .. data[QUERY])
         end
 
@@ -310,7 +303,6 @@ return {
         local gi, ge = {}, {}
         for i=1, #GENRES_FILTER_EXT do
             local val = data[GENRES_FILTER_KEY+i]
-            -- Safe check for both TriState (1,2) and Checkbox (true)
             if val == 1 or val == true then 
                 table.insert(gi, GENRES_FILTER_INT[GENRES_FILTER_KEY+i])
             elseif val == 2 then 
@@ -323,7 +315,7 @@ return {
         end
         if #ge > 0 then 
             table.insert(parts, "ge=" .. table.concat(ge, ",")) 
-            table.insert(parts, "mge=or") 
+            table.insert(parts, "mge=and") 
         end
 
         -- Warnings
@@ -350,7 +342,8 @@ return {
         table.insert(parts, "order=" .. orderVal)
 
         -- EXECUTE
-        return parseListing(GETDocument(baseURL .. "/series-finder/?" .. table.concat(parts, "&")))
+        local finalURL = baseURL .. "/series-finder/?" .. table.concat(parts, "&")
+        return parseListing(GETDocument(finalURL))
     end,
     
     isSearchIncrementing = false,
