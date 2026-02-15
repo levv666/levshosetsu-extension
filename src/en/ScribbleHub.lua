@@ -1,27 +1,24 @@
--- {"id":86802,"ver":"1.1.2","libVer":"1.0.0","author":"TechnoJo4, StormX4","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
+-- {"id":86802,"ver":"1.1.4","libVer":"1.0.0","author":"TechnoJo4, StormX4","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
 
 local baseURL = "https://www.scribblehub.com"
 local qs = Require("url").querystring
 local css = Require("CommonCSS").table
 local HTMLToString = Require("unhtml").HTMLToString
 
--- --- Constants & IDs ---
+-- --- CONSTANTS & DATA ---
 
 local QUERY = 1
 
--- Filter IDs
-local FILTER_SORT = 2
-local FILTER_ORDER = 3
-local FILTER_STATUS = 4
-local FILTER_TAG = 5
+-- Filter Keys (Start high to avoid conflicts)
+local FILTER_SORT = 100
+local FILTER_ORDER = 101
+local FILTER_STATUS = 102
+local FILTER_TAG_TEXT = 103
 
--- ID Ranges for Checkboxes (Start ID)
-local ID_WARN_START = 100
-local ID_GENRE_INC_START = 200
-local ID_GENRE_EXC_START = 300
+local GENRE_FILTER_KEY = 200
+local WARNING_FILTER_KEY = 300
 
--- --- Data Mappings ---
-
+-- ScribbleHub Genre IDs
 local GENRES = {
 	["Action"] = 9, ["Adult"] = 902, ["Adventure"] = 8, ["Boys Love"] = 891,
 	["Comedy"] = 7, ["Drama"] = 903, ["Ecchi"] = 904, ["Fanfiction"] = 38,
@@ -33,6 +30,7 @@ local GENRES = {
 	["Sports"] = 916, ["Supernatural"] = 5, ["Tragedy"] = 901
 }
 
+-- Ordered list for display
 local GENRE_LIST = {
 	"Action", "Adult", "Adventure", "Boys Love", "Comedy", "Drama", "Ecchi", "Fanfiction",
 	"Fantasy", "Gender Bender", "Girls Love", "Harem", "Historical", "Horror", "Isekai",
@@ -49,8 +47,26 @@ local WARNINGS = {
 local WARNING_LIST = { "Gore", "Sexual Content", "Strong Language" }
 
 local SORT_KEYS = { "pageviews", "favorites", "activity", "readers", "rising" }
+local ORDER_KEYS = { "daily", "weekly", "monthly", "alltime" } 
 
--- --- Helper Functions ---
+-- --- HELPERS ---
+
+-- Helper to safely use TriStateFilter if available, otherwise fallback to Checkbox
+local function TriStateFilter_(int, str)
+	if TriStateFilter then
+		return TriStateFilter(int, str)
+	else
+		return CheckboxFilter(int, str)
+	end
+end
+
+local function MultiTriStateFilter(offset, names, stop)
+	local f = {}
+	for i = 1, stop do
+		table.insert(f, TriStateFilter_(offset + i, names[i]))
+	end
+	return f
+end
 
 local function map(list, func)
 	local new_list = {}
@@ -68,10 +84,6 @@ end
 local function expandURL(url)
 	return baseURL .. "/" .. url
 end
-
-local MTYPE = MediaType("application/x-www-form-urlencoded; charset=UTF-8")
-local USERAGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0"
-local HEADERS = HeadersBuilder():add("User-Agent", USERAGENT):build()
 
 local function expandNumber(shortNum)
 	local number, suffix = shortNum:match("^(%d+%.?%d*)([kKmMbB]?)$")
@@ -99,7 +111,7 @@ local function removeElements(element, attr)
 	if elementToRemove then elementToRemove:remove() end
 end
 
--- --- Parsers ---
+-- --- PARSERS ---
 
 local function parse(doc)
 	local container = doc:selectFirst("#page")
@@ -154,38 +166,11 @@ local function parse(doc)
 	end)
 end
 
--- --- Build Filter List Procedurally ---
--- We do this to avoid using 'FilterGroup' which caused the crash, 
--- and to ensure we use standard Filter.Check + Filter.Header
+local MTYPE = MediaType("application/x-www-form-urlencoded; charset=UTF-8")
+local USERAGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0"
+local HEADERS = HeadersBuilder():add("User-Agent", USERAGENT):build()
 
-local searchFiltersList = {
-	Filter.Select(FILTER_SORT, "Sort by", { "Popularity", "Favorites", "Activity", "Readers", "Rising" }),
-	Filter.Select(FILTER_ORDER, "Order", { "Daily", "Weekly", "Monthly", "All Time" }),
-	Filter.Select(FILTER_STATUS, "Status", { "All", "Completed", "Ongoing", "Hiatus" }),
-	Filter.Text(FILTER_TAG, "Tag (Exact Name)", ""),
-	Filter.Separator()
-}
-
--- Add Warnings
-table.insert(searchFiltersList, Filter.Header("Content Warnings (Include)"))
-for i, name in ipairs(WARNING_LIST) do
-	table.insert(searchFiltersList, Filter.Check(ID_WARN_START + i, name))
-end
-
--- Add Genres Include
-table.insert(searchFiltersList, Filter.Header("Genres (Include)"))
-for i, name in ipairs(GENRE_LIST) do
-	table.insert(searchFiltersList, Filter.Check(ID_GENRE_INC_START + i, name))
-end
-
--- Add Genres Exclude
-table.insert(searchFiltersList, Filter.Header("Genres (Exclude)"))
-for i, name in ipairs(GENRE_LIST) do
-	table.insert(searchFiltersList, Filter.Check(ID_GENRE_EXC_START + i, name))
-end
-
-
--- --- Main Extension Object ---
+-- --- MAIN OBJECT ---
 
 return {
 	id = 86802,
@@ -203,8 +188,6 @@ return {
 			return parse(GETDocument(baseURL .. "/latest-series/"))
 		end)
 	},
-
-	searchFilters = searchFiltersList,
 
 	shrinkURL = shrinkURL,
 	expandURL = expandURL,
@@ -276,66 +259,61 @@ return {
 
 	search = function(data)
 		local query = data[QUERY]
-		local tagInput = data[FILTER_TAG]
+		local tagInput = data[FILTER_TAG_TEXT]
 
-		-- Check if any advanced filters are active
-		local hasWarnings = false
-		local hasGenres = false
-		
-		-- Helper to check ID ranges
-		for i=1, #WARNING_LIST do if data[ID_WARN_START + i] then hasWarnings = true break end end
-		for i=1, #GENRE_LIST do if data[ID_GENRE_INC_START + i] or data[ID_GENRE_EXC_START + i] then hasGenres = true break end end
-
-		-- 1. TAG SEARCH MODE
+		-- 1. SEARCH BY TAG NAME
 		if tagInput and tagInput ~= "" then
 			local tagSlug = tagInput:lower():gsub(" ", "-")
 			local sortIdx = data[FILTER_SORT] and data[FILTER_SORT] + 1 or 1
-			local sortKey = SORT_KEYS[sortIdx]
 			return parse(GETDocument(qs({
-				sort = sortKey,
+				sort = SORT_KEYS[sortIdx],
 				order = "desc"
 			}, baseURL .. "/tag/" .. tagSlug .. "/")))
+		end
 
-		-- 2. SERIES FINDER MODE
-		elseif (not query or query == "") and (hasWarnings or hasGenres or data[FILTER_STATUS]) then
+		-- 2. SERIES FINDER / STANDARD SEARCH
+		-- Logic: If filters are used, use Series Finder. Else, use basic search.
+		
+		-- Collect Tri-State Filter Data
+		local gi, ge, cti, cte = {}, {}, {}, {}
+		
+		-- Helper to process Tri-State values
+		local function ProcessTriState(list, startKey, mapping, incTable, excTable)
+			for i, name in ipairs(list) do
+				local val = data[startKey + i]
+				if val == 1 then -- 1 = Include (Green)
+					table.insert(incTable, mapping[name])
+				elseif val == 2 then -- 2 = Exclude (Red)
+					table.insert(excTable, mapping[name])
+				end
+			end
+		end
+
+		ProcessTriState(GENRE_LIST, GENRE_FILTER_KEY, GENRES, gi, ge)
+		ProcessTriState(WARNING_LIST, WARNING_FILTER_KEY, WARNINGS, cti, cte)
+		
+		local hasFilters = (#gi > 0 or #ge > 0 or #cti > 0 or #cte > 0 or data[FILTER_STATUS])
+
+		if (not query or query == "") and hasFilters then
 			local params = { sf = 1 }
 			
-			-- Collect Genres Include
-			local gi = {}
-			for i, name in ipairs(GENRE_LIST) do
-				if data[ID_GENRE_INC_START + i] then table.insert(gi, GENRES[name]) end
-			end
 			if #gi > 0 then params["gi"] = table.concat(gi, ",") params["mgi"] = "or" end
-			
-			-- Collect Genres Exclude
-			local ge = {}
-			for i, name in ipairs(GENRE_LIST) do
-				if data[ID_GENRE_EXC_START + i] then table.insert(ge, GENRES[name]) end
-			end
 			if #ge > 0 then params["ge"] = table.concat(ge, ",") params["mge"] = "or" end
-			
-			-- Collect Warnings
-			local cti = {}
-			for i, name in ipairs(WARNING_LIST) do
-				if data[ID_WARN_START + i] then table.insert(cti, WARNINGS[name]) end
-			end
 			if #cti > 0 then params["cti"] = table.concat(cti, ",") end
+			-- Note: Series Finder URL usually doesn't have explicit Exclude for Warnings (cte), 
+			-- but we supported the logic just in case.
 
-			-- Status
 			local statusIdx = data[FILTER_STATUS]
 			if statusIdx == 1 then params["sto"] = "completed"
 			elseif statusIdx == 2 then params["sto"] = "ongoing"
 			elseif statusIdx == 3 then params["sto"] = "hiatus"
 			end
 
-			-- Sort
 			local sortIdx = data[FILTER_SORT] and data[FILTER_SORT] + 1 or 1
 			params["sort"] = SORT_KEYS[sortIdx]
 			params["order"] = "desc"
 
 			return parse(GETDocument(qs(params, baseURL .. "/series-finder/")))
-
-		-- 3. STANDARD SEARCH MODE
 		else
 			return parse(GETDocument(qs({
 				s = query,
@@ -344,5 +322,15 @@ return {
 		end
 	end,
 	
-	isSearchIncrementing = false
+	isSearchIncrementing = false,
+	
+	searchFilters = {
+		DropdownFilter(FILTER_SORT, "Sort by", { "Popularity", "Favorites", "Activity", "Readers", "Rising" }),
+		DropdownFilter(FILTER_ORDER, "Order", { "Daily", "Weekly", "Monthly", "All Time" }),
+		DropdownFilter(FILTER_STATUS, "Status", { "All", "Completed", "Ongoing", "Hiatus" }),
+		InputFilter(FILTER_TAG_TEXT, "Tag (Exact Name)", ""),
+		
+		FilterGroup("Genres (Click x2 to Exclude)", MultiTriStateFilter(GENRE_FILTER_KEY, GENRE_LIST, #GENRE_LIST)),
+		FilterGroup("Content Warnings", MultiTriStateFilter(WARNING_FILTER_KEY, WARNING_LIST, #WARNING_LIST))
+	}
 }
