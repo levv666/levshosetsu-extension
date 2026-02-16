@@ -1,5 +1,4 @@
 -- {"id":86802,"ver":"1.0.6","libVer":"1.0.0","author":"TechnoJo4, StormX4","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
-local json = Require("dkjson")
 local baseURL = "https://www.scribblehub.com"
 local qs = Require("url").querystring
 
@@ -91,6 +90,15 @@ local function removeElements(element, attr)
 	end
 end
 
+local function getGenreFilters()
+    local filters = {}
+    for i, genre in ipairs(GENRES) do
+        -- ID will be 101, 102, 103...
+        table.insert(filters, CheckboxFilter(FILTER_GENRE_START + i, genre[1]))
+    end
+    return filters
+end
+
 local function parse(doc)
 	return map(doc:selectFirst("#page"):select(".wi_fic_wrap .search_main_box"), function(v)
 		local body = v:selectFirst(".search_body")
@@ -163,13 +171,11 @@ return {
         },
 
 	searchFilters = {
-		DropdownFilter(FILTER_SORT, "Sort by", { "Popularity", "Favorites", "Activity", "Readers", "Rising" }),
-        DropdownFilter(FILTER_ORDER, "Order", { "Daily", "Weekly", "Monthly", "All Time" }),
-		FilterGroup("Genres", map(GENRES, function(v, i)
-                   -- We offset the ID to ensure it doesn't clash with Sort/Order
-                   return CheckboxFilter(FILTER_GENRE_START + i, v[1])
-               end))
-	},
+           DropdownFilter(FILTER_SORT, "Sort by", { "Popularity", "Favorites", "Activity", "Readers", "Rising" }),
+           DropdownFilter(FILTER_ORDER, "Order", { "Daily", "Weekly", "Monthly", "All Time" }),
+           -- Use the helper function here instead of map
+           FilterGroup("Genres", getGenreFilters())
+        },
 
 	shrinkURL = shrinkURL,
 	expandURL = expandURL,
@@ -251,7 +257,6 @@ return {
 
 -- 3. UPDATE SEARCH LOGIC
     search = function(data)
-       error("DEBUG DATA: " .. json.encode(data))
        local query = data[QUERY]
 
        -- CHECK: Are any genres selected?
