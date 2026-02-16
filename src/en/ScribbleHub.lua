@@ -141,153 +141,134 @@ local function parse(doc)
 	end)
 end
 
-return {
-	id = 86802,
-	name = "ScribbleHub",
-	baseURL = baseURL,
-	imageURL = "https://github.com/shosetsuorg/extensions/raw/dev/icons/ScribbleHub.png",
-	chapterType = ChapterType.HTML,
-	hasCloudFlare = true,
+rreturn {
+     id = 86802,
+     name = "ScribbleHub",
+     baseURL = baseURL,
+     imageURL = "https://github.com/shosetsuorg/extensions/raw/dev/icons/ScribbleHub.png",
+     chapterType = ChapterType.HTML,
+     hasCloudFlare = true,
 
-	listings = {
-           Listing("Latest Novels", false, function(data)
-              -- This URL mimics the "All Series" view using the Finder logic
-              return parse(GETDocument(qs({
-                 sf = 1,
-                 sort = "pageviews",
-                 order = "desc",
-                 mgi = "and",
-                 pg = data[PAGE] -- Listings pass page number here
-              }, baseURL .. "/series-finder/")))
-           end)
-        },
+     listings = {
+        Listing("Latest Novels", false, function(data)
+           return parse(GETDocument(qs({
+              sf = 1,
+              sort = "pageviews",
+              order = "desc",
+              mgi = "and",
+              pg = data[PAGE]
+           }, baseURL .. "/series-finder/")))
+        end)
+     },
 
-	searchFilters = {
-		DropdownFilter(FILTER_SORT, "Sort by", { "Popularity", "Favorites", "Activity", "Readers", "Rising" }),
-        DropdownFilter(FILTER_ORDER, "Order", { "Daily", "Weekly", "Monthly", "All Time" }),
-		FilterGroup("Genres", map(GENRES, function(v, i)
-                   -- We offset the ID to ensure it doesn't clash with Sort/Order
-                   return CheckboxFilter(FILTER_GENRE_START + i, v[1])
-               end))
-	},
+     -- FIX 1: Explicitly build filters using a loop to guarantee ID matching
+     searchFilters = (function()
+         local filters = {
+             DropdownFilter(FILTER_SORT, "Sort by", { "Popularity", "Favorites", "Activity", "Readers", "Rising" }),
+             DropdownFilter(FILTER_ORDER, "Order", { "Daily", "Weekly", "Monthly", "All Time" })
+         }
 
-	shrinkURL = shrinkURL,
-	expandURL = expandURL,
+         local genre_checkboxes = {}
+         for i, genre in ipairs(GENRES) do
+             -- This explicitly uses 1-based indexing: 101, 102, 103...
+             table.insert(genre_checkboxes, CheckboxFilter(FILTER_GENRE_START + i, genre[1]))
+         end
 
-	parseNovel = function(url, loadChapters)
-		local doc = GETDocument(baseURL.."/series/"..url.."/a/"):selectFirst(".site-content-contain")
-		local novel = doc:selectFirst("div[typeof=Book]")
-		local wrap = novel:selectFirst(".box_fictionpage")
-		removeElements(wrap, ".dots")
-		removeElements(wrap, ".morelink")
-		local s = doc:selectFirst(".copyright ul"):children()
+         table.insert(filters, FilterGroup("Genres", genre_checkboxes))
+         return filters
+     end)(),
 
-		s = s:get(s:size() - 1):children()
-		s = s:get(s:size() - 1)
-		s = s:ownText()
-		if s:match("Ongoing") then
-			s = NovelStatus.PUBLISHING
-		elseif s:match("Complete") then
-			s = NovelStatus.COMPLETED
-		elseif s:match("Hiatus") then
-			s = NovelStatus.PAUSED
-		else
-			s = NovelStatus.UNKNOWN
-		end
+     shrinkURL = shrinkURL,
+     expandURL = expandURL,
 
-		local text = function(v) return v:text() end
-		local info = NovelInfo {
-			title = novel:selectFirst(".fic_title"):text(),
-			imageURL = novel:selectFirst(".fic_image img"):attr("src"),
-			description = HTMLToString(wrap:selectFirst(".wi_fic_desc")),
-			genres = map(wrap:selectFirst(".wi_fic_genre"):select("a"), text),
-			tags = map(wrap:selectFirst(".wi_fic_showtags"):select("a"), text),
-			authors = { novel:selectFirst("span[property=name] .auth_name_fic"):text() },
-			status = s
-		}
+     parseNovel = function(url, loadChapters)
+        local doc = GETDocument(baseURL.."/series/"..url.."/a/"):selectFirst(".site-content-contain")
+        local novel = doc:selectFirst("div[typeof=Book]")
+        local wrap = novel:selectFirst(".box_fictionpage")
+        removeElements(wrap, ".dots")
+        removeElements(wrap, ".morelink")
 
-		if loadChapters then
-			local body = RequestBody("action=wi_getreleases_pagination&pagenum=-1&mypostid="..url, MTYPE)
-			local cdoc = RequestDocument(POST("https://www.scribblehub.com/wp-admin/admin-ajax.php", HEADERS, body))
-			local chapters = AsList(map(cdoc:selectFirst("ol"):select("li"), function(v, i)
-				local a = v:selectFirst("a")
-				return NovelChapter {
-					order = v:attr("order"),
-					title = a:text(),
-					link = shrinkURL(a:attr("href"))
-				}
-			end))
-			Reverse(chapters)
-			info:setChapters(chapters)
-		end
+        local s_node = doc:selectFirst(".copyright ul"):children()
+        local s_text = s_node:get(s_node:size() - 1):children():get(0):ownText()
 
-		return info
-	end,
+        local status = NovelStatus.UNKNOWN
+        if s_text:match("Ongoing") then status = NovelStatus.PUBLISHING
+        elseif s_text:match("Complete") then status = NovelStatus.COMPLETED
+        elseif s_text:match("Hiatus") then status = NovelStatus.PAUSED end
 
-	getPassage = function(url)
-		local chap = GETDocument(expandURL(url)):getElementById("main read chapter")
-		local title = chap:selectFirst(".chapter-title"):text()
-		chap = chap:getElementById("chp_raw")
+        local info = NovelInfo {
+           title = novel:selectFirst(".fic_title"):text(),
+           imageURL = novel:selectFirst(".fic_image img"):attr("src"),
+           description = HTMLToString(wrap:selectFirst(".wi_fic_desc")),
+           genres = map(wrap:selectFirst(".wi_fic_genre"):select("a"), function(v) return v:text() end),
+           tags = map(wrap:selectFirst(".wi_fic_showtags"):select("a"), function(v) return v:text() end),
+           authors = { novel:selectFirst("span[property=name] .auth_name_fic"):text() },
+           status = status
+        }
 
-		-- Remove <p></p>.
-		local toRemove = {}
-		chap:traverse(NodeVisitor(function(v)
-			if v:tagName() == "p" and v:childrenSize() == 0 and v:text() == "" then
-				toRemove[#toRemove+1] = v
-			end
-			if v:hasAttr("border") then
-				v:removeAttr("border")
-			end
-		end, nil, true))
-		for _,v in pairs(toRemove) do
-			v:remove()
-		end
+        if loadChapters then
+           local body = RequestBody("action=wi_getreleases_pagination&pagenum=-1&mypostid="..url, MTYPE)
+           local cdoc = RequestDocument(POST("https://www.scribblehub.com/wp-admin/admin-ajax.php", HEADERS, body))
+           local chapters = AsList(map(cdoc:selectFirst("ol"):select("li"), function(v, i)
+              local a = v:selectFirst("a")
+              return NovelChapter {
+                 order = v:attr("order"),
+                 title = a:text(),
+                 link = shrinkURL(a:attr("href"))
+              }
+           end))
+           Reverse(chapters)
+           info:setChapters(chapters)
+        end
+        return info
+     end,
 
-		-- Chapter title inserted before chapter text
-		chap:child(0):before("<h1>" .. title .. "</h1>");
+     getPassage = function(url)
+        local chap = GETDocument(expandURL(url)):getElementById("main read chapter")
+        local title = chap:selectFirst(".chapter-title"):text()
+        chap = chap:getElementById("chp_raw")
+        chap:traverse(NodeVisitor(function(v)
+           if v:tagName() == "p" and v:childrenSize() == 0 and v:text() == "" then v:remove() end
+           if v:hasAttr("border") then v:removeAttr("border") end
+        end, nil, true))
+        chap:child(0):before("<h1>" .. title .. "</h1>");
+        return pageOfElem(chap, false, css)
+     end,
 
-		return pageOfElem(chap, false, css)
-	end,
-
--- 3. UPDATE SEARCH LOGIC
-    search = function(data)
-       local query = data[QUERY]
-
-       -- CHECK: Are any genres selected?
-       local selectedIDs = {}
-       for i, genre in ipairs(GENRES) do
-           if data[FILTER_GENRE_START + i] == true then
-               table.insert(selectedIDs, genre[2])
-           end
-       end
-
-       -- PATH A: If User typed a text query, use standard search (ignores filters to ensure accuracy)
-       if query and query ~= "" then
+     search = function(data)
+        local query = data[QUERY]
+        if query and query ~= "" then
            return parse(GETDocument(qs({
               s = query,
               post_type = "fictionposts"
            }, baseURL .. "/")))
-       end
+        end
 
-       -- PATH B: If No text query, use Series Finder with Filters
-       local params = {
-           sf = 1,                 -- Series Finder Mode
-           mgi = "and",            -- Match ALL genres
-           sort = SORT_KEYS[data[FILTER_SORT]] or "pageviews",
-           order = ORDER_KEYS[data[FILTER_ORDER]] or "desc"
-       }
+        local selectedIDs = {}
+        for i, genre in ipairs(GENRES) do
+            -- FIX 2: Use implicit boolean check (data[x] instead of data[x] == true)
+            -- matches the 1-based indexing from the loop above.
+            if data[FILTER_GENRE_START + i] then
+                table.insert(selectedIDs, genre[2])
+            end
+        end
 
-       if #selectedIDs > 0 then
-           params["gi"] = table.concat(selectedIDs, ",")
-       end
+        local params = {
+            sf = 1,
+            mgi = "and",
+            sort = SORT_KEYS[data[FILTER_SORT]] or "pageviews",
+            order = ORDER_KEYS[data[FILTER_ORDER]] or "desc"
+        }
 
-       -- Note: 'pg' is usually the pagination param for series finder,
-       -- Shosetsu handles page numbers in the URL automatically if your scraper logic supports it.
-       -- If you need to handle paging manually:
-       if data[PAGE] and data[PAGE] > 1 then
-           params["pg"] = data[PAGE]
-       end
+        if #selectedIDs > 0 then
+            params["gi"] = table.concat(selectedIDs, ",")
+        end
 
-       return parse(GETDocument(qs(params, baseURL .. "/series-finder/")))
-    end,
-}
+        if data[PAGE] and data[PAGE] > 1 then
+            params["pg"] = data[PAGE]
+        end
+
+        return parse(GETDocument(qs(params, baseURL .. "/series-finder/")))
+     end,
+     isSearchIncrementing = false
+ }
