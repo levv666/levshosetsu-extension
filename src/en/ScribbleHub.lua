@@ -15,12 +15,32 @@ local function expandURL(url)
 	return baseURL .. "/" .. url
 end
 
-local default_order = {
-	[1] = 2, -- Popularity -> Weekly
-	[2] = 4, -- Favorites -> All Time
-	[3] = 2, -- Activity -> Weekly
-	[4] = 2, -- Readers -> Weekly
-	[5] = 1, -- Rising -> Daily
+local FILTER_GENRES = 4 -- New ID for the genre filter
+
+local GENRES = {
+	{"Action", 9}, {"Adult", 902}, {"Adventure", 8}, {"Boys Love", 891},
+	{"Comedy", 7}, {"Drama", 903}, {"Ecchi", 904}, {"Fanfiction", 38},
+	{"Fantasy", 19}, {"Gender Bender", 905}, {"Girls Love", 892}, {"Harem", 1015},
+	{"Historical", 21}, {"Horror", 22}, {"Isekai", 37}, {"Josei", 906},
+	{"LitRPG", 1180}, {"Martial Arts", 907}, {"Mature", 20}, {"Mecha", 908},
+	{"Mystery", 909}, {"Psychological", 910}, {"Romance", 6}, {"School Life", 911},
+	{"Sci-fi", 912}, {"Seinen", 913}, {"Slice of Life", 914}, {"Smut", 915},
+	{"Sports", 916}, {"Supernatural", 5}, {"Tragedy", 901}
+}
+
+local FILTER_GENRE_START = 100
+
+local SORT_KEYS = {
+    [0] = "pageviews",
+    [1] = "favorites",
+    [2] = "readers",     -- 'Activity' doesn't map perfectly, usually Readers or Frequency
+    [3] = "chapters",    -- Replaced 'Readers' with explicit metric
+    [4] = "reviews"      -- Replaced 'Rising'
+}
+
+local ORDER_KEYS = {
+    [0] = "desc",
+    [1] = "asc"
 }
 
 local FILTER_SORT = 2
@@ -144,7 +164,11 @@ return {
 
 	searchFilters = {
 		DropdownFilter(FILTER_SORT, "Sort by", { "Popularity", "Favorites", "Activity", "Readers", "Rising" }),
-		DropdownFilter(FILTER_ORDER, "Order", { "Daily", "Weekly", "Monthly", "All Time" })
+        DropdownFilter(FILTER_ORDER, "Order", { "Daily", "Weekly", "Monthly", "All Time" }),
+		FilterGroup("Genres", map(GENRES, function(v, i)
+                   -- We offset the ID to ensure it doesn't clash with Sort/Order
+                   return CheckboxFilter(FILTER_GENRE_START + i, v[1])
+               end))
 	},
 
 	shrinkURL = shrinkURL,
@@ -225,10 +249,47 @@ return {
 		return pageOfElem(chap, false, css)
 	end,
 
-	search = function(data)
-		return parse(GETDocument(qs({
-			s = data[QUERY], post_type = "fictionposts"
-		}, baseURL .. "/")))
-	end,
-	isSearchIncrementing = false
+-- 3. UPDATE SEARCH LOGIC
+    search = function(data)
+       local query = data[QUERY]
+
+       -- CHECK: Are any genres selected?
+       local selectedIDs = {}
+       for i, genre in ipairs(GENRES) do
+           if data[FILTER_GENRE_START + i] == true then
+               table.insert(selectedIDs, genre[2])
+           end
+       end
+
+       -- PATH A: If User typed a text query, use standard search (ignores filters to ensure accuracy)
+       if query and query ~= "" then
+           return parse(GETDocument(qs({
+              s = query,
+              post_type = "fictionposts"
+           }, baseURL .. "/")))
+       end
+
+       -- PATH B: If No text query, use Series Finder with Filters
+       local params = {
+           sf = 1,                 -- Series Finder Mode
+           mgi = "and",            -- Match ALL genres
+           sort = SORT_KEYS[data[FILTER_SORT]] or "pageviews",
+           order = ORDER_KEYS[data[FILTER_ORDER]] or "desc"
+       }
+
+       if #selectedIDs > 0 then
+           params["gi"] = table.concat(selectedIDs, ",")
+       end
+
+       -- Note: 'pg' is usually the pagination param for series finder,
+       -- Shosetsu handles page numbers in the URL automatically if your scraper logic supports it.
+       -- If you need to handle paging manually:
+       if data[PAGE] and data[PAGE] > 1 then
+           params["pg"] = data[PAGE]
+       end
+
+       return parse(GETDocument(qs(params, baseURL .. "/series-finder/")))
+    end,
+
+    -- ... (Rest of the extension) ...
 }
