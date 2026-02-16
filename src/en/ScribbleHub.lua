@@ -1,11 +1,11 @@
--- {"id":86802,"ver":"1.0.6","libVer":"1.0.0","author":"TechnoJo4, StormX4","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
+-- {"id":86802,"ver":"1.1.1","libVer":"1.0.0","author":"TechnoJo4, StormX4","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
 
 local baseURL = "https://www.scribblehub.com"
 local qs = Require("url").querystring
 local css = Require("CommonCSS").table
 local HTMLToString = Require("unhtml").HTMLToString
 
--- 1. DEFINE GENRES
+-- 1. GENRE LIST
 local GENRES = {
 	{"Action", 9}, {"Adult", 902}, {"Adventure", 8}, {"Boys Love", 891},
 	{"Comedy", 7}, {"Drama", 903}, {"Ecchi", 904}, {"Fanfiction", 38},
@@ -17,13 +17,13 @@ local GENRES = {
 	{"Sports", 916}, {"Supernatural", 5}, {"Tragedy", 901}
 }
 
--- 2. DEFINE KEYS FOR SERIES FINDER
+-- 2. SORT MAPS
 local SORT_KEYS = {
-    [0] = "pageviews", -- Popularity
-    [1] = "favorites", -- Favorites
-    [2] = "readers",   -- Readers
-    [3] = "chapters",  -- Chapters
-    [4] = "reviews"    -- Reviews
+    [0] = "pageviews",
+    [1] = "favorites",
+    [2] = "readers",
+    [3] = "chapters",
+    [4] = "reviews"
 }
 
 local ORDER_KEYS = {
@@ -31,12 +31,16 @@ local ORDER_KEYS = {
     [1] = "asc"
 }
 
--- Filter IDs
-local FILTER_SORT = 1
-local FILTER_ORDER = 2
-local FILTER_GENRE_START = 100
+-- 3. FIXED IDs (Must start at 0 and be sequential)
+local FILTER_SORT = 0
+local FILTER_ORDER = 1
+-- The Genre filters will start at ID 2 (0, 1, 2...)
+local FILTER_GENRE_START = 2
 
--- Standard Helpers
+local MTYPE = MediaType("application/x-www-form-urlencoded; charset=UTF-8")
+local USERAGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0"
+local HEADERS = HeadersBuilder():add("User-Agent", USERAGENT):build()
+
 local function shrinkURL(url)
     return url:gsub("^.-scribblehub%.com/?", "")
 end
@@ -44,10 +48,6 @@ end
 local function expandURL(url)
     return baseURL .. "/" .. url
 end
-
-local MTYPE = MediaType("application/x-www-form-urlencoded; charset=UTF-8")
-local USERAGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0"
-local HEADERS = HeadersBuilder():add("User-Agent", USERAGENT):build()
 
 local function expandNumber(shortNum)
     local number, suffix = shortNum:match("^(%d+%.?%d*)([kKmMbB]?)$")
@@ -81,9 +81,8 @@ local function parse(doc)
        local body = v:selectFirst(".search_body") or v
        local t = v:selectFirst(".search_title a")
        local stats = body:select(".search_stats .nl_stat")
-
-       -- Extract Description
        local description = body:ownText()
+
        if description == nil or description:len() == 0 then
           local element = body:selectFirst("> div:last-child")
           if element then
@@ -124,26 +123,30 @@ return {
     chapterType = ChapterType.HTML,
     hasCloudFlare = true,
 
-    -- 3. UPDATE LISTINGS TO USE SERIES FINDER (This fixes the 'default page' issue)
+    -- Updated Listings to use Series Finder URL structure
     listings = {
        Listing("Latest Novels", false, function(data)
-          -- This URL mimics the "All Series" view using the Finder logic
           return parse(GETDocument(qs({
              sf = 1,
              sort = "pageviews",
              order = "desc",
              mgi = "and",
-             pg = data[PAGE] -- Listings pass page number here
+             pg = data[PAGE]
           }, baseURL .. "/series-finder/")))
        end)
     },
 
-    -- 4. UPDATE FILTERS WITH GENRES
+    -- Updated Filters with Sequential IDs (0, 1, 2...)
     searchFilters = {
        DropdownFilter(FILTER_SORT, "Sort By", { "Popularity", "Favorites", "Readers", "Chapters", "Reviews" }),
        DropdownFilter(FILTER_ORDER, "Order", { "Descending", "Ascending" }),
        FilterGroup("Genres", map(GENRES, function(v, i)
-           return CheckboxFilter(FILTER_GENRE_START + i, v[1])
+           -- i starts at 1 in Lua, but we subtract 1 from index to ensure
+           -- sequential ID mapping if needed, or just append strictly.
+           -- Actually, map index 'i' in Lua is 1-based.
+           -- FILTER_GENRE_START is 2.
+           -- First genre ID = 2 + 1 - 1 = 2. Next is 3, etc.
+           return CheckboxFilter(FILTER_GENRE_START + (i - 1), v[1])
        end))
     },
 
@@ -156,7 +159,6 @@ return {
        local wrap = novel:selectFirst(".box_fictionpage")
        removeElements(wrap, ".dots")
        removeElements(wrap, ".morelink")
-
        local s_node = doc:selectFirst(".copyright ul"):children()
        local s_text = s_node:get(s_node:size() - 1):children():get(0):ownText()
 
@@ -196,22 +198,16 @@ return {
        local chap = GETDocument(expandURL(url)):getElementById("main read chapter")
        local title = chap:selectFirst(".chapter-title"):text()
        chap = chap:getElementById("chp_raw")
-
-       -- Clean up formatting
        chap:traverse(NodeVisitor(function(v)
           if v:tagName() == "p" and v:childrenSize() == 0 and v:text() == "" then v:remove() end
           if v:hasAttr("border") then v:removeAttr("border") end
        end, nil, true))
-
        chap:child(0):before("<h1>" .. title .. "</h1>");
        return pageOfElem(chap, false, css)
     end,
 
-    -- 5. UPDATE SEARCH LOGIC
     search = function(data)
        local query = data[QUERY]
-
-       -- Check if user typed a specific search query
        if query and query ~= "" then
           return parse(GETDocument(qs({
              s = query,
@@ -219,10 +215,10 @@ return {
           }, baseURL .. "/")))
        end
 
-       -- Otherwise, use Series Finder with filters
        local selectedIDs = {}
        for i, genre in ipairs(GENRES) do
-           if data[FILTER_GENRE_START + i] == true then
+           -- Retrieve using the same ID logic: start + (i - 1)
+           if data[FILTER_GENRE_START + (i - 1)] == true then
                table.insert(selectedIDs, genre[2])
            end
        end
