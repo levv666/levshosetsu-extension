@@ -15,7 +15,7 @@ local function expandURL(url)
 	return baseURL .. "/" .. url
 end
 
-local FILTER_GENRES = 4 -- New ID for the genre filter
+local FILTER_GENRES = 99 -- New ID for the genre filter
 
 local GENRES = {
 	{"Action", 9}, {"Adult", 902}, {"Adventure", 8}, {"Boys Love", 891},
