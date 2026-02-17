@@ -266,23 +266,21 @@ return {
 	end,
 
 -- 3. UPDATE SEARCH LOGIC
-    search = function(data)
+search = function(data)
            local query = data[QUERY]
 
-           -- CHECK: Are any genres selected?
+           -- 1. Identify which genres are checked
            local selectedIDs = {}
-
-           -- We iterate through your GENRES table again
            for _, genre in ipairs(GENRES) do
-               local genreID = genre[2] -- Get the official ID (e.g., 9)
+               local genreID = genre[2]
 
-               -- Check if the checkbox with ID 9 is checked
-               if data[genreID] == true then
+               -- FIX: Check BOTH number and string keys to be safe on all devices
+               if data[genreID] == true or data[tostring(genreID)] == true then
                    table.insert(selectedIDs, genreID)
                end
            end
 
-           -- PATH A: Text Search (Unchanged)
+           -- PATH A: Text Search (ScribbleHub text search ignores filters)
            if query and query ~= "" then
                return parse(GETDocument(qs({
                   s = query,
@@ -290,7 +288,7 @@ return {
                }, baseURL .. "/")))
            end
 
-           -- PATH B: Series Finder
+           -- PATH B: Series Finder (Applies filters)
            local params = {
                sf = 1,
                mgi = "and",
@@ -298,7 +296,6 @@ return {
                order = ORDER_KEYS[data[FILTER_ORDER]] or "desc"
            }
 
-           -- If we found selected genres, add them to the params
            if #selectedIDs > 0 then
                params["gi"] = table.concat(selectedIDs, ",")
            end
@@ -308,5 +305,5 @@ return {
            end
 
            return parse(GETDocument(qs(params, baseURL .. "/series-finder/")))
-        end,
+    end,
     }
