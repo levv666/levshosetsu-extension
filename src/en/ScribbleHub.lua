@@ -6,7 +6,7 @@ local css = Require("CommonCSS").table
 local HTMLToString = Require("unhtml").HTMLToString
 
 -- ==========================================
--- 1. CONFIGURATION & GERE DEFINITIONS
+-- 1. CONFIGURATION & GER DEFINITIONS
 -- ==========================================
 
 -- HELPER: Page Wrapper
