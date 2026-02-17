@@ -6,7 +6,7 @@ local css = Require("CommonCSS").table
 local HTMLToString = Require("unhtml").HTMLToString
 
 -- ==========================================
--- 1. CONFIGURATION & GENRE DEFINITIONS
+-- 1. CONFIGURATION & GERE DEFINITIONS
 -- ==========================================
 
 -- HELPER: Page Wrapper
@@ -278,46 +278,64 @@ return {
     -- 4. SEARCH LOGIC (RoyalRoad Architecture)
     -- ==========================================
     search = function(data)
-       local query = data[QUERY]
+           local query = data[QUERY]
 
-       local selectedIDs = {}
+           -- =========================================================
+           -- ROBUST GENRE DETECTION (Reverse Lookup)
+           -- =========================================================
 
-       -- THIS IS THE FIX:
-       -- Iterate over OUR known list (GENRES_LIST)
-       -- Check if that ID exists in the 'data' table (handling both number and string types)
-       for _, genre in ipairs(GENRES_LIST) do
-           local id = genre[2] -- The ID (e.g., 902)
-
-           -- Check if data[902] is true OR data["902"] is true
-           if data[id] == true or data[tostring(id)] == true then
-               table.insert(selectedIDs, id)
+           -- 1. Build a "String Map" of our valid genres.
+           -- This lets us match keys even if one is a String ("9") and one is a Number (9).
+           local valid_genres = {}
+           for _, genre in ipairs(GENRES_LIST) do
+               -- Key = String representation ("9"), Value = Original Number (9)
+               valid_genres[tostring(genre[2])] = genre[2]
            end
-       end
 
-       -- PATH A: Text Search
-       if query and query ~= "" then
-           return parse(GETDocument(qs({
-              s = query,
-              post_type = "fictionposts"
-           }, baseURL .. "/")))
-       end
+           local selectedIDs = {}
 
-       -- PATH B: Series Finder
-       local params = {
-           sf = 1,
-           mgi = "and",
-           sort = SORT_KEYS[data[FILTER_SORT]] or "pageviews",
-           order = ORDER_KEYS[data[FILTER_ORDER]] or "desc"
-       }
+           -- 2. Iterate through ALL data sent by the app (pairs)
+           -- This guarantees we see every key, no matter its internal type.
+           for key, value in pairs(data) do
+               if value == true then
+                   -- Convert whatever key the app sent (Int, Float, String) to a String
+                   local keyStr = tostring(key)
 
-       if #selectedIDs > 0 then
-           params["gi"] = table.concat(selectedIDs, ",")
-       end
+                   -- If this key matches one of our genres, add the ORIGINAL ID to our list
+                   if valid_genres[keyStr] then
+                       table.insert(selectedIDs, valid_genres[keyStr])
+                   end
+               end
+           end
 
-       if data[PAGE] and data[PAGE] > 1 then
-           params["pg"] = data[PAGE]
-       end
+           -- =========================================================
+           -- URL CONSTRUCTION
+           -- =========================================================
 
-       return parse(GETDocument(qs(params, baseURL .. "/series-finder/")))
-    end,
+           -- PATH A: Text Search
+           if query and query ~= "" then
+               return parse(GETDocument(qs({
+                  s = query,
+                  post_type = "fictionposts"
+               }, baseURL .. "/")))
+           end
+
+           -- PATH B: Series Finder
+           local params = {
+               sf = 1,
+               mgi = "and",
+               sort = SORT_KEYS[data[FILTER_SORT]] or "pageviews",
+               order = ORDER_KEYS[data[FILTER_ORDER]] or "desc"
+           }
+
+           if #selectedIDs > 0 then
+               params["gi"] = table.concat(selectedIDs, ",")
+           end
+
+           if data[PAGE] and data[PAGE] > 1 then
+               params["pg"] = data[PAGE]
+           end
+
+           return parse(GETDocument(qs(params, baseURL .. "/series-finder/")))
+        end,
 }
