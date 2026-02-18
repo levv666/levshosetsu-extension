@@ -60,8 +60,8 @@ local default_order = {
 	[5] = 1, -- Rising -> Daily
 }
 
-local FILTER_SORT = 2
-local FILTER_ORDER = 3
+local FILTER_SORT = 6
+local FILTER_ORDER = 7
 
 local MTYPE = MediaType("application/x-www-form-urlencoded; charset=UTF-8")
 local USERAGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0"
