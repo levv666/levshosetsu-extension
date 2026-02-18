@@ -1,4 +1,4 @@
--- {"id":86802,"ver":"1.1.2","libVer":"1.0.0","author":"TechnoJo4, StormX4 (updated by lev616)","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
+-- {"id":86802,"ver":"1.1.3","libVer":"1.0.0","author":"TechnoJo4, StormX4 (updated by lev616)","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
 
 local baseURL = "https://www.scribblehub.com"
 local qs = Require("url").querystring
@@ -18,16 +18,10 @@ end
 local FILTER_GENRE = 4
 local FILTER_GENRE_MODE = 5
 
-local default_order = {
-	[1] = 2, -- Popularity -> Weekly
-	[2] = 4, -- Favorites -> All Time
-	[3] = 2, -- Activity -> Weekly
-	[4] = 2, -- Readers -> Weekly
-	[5] = 1, -- Rising -> Daily
-}
-
 local FILTER_SORT = 6
 local FILTER_ORDER = 7
+
+local FILTER_STATUS = 8
 
 local SORT_VALUES = {
     "chapters",
@@ -110,6 +104,14 @@ local GENRE_FILTERS = {
         { filterId = FILTER_GENRE_SUPERNATURAL,  gi = "5"    }, -- Supernatural
         { filterId = FILTER_GENRE_TRAGEDY,       gi = "901"  }  -- Tragedy
     }
+
+local STATUS_VALUES = {
+    "all",        -- index 0
+    "completed",  -- index 1
+    "ongoing",    -- index 2
+    "hiatus"      -- index 3
+}
+
 
 local MTYPE = MediaType("application/x-www-form-urlencoded; charset=UTF-8")
 local USERAGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0"
@@ -268,6 +270,9 @@ return {
             local gi = buildGenreGI(data)
             local matchMode = (data[FILTER_GENRE_MODE] == 1) and "or" or "and"
 
+            local statusIndex = data[FILTER_STATUS] or 0
+            local status = STATUS_VALUES[statusIndex + 1]
+
             local params = {
                 sf = 1,
                 sort = sort,
@@ -280,6 +285,11 @@ return {
                 params.mgi = matchMode
             end
 
+            -- status pakai cp (BUKAN fic_storystatus)
+            if status ~= "all" then
+                params.cp = status
+            end
+
             local url = qs(params, baseURL .. "/series-finder/")
             print("URL =", url)
 
@@ -288,7 +298,14 @@ return {
 
     },
 
-	searchFilters = {
+    searchFilters = {
+	    DropdownFilter(FILTER_STATUS, "Story Status", {
+            "All",
+            "Completed",
+            "Ongoing",
+            "Hiatus"
+        }),
+
         DropdownFilter(FILTER_SORT, "Sort by", {
                 "Chapters",
                 "Chapters / Week",
