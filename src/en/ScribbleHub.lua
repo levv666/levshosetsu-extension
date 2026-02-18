@@ -1,4 +1,4 @@
--- {"id":86802,"ver":"1.1.0","libVer":"1.0.0","author":"TechnoJo4, StormX4","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
+-- {"id":86802,"ver":"1.1.1","libVer":"1.0.0","author":"TechnoJo4, StormX4","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
 
 local baseURL = "https://www.scribblehub.com"
 local qs = Require("url").querystring
@@ -242,23 +242,23 @@ return {
             inc = inc or 1
 
             local gi = buildGenreGI(data)
+            if not gi then return {} end
+
             local matchMode = (data[FILTER_GENRE_MODE] == 1) and "or" or "and"
 
-            local params = {
-                sf = 1,
-                pg = inc,                 -- ⭐ pagination
-                sort = "totalwords",
-                order = "desc"
-            }
+            local url =
+                baseURL .. "/series-finder/?" ..
+                "sf=1" ..
+                "&gi=" .. gi ..
+                "&mgi=" .. matchMode ..
+                "&sort=totalwords" ..
+                "&order=desc" ..
+                "&pg=" .. inc
 
-            if gi then
-                params.gi = gi
-                params.mgi = matchMode
-            end
-
-            local url = qs(params, baseURL .. "/series-finder/")
+            print("Finder URL:", url)
             return parse(GETDocument(url))
         end)
+
     },
 
 	searchFilters = {
