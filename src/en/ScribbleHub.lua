@@ -29,6 +29,22 @@ local default_order = {
 local FILTER_SORT = 6
 local FILTER_ORDER = 7
 
+local SORT_VALUES = {
+    "chapters",
+    "frequency",
+    "dateadded",
+    "favorites",
+    "lastchpdate",
+    "numofrate",
+    "pages",
+    "pageviews",
+    "ratings",
+    "readers",
+    "reviews",
+    "totalwords"
+}
+
+
 local FILTER_GENRE_ACTION        = 100
 local FILTER_GENRE_ADULT         = 101
 local FILTER_GENRE_ADVENTURE     = 102
@@ -241,32 +257,53 @@ return {
 		Listing("Novels", true, function(data)
             local page = data[PAGE] or 1
 
-            local gi = buildGenreGI(data)
-            if not gi then return {} end
+            -- SORT
+            local sortIndex = data[FILTER_SORT] or 7 -- default Pageviews
+            local sort = SORT_VALUES[sortIndex + 1] or "pageviews"
 
+            -- ORDER
+            local order = (data[FILTER_ORDER] == 0) and "asc" or "desc"
+
+            -- GENRE
+            local gi = buildGenreGI(data)
             local matchMode = (data[FILTER_GENRE_MODE] == 1) and "or" or "and"
 
-            local url =
-                baseURL .. "/series-finder/?" ..
-                "sf=1" ..
-                "&gi=" .. gi ..
-                "&mgi=" .. matchMode ..
-                "&sort=totalwords" ..
-                "&order=desc" ..
-                "&pg=" .. page
+            local params = {
+                sf = 1,
+                sort = sort,
+                order = order,
+                pg = page
+            }
 
-            print("PAGE =", page)
+            if gi then
+                params.gi = gi
+                params.mgi = matchMode
+            end
+
+            local url = qs(params, baseURL .. "/series-finder/")
+            print("URL =", url)
+
             return parse(GETDocument(url))
         end)
 
     },
 
 	searchFilters = {
-        DropdownFilter(FILTER_SORT, "Sort by",
-            { "Popularity", "Favorites", "Activity", "Readers", "Rising" }),
-
-        DropdownFilter(FILTER_ORDER, "Order",
-            { "Daily", "Weekly", "Monthly", "All Time" }),
+        DropdownFilter(FILTER_SORT, "Sort by", {
+                "Chapters",
+                "Chapters / Week",
+                "Date Added",
+                "Favorites",
+                "Last Update",
+                "Number of Ratings",
+                "Pages",
+                "Pageviews",
+                "Ratings",
+                "Readers",
+                "Reviews",
+                "Total Words"
+            }),
+        DropdownFilter(FILTER_ORDER, "Order", { "Ascending", "Descending" }),
 
         FilterGroup("Genre", {
             CheckboxFilter(FILTER_GENRE_ACTION,        "Action"),
