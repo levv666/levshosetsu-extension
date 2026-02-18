@@ -1,4 +1,4 @@
--- {"id":86802,"ver":"1.0.9","libVer":"1.0.0","author":"TechnoJo4, StormX4","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
+-- {"id":86802,"ver":"1.1.0","libVer":"1.0.0","author":"TechnoJo4, StormX4","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
 
 local baseURL = "https://www.scribblehub.com"
 local qs = Require("url").querystring
@@ -238,17 +238,15 @@ return {
 	hasCloudFlare = true,
 
 	listings = {
-		Listing("Novels", false, function(data)
-            local sort = data[FILTER_SORT] and data[FILTER_SORT] + 1 or 1
-            local order = data[FILTER_ORDER]
-                and data[FILTER_ORDER] + 1
-                or default_order[sort]
+		Listing("Novels", true, function(data, inc)
+            inc = inc or 1
 
             local gi = buildGenreGI(data)
             local matchMode = (data[FILTER_GENRE_MODE] == 1) and "or" or "and"
 
             local params = {
                 sf = 1,
+                pg = inc,                 -- ⭐ pagination
                 sort = "totalwords",
                 order = "desc"
             }
