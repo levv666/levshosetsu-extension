@@ -1,4 +1,4 @@
--- {"id":86802,"ver":"1.0.7","libVer":"1.0.0","author":"TechnoJo4, StormX4","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
+-- {"id":86802,"ver":"1.0.8","libVer":"1.0.0","author":"TechnoJo4, StormX4","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
 
 local baseURL = "https://www.scribblehub.com"
 local qs = Require("url").querystring
@@ -15,40 +15,6 @@ local function expandURL(url)
 	return baseURL .. "/" .. url
 end
 
-local GENRES = {
-    { name = "Action", id = "9" },
-    { name = "Adult", id = "902" },
-    { name = "Adventure", id = "8" },
-    { name = "Boys Love", id = "891" },
-    { name = "Comedy", id = "7" },
-    { name = "Drama", id = "903" },
-    { name = "Ecchi", id = "904" },
-    { name = "Fanfiction", id = "38" },
-    { name = "Fantasy", id = "19" },
-    { name = "Gender Bender", id = "905" },
-    { name = "Girls Love", id = "892" },
-    { name = "Harem", id = "1015" },
-    { name = "Historical", id = "21" },
-    { name = "Horror", id = "22" },
-    { name = "Isekai", id = "37" },
-    { name = "Josei", id = "906" },
-    { name = "LitRPG", id = "1180" },
-    { name = "Martial Arts", id = "907" },
-    { name = "Mature", id = "20" },
-    { name = "Mecha", id = "908" },
-    { name = "Mystery", id = "909" },
-    { name = "Psychological", id = "910" },
-    { name = "Romance", id = "6" },
-    { name = "School Life", id = "911" },
-    { name = "Sci-fi", id = "912" },
-    { name = "Seinen", id = "913" },
-    { name = "Slice of Life", id = "914" },
-    { name = "Smut", id = "915" },
-    { name = "Sports", id = "916" },
-    { name = "Supernatural", id = "5" },
-    { name = "Tragedy", id = "901" }
-}
-
 local FILTER_GENRE = 4
 local FILTER_GENRE_MODE = 5
 
@@ -62,6 +28,72 @@ local default_order = {
 
 local FILTER_SORT = 6
 local FILTER_ORDER = 7
+
+local FILTER_GENRE_ACTION        = 100
+local FILTER_GENRE_ADULT         = 101
+local FILTER_GENRE_ADVENTURE     = 102
+local FILTER_GENRE_BOYS_LOVE     = 103
+local FILTER_GENRE_COMEDY        = 104
+local FILTER_GENRE_DRAMA         = 105
+local FILTER_GENRE_ECCHI         = 106
+local FILTER_GENRE_FANFICTION    = 107
+local FILTER_GENRE_FANTASY       = 108
+local FILTER_GENRE_GENDER_BENDER = 109
+local FILTER_GENRE_GIRLS_LOVE    = 110
+local FILTER_GENRE_HAREM         = 111
+local FILTER_GENRE_HISTORICAL    = 112
+local FILTER_GENRE_HORROR        = 113
+local FILTER_GENRE_ISEKAI        = 114
+local FILTER_GENRE_JOSEI         = 115
+local FILTER_GENRE_LITRPG        = 116
+local FILTER_GENRE_MARTIAL_ARTS  = 117
+local FILTER_GENRE_MATURE        = 118
+local FILTER_GENRE_MECHA         = 119
+local FILTER_GENRE_MYSTERY       = 120
+local FILTER_GENRE_PSYCHOLOGICAL = 121
+local FILTER_GENRE_ROMANCE       = 122
+local FILTER_GENRE_SCHOOL_LIFE   = 123
+local FILTER_GENRE_SCI_FI        = 124
+local FILTER_GENRE_SEINEN        = 125
+local FILTER_GENRE_SLICE_OF_LIFE = 126
+local FILTER_GENRE_SMUT          = 127
+local FILTER_GENRE_SPORTS        = 128
+local FILTER_GENRE_SUPERNATURAL  = 129
+local FILTER_GENRE_TRAGEDY       = 130
+
+local GENRE_FILTERS = {
+        { filterId = FILTER_GENRE_ACTION,        gi = "9"    }, -- Action
+        { filterId = FILTER_GENRE_ADULT,         gi = "902"  }, -- Adult
+        { filterId = FILTER_GENRE_ADVENTURE,     gi = "8"    }, -- Adventure
+        { filterId = FILTER_GENRE_BOYS_LOVE,     gi = "891"  }, -- Boys Love
+        { filterId = FILTER_GENRE_COMEDY,        gi = "7"    }, -- Comedy
+        { filterId = FILTER_GENRE_DRAMA,         gi = "903"  }, -- Drama
+        { filterId = FILTER_GENRE_ECCHI,         gi = "904"  }, -- Ecchi
+        { filterId = FILTER_GENRE_FANFICTION,    gi = "38"   }, -- Fanfiction
+        { filterId = FILTER_GENRE_FANTASY,       gi = "19"   }, -- Fantasy
+        { filterId = FILTER_GENRE_GENDER_BENDER, gi = "905"  }, -- Gender Bender
+        { filterId = FILTER_GENRE_GIRLS_LOVE,    gi = "892"  }, -- Girls Love
+        { filterId = FILTER_GENRE_HAREM,         gi = "1015" }, -- Harem
+        { filterId = FILTER_GENRE_HISTORICAL,    gi = "21"   }, -- Historical
+        { filterId = FILTER_GENRE_HORROR,        gi = "22"   }, -- Horror
+        { filterId = FILTER_GENRE_ISEKAI,        gi = "37"   }, -- Isekai
+        { filterId = FILTER_GENRE_JOSEI,         gi = "906"  }, -- Josei
+        { filterId = FILTER_GENRE_LITRPG,        gi = "1180" }, -- LitRPG
+        { filterId = FILTER_GENRE_MARTIAL_ARTS,  gi = "907"  }, -- Martial Arts
+        { filterId = FILTER_GENRE_MATURE,        gi = "20"   }, -- Mature
+        { filterId = FILTER_GENRE_MECHA,         gi = "908"  }, -- Mecha
+        { filterId = FILTER_GENRE_MYSTERY,       gi = "909"  }, -- Mystery
+        { filterId = FILTER_GENRE_PSYCHOLOGICAL, gi = "910"  }, -- Psychological
+        { filterId = FILTER_GENRE_ROMANCE,       gi = "6"    }, -- Romance
+        { filterId = FILTER_GENRE_SCHOOL_LIFE,   gi = "911"  }, -- School Life
+        { filterId = FILTER_GENRE_SCI_FI,        gi = "912"  }, -- Sci-fi
+        { filterId = FILTER_GENRE_SEINEN,        gi = "913"  }, -- Seinen
+        { filterId = FILTER_GENRE_SLICE_OF_LIFE, gi = "914"  }, -- Slice of Life
+        { filterId = FILTER_GENRE_SMUT,          gi = "915"  }, -- Smut
+        { filterId = FILTER_GENRE_SPORTS,        gi = "916"  }, -- Sports
+        { filterId = FILTER_GENRE_SUPERNATURAL,  gi = "5"    }, -- Supernatural
+        { filterId = FILTER_GENRE_TRAGEDY,       gi = "901"  }  -- Tragedy
+    }
 
 local MTYPE = MediaType("application/x-www-form-urlencoded; charset=UTF-8")
 local USERAGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0"
@@ -128,6 +160,8 @@ local function getSelectedGenres(data)
 end
 
 
+
+
 local function parse(doc)
 	return map(doc:selectFirst("#page"):select(".wi_fic_wrap .search_main_box"), function(v)
 		local body = v:selectFirst(".search_body")
@@ -178,6 +212,23 @@ local function parse(doc)
 	end)
 end
 
+local function buildGenreGI(data)
+    local selected = {}
+
+    for _, g in ipairs(GENRE_FILTERS) do
+        if data[g.filterId] == true then
+            table.insert(selected, g.gi)
+        end
+    end
+
+    if #selected == 0 then
+        return nil
+    end
+
+    return table.concat(selected, ",")
+end
+
+
 return {
 	id = 86802,
 	name = "ScribbleHub",
@@ -193,8 +244,8 @@ return {
                 and data[FILTER_ORDER] + 1
                 or default_order[sort]
 
-            local gi = getSelectedGenres(data)
-            local matchMode = data[FILTER_GENRE_MODE] == 1 and "or" or "and"
+            local gi = buildGenreGI(data)
+            local matchMode = (data[FILTER_GENRE_MODE] == 1) and "or" or "and"
 
             local params = {
                 sf = 1,
@@ -210,7 +261,7 @@ return {
             local url = qs(params, baseURL .. "/series-finder/")
             return parse(GETDocument(url))
         end)
-	},
+    },
 
 	searchFilters = {
         DropdownFilter(FILTER_SORT, "Sort by",
@@ -219,18 +270,43 @@ return {
         DropdownFilter(FILTER_ORDER, "Order",
             { "Daily", "Weekly", "Monthly", "All Time" }),
 
-        CheckboxFilter(
-            FILTER_GENRE,
-            "Genre",
-            map(GENRES, function(g) return g.name end)
-        ),
+        FilterGroup("Genre", {
+            CheckboxFilter(FILTER_GENRE_ACTION,        "Action"),
+            CheckboxFilter(FILTER_GENRE_ADULT,         "Adult"),
+            CheckboxFilter(FILTER_GENRE_ADVENTURE,     "Adventure"),
+            CheckboxFilter(FILTER_GENRE_BOYS_LOVE,     "Boys Love"),
+            CheckboxFilter(FILTER_GENRE_COMEDY,        "Comedy"),
+            CheckboxFilter(FILTER_GENRE_DRAMA,         "Drama"),
+            CheckboxFilter(FILTER_GENRE_ECCHI,         "Ecchi"),
+            CheckboxFilter(FILTER_GENRE_FANFICTION,    "Fanfiction"),
+            CheckboxFilter(FILTER_GENRE_FANTASY,       "Fantasy"),
+            CheckboxFilter(FILTER_GENRE_GENDER_BENDER, "Gender Bender"),
+            CheckboxFilter(FILTER_GENRE_GIRLS_LOVE,    "Girls Love"),
+            CheckboxFilter(FILTER_GENRE_HAREM,         "Harem"),
+            CheckboxFilter(FILTER_GENRE_HISTORICAL,    "Historical"),
+            CheckboxFilter(FILTER_GENRE_HORROR,        "Horror"),
+            CheckboxFilter(FILTER_GENRE_ISEKAI,        "Isekai"),
+            CheckboxFilter(FILTER_GENRE_JOSEI,         "Josei"),
+            CheckboxFilter(FILTER_GENRE_LITRPG,        "LitRPG"),
+            CheckboxFilter(FILTER_GENRE_MARTIAL_ARTS,  "Martial Arts"),
+            CheckboxFilter(FILTER_GENRE_MATURE,        "Mature"),
+            CheckboxFilter(FILTER_GENRE_MECHA,         "Mecha"),
+            CheckboxFilter(FILTER_GENRE_MYSTERY,       "Mystery"),
+            CheckboxFilter(FILTER_GENRE_PSYCHOLOGICAL, "Psychological"),
+            CheckboxFilter(FILTER_GENRE_ROMANCE,       "Romance"),
+            CheckboxFilter(FILTER_GENRE_SCHOOL_LIFE,   "School Life"),
+            CheckboxFilter(FILTER_GENRE_SCI_FI,        "Sci-fi"),
+            CheckboxFilter(FILTER_GENRE_SEINEN,        "Seinen"),
+            CheckboxFilter(FILTER_GENRE_SLICE_OF_LIFE, "Slice of Life"),
+            CheckboxFilter(FILTER_GENRE_SMUT,          "Smut"),
+            CheckboxFilter(FILTER_GENRE_SPORTS,        "Sports"),
+            CheckboxFilter(FILTER_GENRE_SUPERNATURAL,  "Supernatural"),
+            CheckboxFilter(FILTER_GENRE_TRAGEDY,       "Tragedy"),
+        }),
 
-        DropdownFilter(
-            FILTER_GENRE_MODE,
-            "Genre Match",
-            { "AND", "OR" }
-        )
+        DropdownFilter(FILTER_GENRE_MODE, "Genre Match", { "AND", "OR" })
     },
+
 
 
 	shrinkURL = shrinkURL,
