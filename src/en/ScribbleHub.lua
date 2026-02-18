@@ -1,4 +1,4 @@
--- {"id":86802,"ver":"1.1.1","libVer":"1.0.0","author":"TechnoJo4, StormX4","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
+-- {"id":86802,"ver":"1.1.2","libVer":"1.0.0","author":"TechnoJo4, StormX4","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
 
 local baseURL = "https://www.scribblehub.com"
 local qs = Require("url").querystring
@@ -238,8 +238,8 @@ return {
 	hasCloudFlare = true,
 
 	listings = {
-		Listing("Novels", true, function(data, inc)
-            inc = inc or 1
+		Listing("Novels", true, function(data)
+            local page = data[PAGE] or 1
 
             local gi = buildGenreGI(data)
             if not gi then return {} end
@@ -253,9 +253,9 @@ return {
                 "&mgi=" .. matchMode ..
                 "&sort=totalwords" ..
                 "&order=desc" ..
-                "&pg=" .. inc
+                "&pg=" .. page
 
-            print("Finder URL:", url)
+            print("PAGE =", page)
             return parse(GETDocument(url))
         end)
 
