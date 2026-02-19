@@ -345,7 +345,7 @@ return {
                 "Reviews",
                 "Total Words"
             }),
-        DropdownFilter(FILTER_ORDER, "Order", { "Ascending", "AscendingDescending" }),
+        DropdownFilter(FILTER_ORDER, "Order", { "Descending", "Ascending" }),
 
         FilterGroup("Genre", {
             TriStateFilter(FILTER_GENRE_ACTION,        "Action"),
