@@ -21,7 +21,6 @@ local FILTER_SORT = 6
 local FILTER_ORDER = 7
 
 local FILTER_STATUS = 8
-local FILTER_CW = 9
 local FILTER_CW_MODE = 10
 
 
@@ -171,28 +170,6 @@ local function removeElements(element, attr)
 	end
 end
 
-local function getSelectedGenres(data)
-    local selected = {}
-    local genreData = data[FILTER_GENRE]
-
-    if not genreData then return nil end
-
-    for i, checked in pairs(genreData) do
-        if checked then
-            table.insert(selected, GENRES[i].id)
-        end
-    end
-
-    if #selected == 0 then
-        return nil
-    end
-
-    return table.concat(selected, ",")
-end
-
-
-
-
 local function parse(doc)
 	return map(doc:selectFirst("#page"):select(".wi_fic_wrap .search_main_box"), function(v)
 		local body = v:selectFirst(".search_body")
@@ -241,22 +218,6 @@ local function parse(doc)
 			authors = { author }
 		}
 	end)
-end
-
-local function buildGenreGI(data)
-    local selected = {}
-
-    for _, g in ipairs(GENRE_FILTERS) do
-        if data[g.filterId] == true then
-            table.insert(selected, g.gi)
-        end
-    end
-
-    if #selected == 0 then
-        return nil
-    end
-
-    return table.concat(selected, ",")
 end
 
 local function buildGenreParams(data)
