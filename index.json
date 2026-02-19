@@ -542,7 +542,7 @@
 			"lang": "en",
 			"ver": "1.0.17",
 			"libVer": "1.0.0",
-			"md5": "6f8ed8cdbcfcf645945f7126e654ff84948fd416fe37e4b5cb82b3d838a0c9c8",
+			"md5": "3bbb4e16ac9601fbcfad438c19dd37cd984b6b9ac62757422ec10c93562e9070",
 			"type": "LuaScript"
 		},
 		{
@@ -551,9 +551,9 @@
 			"fileName": "ScribbleHub",
 			"imageURL": "https://github.com/shosetsuorg/extensions/raw/dev/icons/ScribbleHub.png",
 			"lang": "en",
-			"ver": "1.1.3",
+			"ver": "1.1.4",
 			"libVer": "1.0.0",
-			"md5": "64f961d4016326a0d93e7c6a6a9b42c28c1f59667492e984f1d11e338ad0372f",
+			"md5": "e9de26238245988f0b3fe8dbadfad49009102e2eaf48ddfdc971bf0904bddde8",
 			"type": "LuaScript"
 		},
 		{

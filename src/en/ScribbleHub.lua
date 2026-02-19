@@ -1,4 +1,4 @@
--- {"id":86802,"ver":"1.1.3","libVer":"1.0.0","author":"TechnoJo4, StormX4 (updated by lev616)","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
+-- {"id":86802,"ver":"1.1.4","libVer":"1.0.0","author":"TechnoJo4, StormX4 (updated by lev616)","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
 
 local baseURL = "https://www.scribblehub.com"
 local qs = Require("url").querystring
@@ -15,7 +15,6 @@ local function expandURL(url)
 	return baseURL .. "/" .. url
 end
 
-local FILTER_GENRE = 4
 local FILTER_GENRE_MODE = 5
 
 local FILTER_SORT = 6
@@ -24,14 +23,14 @@ local FILTER_ORDER = 7
 local FILTER_STATUS = 8
 
 local SORT_VALUES = {
-    "chapters",
+    "pageviews",
     "frequency",
     "dateadded",
     "favorites",
     "lastchpdate",
     "numofrate",
     "pages",
-    "pageviews",
+    "chapters",
     "ratings",
     "readers",
     "reviews",
@@ -246,6 +245,24 @@ local function buildGenreGI(data)
     return table.concat(selected, ",")
 end
 
+local function buildGenreParams(data)
+    local include = {}
+    local exclude = {}
+
+    for _, g in ipairs(GENRE_FILTERS) do
+        local state = data[g.filterId]
+
+        if state == 1 then
+            include[#include + 1] = g.gi
+        elseif state == 2 then
+            exclude[#exclude + 1] = g.gi
+        end
+    end
+
+    return
+        (#include > 0 and table.concat(include, ",")) or nil,
+        (#exclude > 0 and table.concat(exclude, ",")) or nil
+end
 
 return {
 	id = 86802,
@@ -267,9 +284,9 @@ return {
             local order = (data[FILTER_ORDER] == 0) and "asc" or "desc"
 
             -- GENRE
-            local gi = buildGenreGI(data)
-            local matchMode = (data[FILTER_GENRE_MODE] == 1) and "or" or "and"
+            local gi, ge = buildGenreParams(data)
 
+            -- status
             local statusIndex = data[FILTER_STATUS] or 0
             local status = STATUS_VALUES[statusIndex + 1]
 
@@ -282,7 +299,15 @@ return {
 
             if gi then
                 params.gi = gi
-                params.mgi = matchMode
+
+                if gi:find(",") then
+                    local mode = (data[FILTER_GENRE_MODE] == 1) and "or" or "and"
+                    params.mgi = mode
+                end
+            end
+
+            if ge then
+                params.ge = ge
             end
 
             -- status pakai cp (BUKAN fic_storystatus)
@@ -307,53 +332,53 @@ return {
         }),
 
         DropdownFilter(FILTER_SORT, "Sort by", {
-                "Chapters",
+                "Pageviews",
                 "Chapters / Week",
                 "Date Added",
                 "Favorites",
                 "Last Update",
                 "Number of Ratings",
                 "Pages",
-                "Pageviews",
+                "Chapters",
                 "Ratings",
                 "Readers",
                 "Reviews",
                 "Total Words"
             }),
-        DropdownFilter(FILTER_ORDER, "Order", { "Ascending", "Descending" }),
+        DropdownFilter(FILTER_ORDER, "Order", { "Descending", "Ascending" }),
 
         FilterGroup("Genre", {
-            CheckboxFilter(FILTER_GENRE_ACTION,        "Action"),
-            CheckboxFilter(FILTER_GENRE_ADULT,         "Adult"),
-            CheckboxFilter(FILTER_GENRE_ADVENTURE,     "Adventure"),
-            CheckboxFilter(FILTER_GENRE_BOYS_LOVE,     "Boys Love"),
-            CheckboxFilter(FILTER_GENRE_COMEDY,        "Comedy"),
-            CheckboxFilter(FILTER_GENRE_DRAMA,         "Drama"),
-            CheckboxFilter(FILTER_GENRE_ECCHI,         "Ecchi"),
-            CheckboxFilter(FILTER_GENRE_FANFICTION,    "Fanfiction"),
-            CheckboxFilter(FILTER_GENRE_FANTASY,       "Fantasy"),
-            CheckboxFilter(FILTER_GENRE_GENDER_BENDER, "Gender Bender"),
-            CheckboxFilter(FILTER_GENRE_GIRLS_LOVE,    "Girls Love"),
-            CheckboxFilter(FILTER_GENRE_HAREM,         "Harem"),
-            CheckboxFilter(FILTER_GENRE_HISTORICAL,    "Historical"),
-            CheckboxFilter(FILTER_GENRE_HORROR,        "Horror"),
-            CheckboxFilter(FILTER_GENRE_ISEKAI,        "Isekai"),
-            CheckboxFilter(FILTER_GENRE_JOSEI,         "Josei"),
-            CheckboxFilter(FILTER_GENRE_LITRPG,        "LitRPG"),
-            CheckboxFilter(FILTER_GENRE_MARTIAL_ARTS,  "Martial Arts"),
-            CheckboxFilter(FILTER_GENRE_MATURE,        "Mature"),
-            CheckboxFilter(FILTER_GENRE_MECHA,         "Mecha"),
-            CheckboxFilter(FILTER_GENRE_MYSTERY,       "Mystery"),
-            CheckboxFilter(FILTER_GENRE_PSYCHOLOGICAL, "Psychological"),
-            CheckboxFilter(FILTER_GENRE_ROMANCE,       "Romance"),
-            CheckboxFilter(FILTER_GENRE_SCHOOL_LIFE,   "School Life"),
-            CheckboxFilter(FILTER_GENRE_SCI_FI,        "Sci-fi"),
-            CheckboxFilter(FILTER_GENRE_SEINEN,        "Seinen"),
-            CheckboxFilter(FILTER_GENRE_SLICE_OF_LIFE, "Slice of Life"),
-            CheckboxFilter(FILTER_GENRE_SMUT,          "Smut"),
-            CheckboxFilter(FILTER_GENRE_SPORTS,        "Sports"),
-            CheckboxFilter(FILTER_GENRE_SUPERNATURAL,  "Supernatural"),
-            CheckboxFilter(FILTER_GENRE_TRAGEDY,       "Tragedy"),
+            TriStateFilter(FILTER_GENRE_ACTION,        "Action"),
+            TriStateFilter(FILTER_GENRE_ADULT,         "Adult"),
+            TriStateFilter(FILTER_GENRE_ADVENTURE,     "Adventure"),
+            TriStateFilter(FILTER_GENRE_BOYS_LOVE,     "Boys Love"),
+            TriStateFilter(FILTER_GENRE_COMEDY,        "Comedy"),
+            TriStateFilter(FILTER_GENRE_DRAMA,         "Drama"),
+            TriStateFilter(FILTER_GENRE_ECCHI,         "Ecchi"),
+            TriStateFilter(FILTER_GENRE_FANFICTION,    "Fanfiction"),
+            TriStateFilter(FILTER_GENRE_FANTASY,       "Fantasy"),
+            TriStateFilter(FILTER_GENRE_GENDER_BENDER, "Gender Bender"),
+            TriStateFilter(FILTER_GENRE_GIRLS_LOVE,    "Girls Love"),
+            TriStateFilter(FILTER_GENRE_HAREM,         "Harem"),
+            TriStateFilter(FILTER_GENRE_HISTORICAL,    "Historical"),
+            TriStateFilter(FILTER_GENRE_HORROR,        "Horror"),
+            TriStateFilter(FILTER_GENRE_ISEKAI,        "Isekai"),
+            TriStateFilter(FILTER_GENRE_JOSEI,         "Josei"),
+            TriStateFilter(FILTER_GENRE_LITRPG,        "LitRPG"),
+            TriStateFilter(FILTER_GENRE_MARTIAL_ARTS,  "Martial Arts"),
+            TriStateFilter(FILTER_GENRE_MATURE,        "Mature"),
+            TriStateFilter(FILTER_GENRE_MECHA,         "Mecha"),
+            TriStateFilter(FILTER_GENRE_MYSTERY,       "Mystery"),
+            TriStateFilter(FILTER_GENRE_PSYCHOLOGICAL, "Psychological"),
+            TriStateFilter(FILTER_GENRE_ROMANCE,       "Romance"),
+            TriStateFilter(FILTER_GENRE_SCHOOL_LIFE,   "School Life"),
+            TriStateFilter(FILTER_GENRE_SCI_FI,        "Sci-fi"),
+            TriStateFilter(FILTER_GENRE_SEINEN,        "Seinen"),
+            TriStateFilter(FILTER_GENRE_SLICE_OF_LIFE, "Slice of Life"),
+            TriStateFilter(FILTER_GENRE_SMUT,          "Smut"),
+            TriStateFilter(FILTER_GENRE_SPORTS,        "Sports"),
+            TriStateFilter(FILTER_GENRE_SUPERNATURAL,  "Supernatural"),
+            TriStateFilter(FILTER_GENRE_TRAGEDY,       "Tragedy"),
         }),
 
         DropdownFilter(FILTER_GENRE_MODE, "Genre Match", { "AND", "OR" })
