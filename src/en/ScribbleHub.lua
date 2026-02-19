@@ -293,9 +293,9 @@ local function buildCWParams(data)
     end
 
     local cti = (#include > 0) and table.concat(include, ",") or nil
-    local ecti = (#exclude > 0) and table.concat(exclude, ",") or nil
+    local cte = (#exclude > 0) and table.concat(exclude, ",") or nil
 
-    return cti, ecti
+    return cti, cte
 end
 
 return {
@@ -325,7 +325,7 @@ return {
             local status = STATUS_VALUES[statusIndex + 1]
 
             -- content warnings
-            local cti, ecti = buildCWParams(data)
+            local cti, cte = buildCWParams(data)
 
             local params = {
                 sf = 1,
@@ -359,12 +359,12 @@ return {
 
                 if cti:find(",") then
                     local mode = (data[FILTER_CW_MODE] == 1) and "or" or "and"
-                    params.mcti = mode
+                    params.mct = mode
                 end
             end
 
-            if ecti then
-                params.ecti = ecti
+            if cte then
+                params.cte = cte
             end
 
             local url = qs(params, baseURL .. "/series-finder/")
