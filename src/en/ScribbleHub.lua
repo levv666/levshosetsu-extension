@@ -391,9 +391,6 @@ return {
 
             return parse(GETDocument(url))
         end)
-    }
-
-
     },
 
     searchFilters = {
