@@ -1,4 +1,4 @@
--- {"id":86802,"ver":"1.1.8","libVer":"1.0.0","author":"TechnoJo4, StormX4 (updated by lev616)","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
+-- {"id":86802,"ver":"1.1.7","libVer":"1.0.0","author":"TechnoJo4, StormX4 (updated by lev616)","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
 
 local baseURL = "https://www.scribblehub.com"
 local qs = Require("url").querystring
@@ -81,7 +81,7 @@ local FILTER_CW_STRONG_LANGUAGE = 903
 local CW_FILTERS = {
         { cwId = FILTER_CW_GORE,        cti = "48"    }, -- Action
         { cwId = FILTER_CW_SEXUAL_CONTENT,         cti = "50"  }, -- Adult
-        { cwId = FILTER_CW_STRONG_LANGUAGE,     cti = "59"    }, -- Adventure
+        { cwId = FILTER_CW_STRONG_LANGUAGE,     cti = "49"    }, -- Adventure
     }
 
 local GENRE_FILTERS = {
@@ -307,90 +307,72 @@ return {
 	hasCloudFlare = true,
 
 	listings = {
-        Listing("Novels", true, function(data)
-
+		Listing("Novels", true, function(data)
             local page = data[PAGE] or 1
 
-            -- =========================
             -- SORT
-            -- =========================
-            local sortIndex = data[FILTER_SORT] or 7
+            local sortIndex = data[FILTER_SORT] or 7 -- default Pageviews
             local sort = SORT_VALUES[sortIndex + 1] or "pageviews"
 
-            -- =========================
             -- ORDER
-            -- =========================
             local order = (data[FILTER_ORDER] == 0) and "desc" or "asc"
 
-            -- =========================
             -- GENRE
-            -- =========================
             local gi, ge = buildGenreParams(data)
 
-            -- =========================
-            -- STATUS
-            -- =========================
+            -- status
             local statusIndex = data[FILTER_STATUS] or 0
             local status = STATUS_VALUES[statusIndex + 1]
 
-            -- =========================
-            -- CONTENT WARNING
-            -- =========================
+            -- content warnings
             local cti, cte = buildCWParams(data)
 
-            -- =========================
-            -- BUILD URL MANUALLY
-            -- =========================
-            local url = baseURL .. "/series-finder/?sf=1"
-            url = url .. "&sort=" .. sort
-            url = url .. "&order=" .. order
-            url = url .. "&pg=" .. page
+            local params = {
+                sf = 1,
+                sort = sort,
+                order = order,
+                pg = page
+            }
 
-            -- =========================
-            -- GENRE INCLUDE
-            -- =========================
+            --genre parameter
             if gi then
-                url = url .. "&gi=" .. gi
+                params.gi = gi
 
                 if gi:find(",") then
                     local mode = (data[FILTER_GENRE_MODE] == 1) and "or" or "and"
-                    url = url .. "&mgi=" .. mode
+                    params.mgi = mode
                 end
             end
 
-            -- GENRE EXCLUDE
             if ge then
-                url = url .. "&ge=" .. ge
+                params.ge = ge
             end
 
-            -- =========================
-            -- STATUS
-            -- =========================
-            if status and status ~= "all" then
-                url = url .. "&cp=" .. status
+            -- status pakai cp (BUKAN fic_storystatus)
+            if status ~= "all" then
+                params.cp = status
             end
 
-            -- =========================
-            -- CW INCLUDE (RAW COMMA)
-            -- =========================
+            -- cw parameter
             if cti then
-                url = url .. "&cti=" .. cti
+                params.cti = cti
 
                 if cti:find(",") then
                     local mode = (data[FILTER_CW_MODE] == 1) and "or" or "and"
-                    url = url .. "&mct=" .. mode
+                    params.mct = mode
                 end
             end
 
-            -- CW EXCLUDE
             if cte then
-                url = url .. "&cte=" .. cte
+                params.cte = cte
             end
 
-            print("FINAL URL =", url)
+            local url = qs(params, baseURL .. "/series-finder/")
+            print("URL =", url)
 
             return parse(GETDocument(url))
         end)
+
     },
 
     searchFilters = {
