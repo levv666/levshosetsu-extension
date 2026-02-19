@@ -1,4 +1,4 @@
--- {"id":86802,"ver":"1.1.4","libVer":"1.0.0","author":"TechnoJo4, StormX4 (updated by lev616)","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
+-- {"id":86802,"ver":"1.1.5","libVer":"1.0.0","author":"TechnoJo4, StormX4 (updated by lev616)","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
 
 local baseURL = "https://www.scribblehub.com"
 local qs = Require("url").querystring
@@ -281,7 +281,7 @@ return {
             local sort = SORT_VALUES[sortIndex + 1] or "pageviews"
 
             -- ORDER
-            local order = (data[FILTER_ORDER] == 0) and "asc" or "desc"
+            local order = (data[FILTER_ORDER] == 0) and "desc" or "asc"
 
             -- GENRE
             local gi, ge = buildGenreParams(data)
@@ -345,7 +345,7 @@ return {
                 "Reviews",
                 "Total Words"
             }),
-        DropdownFilter(FILTER_ORDER, "Order", { "Descending", "Ascending" }),
+        DropdownFilter(FILTER_ORDER, "Order", { "Ascending", "AscendingDescending" }),
 
         FilterGroup("Genre", {
             TriStateFilter(FILTER_GENRE_ACTION,        "Action"),
