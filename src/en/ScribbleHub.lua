@@ -1,4 +1,4 @@
--- {"id":86802,"ver":"1.1.7","libVer":"1.0.0","author":"TechnoJo4, StormX4 (updated by lev616)","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
+-- {"id":86802,"ver":"1.1.8","libVer":"1.0.0","author":"TechnoJo4, StormX4 (updated by lev616)","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
 
 local baseURL = "https://www.scribblehub.com"
 local qs = Require("url").querystring
@@ -307,71 +307,92 @@ return {
 	hasCloudFlare = true,
 
 	listings = {
-		Listing("Novels", true, function(data)
+        Listing("Novels", true, function(data)
+
             local page = data[PAGE] or 1
 
+            -- =========================
             -- SORT
-            local sortIndex = data[FILTER_SORT] or 7 -- default Pageviews
+            -- =========================
+            local sortIndex = data[FILTER_SORT] or 7
             local sort = SORT_VALUES[sortIndex + 1] or "pageviews"
 
+            -- =========================
             -- ORDER
+            -- =========================
             local order = (data[FILTER_ORDER] == 0) and "desc" or "asc"
 
+            -- =========================
             -- GENRE
+            -- =========================
             local gi, ge = buildGenreParams(data)
 
-            -- status
+            -- =========================
+            -- STATUS
+            -- =========================
             local statusIndex = data[FILTER_STATUS] or 0
             local status = STATUS_VALUES[statusIndex + 1]
 
-            -- content warnings
+            -- =========================
+            -- CONTENT WARNING
+            -- =========================
             local cti, cte = buildCWParams(data)
 
-            local params = {
-                sf = 1,
-                sort = sort,
-                order = order,
-                pg = page
-            }
+            -- =========================
+            -- BUILD URL MANUALLY
+            -- =========================
+            local url = baseURL .. "/series-finder/?sf=1"
+            url = url .. "&sort=" .. sort
+            url = url .. "&order=" .. order
+            url = url .. "&pg=" .. page
 
-            --genre parameter
+            -- =========================
+            -- GENRE INCLUDE
+            -- =========================
             if gi then
-                params.gi = gi
+                url = url .. "&gi=" .. gi
 
                 if gi:find(",") then
                     local mode = (data[FILTER_GENRE_MODE] == 1) and "or" or "and"
-                    params.mgi = mode
+                    url = url .. "&mgi=" .. mode
                 end
             end
 
+            -- GENRE EXCLUDE
             if ge then
-                params.ge = ge
+                url = url .. "&ge=" .. ge
             end
 
-            -- status pakai cp (BUKAN fic_storystatus)
-            if status ~= "all" then
-                params.cp = status
+            -- =========================
+            -- STATUS
+            -- =========================
+            if status and status ~= "all" then
+                url = url .. "&cp=" .. status
             end
 
-            -- cw parameter
+            -- =========================
+            -- CW INCLUDE (RAW COMMA)
+            -- =========================
             if cti then
-                params.cti = cti
+                url = url .. "&cti=" .. cti
 
                 if cti:find(",") then
                     local mode = (data[FILTER_CW_MODE] == 1) and "or" or "and"
-                    params.mct = mode
+                    url = url .. "&mct=" .. mode
                 end
             end
 
+            -- CW EXCLUDE
             if cte then
-                params.cte = cte
+                url = url .. "&cte=" .. cte
             end
 
-            local url = qs(params, baseURL .. "/series-finder/")
-            print("URL =", url)
+            print("FINAL URL =", url)
 
             return parse(GETDocument(url))
         end)
+    }
+
 
     },
 
