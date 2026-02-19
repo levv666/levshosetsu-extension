@@ -1,4 +1,4 @@
--- {"id":86802,"ver":"1.1.6","libVer":"1.0.0","author":"TechnoJo4, StormX4 (updated by lev616)","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
+-- {"id":86802,"ver":"1.1.7","libVer":"1.0.0","author":"TechnoJo4, StormX4 (updated by lev616)","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
 
 local baseURL = "https://www.scribblehub.com"
 local qs = Require("url").querystring
@@ -21,6 +21,9 @@ local FILTER_SORT = 6
 local FILTER_ORDER = 7
 
 local FILTER_STATUS = 8
+local FILTER_CW = 9
+local FILTER_CW_MODE = 10
+
 
 local SORT_VALUES = {
     "pageviews",
@@ -69,6 +72,17 @@ local FILTER_GENRE_SMUT          = 127
 local FILTER_GENRE_SPORTS        = 128
 local FILTER_GENRE_SUPERNATURAL  = 129
 local FILTER_GENRE_TRAGEDY       = 130
+
+
+local FILTER_CW_GORE       = 901
+local FILTER_CW_SEXUAL_CONTENT         = 902
+local FILTER_CW_STRONG_LANGUAGE = 903
+
+local CW_FILTERS = {
+        { cwId = FILTER_CW_GORE,        cti = "48"    }, -- Action
+        { cwId = FILTER_CW_SEXUAL_CONTENT,         cti = "50"  }, -- Adult
+        { cwId = FILTER_CW_STRONG_LANGUAGE,     cti = "59"    }, -- Adventure
+    }
 
 local GENRE_FILTERS = {
         { filterId = FILTER_GENRE_ACTION,        gi = "9"    }, -- Action
@@ -264,6 +278,26 @@ local function buildGenreParams(data)
         (#exclude > 0 and table.concat(exclude, ",")) or nil
 end
 
+local function buildCWParams(data)
+    local include = {}
+    local exclude = {}
+
+    for _, cw in ipairs(CW_FILTERS) do
+        local state = data[cw.cwId]
+
+        if state == 1 then
+            table.insert(include, cw.cti)
+        elseif state == 2 then
+            table.insert(exclude, cw.cti)
+        end
+    end
+
+    local cti = (#include > 0) and table.concat(include, ",") or nil
+    local ecti = (#exclude > 0) and table.concat(exclude, ",") or nil
+
+    return cti, ecti
+end
+
 return {
 	id = 86802,
 	name = "ScribbleHub",
@@ -290,6 +324,9 @@ return {
             local statusIndex = data[FILTER_STATUS] or 0
             local status = STATUS_VALUES[statusIndex + 1]
 
+            -- content warnings
+            local cti, ecti = buildCWParams(data)
+
             local params = {
                 sf = 1,
                 sort = sort,
@@ -297,6 +334,7 @@ return {
                 pg = page
             }
 
+            --genre parameter
             if gi then
                 params.gi = gi
 
@@ -313,6 +351,20 @@ return {
             -- status pakai cp (BUKAN fic_storystatus)
             if status ~= "all" then
                 params.cp = status
+            end
+
+            -- cw parameter
+            if cti then
+                params.cti = cti
+
+                if cti:find(",") then
+                    local mode = (data[FILTER_CW_MODE] == 1) and "or" or "and"
+                    params.mcti = mode
+                end
+            end
+
+            if ecti then
+                params.ecti = ecti
             end
 
             local url = qs(params, baseURL .. "/series-finder/")
@@ -381,7 +433,16 @@ return {
             TriStateFilter(FILTER_GENRE_TRAGEDY,       "Tragedy"),
         }),
 
-        DropdownFilter(FILTER_GENRE_MODE, "Genre Match", { "AND", "OR" })
+        DropdownFilter(FILTER_GENRE_MODE, "Genre Match", { "AND", "OR" }),
+
+        FilterGroup("Content Warning", {
+            TriStateFilter(FILTER_CW_GORE, "Gore"),
+            TriStateFilter(FILTER_CW_SEXUAL_CONTENT, "Sexual Content"),
+            TriStateFilter(FILTER_CW_STRONG_LANGUAGE, "Strong Language"),
+        }),
+
+        DropdownFilter(FILTER_CW_MODE, "CW Match", { "AND", "OR" })
+
     },
 
 
