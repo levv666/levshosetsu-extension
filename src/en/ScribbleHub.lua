@@ -1,4 +1,4 @@
--- {"id":86802,"ver":"1.2.4","libVer":"1.0.0","author":"TechnoJo4, StormX4 (updated by lev616)","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
+-- {"id":86802,"ver":"1.2.5","libVer":"1.0.0","author":"TechnoJo4, StormX4 (updated by lev616)","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
 
 local baseURL = "https://www.scribblehub.com"
 local qs = Require("url").querystring
@@ -1105,7 +1105,7 @@ return {
             -- =========================
             local cti, cte = buildCWParams(data)
 
-            local ti, te = buildTagParams(data)
+            local tgi, tge = buildTagParams(data)
             -- =========================
             -- BUILD PARAM TABLE
             -- =========================
@@ -1132,16 +1132,16 @@ return {
                 params.ge = ge
             end
 
-            if ti then
-                params.ti = ti
+            if tgi then
+                params.tgi = tgi
 
-                if ti:find(",") then
-                    params.mti = (data[FILTER_TAG_MODE] == 1) and "or" or "and"
+                if tgi:find(",") then
+                    params.mtgi = (data[FILTER_TAG_MODE] == 1) and "or" or "and"
                 end
             end
 
-            if te then
-                params.te = te
+            if tge then
+                params.tge = tge
             end
 
             -- =========================
