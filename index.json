@@ -123,9 +123,9 @@
 			"fileName": "ScribbleHub",
 			"imageURL": "https://github.com/shosetsuorg/extensions/raw/dev/icons/ScribbleHub.png",
 			"lang": "en",
-			"ver": "1.2.2",
+			"ver": "1.2.4",
 			"libVer": "1.0.0",
-			"md5": "4f491bf0b4d9bef209e6b5c65f2e9c8d61190190804428e5e68c020958019a81",
+			"md5": "6fd7d5d06bccc075fd9431771bd36e586052c3bc766f41ea6016c0bedbd49151",
 			"type": "LuaScript"
 		}
 	],
