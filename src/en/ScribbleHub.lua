@@ -1,4 +1,4 @@
--- {"id":86802,"ver":"1.2.5","libVer":"1.0.0","author":"TechnoJo4, StormX4 (updated by lev616)","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
+-- {"id":86802,"ver":"1.2.7","libVer":"1.0.0","author":"TechnoJo4, StormX4 (updated by lev616)","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
 
 local baseURL = "https://www.scribblehub.com"
 local qs = Require("url").querystring
@@ -1065,6 +1065,72 @@ local function buildTagParams(data)
     return ti, te
 end
 
+local function applySort(params, data)
+    local sortIndex = data[FILTER_SORT] or 7
+    params.sort = SORT_VALUES[sortIndex + 1] or "pageviews"
+end
+
+local function applyOrder(params, data)
+    params.order = (data[FILTER_ORDER] == 0) and "desc" or "asc"
+end
+
+local function applyStatus(params, data)
+    local statusIndex = data[FILTER_STATUS] or 0
+    local status = STATUS_VALUES[statusIndex + 1]
+
+    if status and status ~= "all" then
+        params.cp = status
+    end
+end
+
+local function applyGenre(params, data)
+    local gi, ge = buildGenreParams(data)
+
+    if gi then
+        params.gi = gi
+
+        if gi:find(",") then
+            params.mgi = (data[FILTER_GENRE_MODE] == 1) and "or" or "and"
+        end
+    end
+
+    if ge then
+        params.ge = ge
+    end
+end
+
+local function applyContentWarning(params, data)
+    local cti, cte = buildCWParams(data)
+
+    if cti then
+        params.cti = cti
+
+        if cti:find(",") then
+            params.mct = (data[FILTER_CW_MODE] == 1) and "or" or "and"
+        end
+    end
+
+    if cte then
+        params.cte = cte
+    end
+end
+
+local function applyTags(params, data)
+    local tgi, tge = buildTagParams(data)
+
+    if tgi then
+        params.tgi = tgi
+
+        if tgi:find(",") then
+            params.mtgi = (data[FILTER_TAG_MODE] == 1) and "or" or "and"
+        end
+    end
+
+    if tge then
+        params.tge = tge
+    end
+end
+
 return {
 	id = 86802,
 	name = "ScribbleHub",
@@ -1076,100 +1142,18 @@ return {
 	listings = {
         Listing("Novels", true, function(data)
 
-            local page = data[PAGE] or 1
-
-            -- =========================
-            -- SORT
-            -- =========================
-            local sortIndex = data[FILTER_SORT] or 7
-            local sort = SORT_VALUES[sortIndex + 1] or "pageviews"
-
-            -- =========================
-            -- ORDER
-            -- =========================
-            local order = (data[FILTER_ORDER] == 0) and "desc" or "asc"
-
-            -- =========================
-            -- STATUS
-            -- =========================
-            local statusIndex = data[FILTER_STATUS] or 0
-            local status = STATUS_VALUES[statusIndex + 1]
-
-            -- =========================
-            -- GENRE (include/exclude)
-            -- =========================
-            local gi, ge = buildGenreParams(data)
-
-            -- =========================
-            -- CONTENT WARNING (include/exclude)
-            -- =========================
-            local cti, cte = buildCWParams(data)
-
-            local tgi, tge = buildTagParams(data)
-            -- =========================
-            -- BUILD PARAM TABLE
-            -- =========================
             local params = {
                 sf = 1,
-                sort = sort,
-                order = order,
-                pg = page
+                pg = data[PAGE] or 1
             }
 
-            -- =========================
-            -- GENRE INCLUDE
-            -- =========================
-            if gi then
-                params.gi = gi
+            applySort(params, data)
+            applyOrder(params, data)
+            applyStatus(params, data)
+            applyGenre(params, data)
+            applyContentWarning(params, data)
+            applyTags(params, data)
 
-                if gi:find(",") then
-                    params.mgi = (data[FILTER_GENRE_MODE] == 1) and "or" or "and"
-                end
-            end
-
-            -- GENRE EXCLUDE
-            if ge then
-                params.ge = ge
-            end
-
-            if tgi then
-                params.tgi = tgi
-
-                if tgi:find(",") then
-                    params.mtgi = (data[FILTER_TAG_MODE] == 1) and "or" or "and"
-                end
-            end
-
-            if tge then
-                params.tge = tge
-            end
-
-            -- =========================
-            -- STATUS
-            -- =========================
-            if status and status ~= "all" then
-                params.cp = status
-            end
-
-            -- =========================
-            -- CW INCLUDE
-            -- =========================
-            if cti then
-                params.cti = cti
-
-                if cti:find(",") then
-                    params.mct = (data[FILTER_CW_MODE] == 1) and "or" or "and"
-                end
-            end
-
-            -- CW EXCLUDE
-            if cte then
-                params.cte = cte
-            end
-
-            -- =========================
-            -- BUILD FINAL URL
-            -- =========================
             local url = qs(params, baseURL .. "/series-finder/")
             print("FINAL URL =", url)
 
