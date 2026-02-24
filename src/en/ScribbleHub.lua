@@ -1261,16 +1261,17 @@ return {
 			s = NovelStatus.UNKNOWN
 		end
 
-		local text = function(v) return v:text() end
-        local tagElements = wrap:select(".wi_fic_showtags a")
+        local genreElements = doc:select(".wi_fic_genre a")
+        local tagElements = doc:select(".wi_fic_showtags a")
+
         local info = NovelInfo {
-			title = novel:selectFirst(".fic_title"):text(),
-			imageURL = novel:selectFirst(".fic_image img"):attr("src"),
-			description = HTMLToString(wrap:selectFirst(".wi_fic_desc")),
-			genres = map(wrap:selectFirst(".wi_fic_genre"):select("a"), text),
-			tags = map(tagElements, text),
-			authors = { novel:selectFirst("span[property=name] .auth_name_fic"):text() },
-			status = s
+            title = novel:selectFirst(".fic_title"):text(),
+            imageURL = novel:selectFirst(".fic_image img"):attr("src"),
+            description = HTMLToString(doc:selectFirst(".wi_fic_desc")),
+            genres = map(genreElements, text),
+            tags = map(tagElements, text),
+            authors = { novel:selectFirst("span[property=name] .auth_name_fic"):text() },
+            status = s
 		}
 
 		if loadChapters then
