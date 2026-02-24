@@ -187,7 +187,7 @@ local function parseNovel(novelURL)
                         order = v,
                         title = "[" .. v:selectFirst("div.f12"):text() .. "] " .. v:selectFirst("div.text-bold"):text(),
                         link = baseURL .. v:attr("href"),
-                        release = v:selectFirst("div.f14 text-no-break text-muted-gray-1"):text()
+                        release = v:selectFirst("div.f14 text-no-break text-muted-gray-1"):text() or nil
                     }
                 end)
         )
