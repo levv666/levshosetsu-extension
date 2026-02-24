@@ -227,8 +227,16 @@ local function getListing(data)
     if sortby ~= nil then
         sortByValue = SORT_BY_PARAMS[sortby+1]
     end
-    
-    local url = baseURL .. sortByValue .. genreValue .. "&page=" .. page
+
+    local basePath = baseURL .. adultValue .. sortByValue
+    local hasQuery = genreValue ~= "" and genreValue ~= "All"
+
+    if hasQuery then
+        local genreParam = genreValue:gsub("^%?", "")
+        url = basePath .. "?" .. genreParam .. "&page=" .. page
+    else
+        url = basePath .. "?page=" .. page
+    end
     if genreValue == "All" then
         url = baseURL .. sortByValue .. "&page=" .. page
     end
