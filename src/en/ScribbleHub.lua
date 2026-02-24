@@ -1,4 +1,4 @@
--- {"id":86802,"ver":"1.2.7","libVer":"1.0.0","author":"TechnoJo4, StormX4 (updated by lev616)","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
+-- {"id":86802,"ver":"1.2.8","libVer":"1.0.0","author":"TechnoJo4, StormX4 (updated by lev616)","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
 
 local baseURL = "https://www.scribblehub.com"
 local qs = Require("url").querystring
@@ -1277,11 +1277,12 @@ return {
 			local cdoc = RequestDocument(POST("https://www.scribblehub.com/wp-admin/admin-ajax.php", HEADERS, body))
 			local chapters = AsList(map(cdoc:selectFirst("ol"):select("li"), function(v, i)
 				local a = v:selectFirst("a")
+                local a_span = v:selectFirst("span")
 				return NovelChapter {
 					order = v:attr("order"),
 					title = a:text(),
 					link = shrinkURL(a:attr("href")),
-                    release = (a_time and (a_time:attr("title") or a_time:attr("unixtime") or v:selectLast("a"):text())) or nil
+                    release = (a_span and (a_span:attr("title") or a_span:attr("unixtime") or v:selectLast("a"):text())) or nil
 				}
 			end))
 			Reverse(chapters)
