@@ -1,4 +1,4 @@
--- {"id":95565,"ver":"1.0.10","libVer":"1.0.0","author":"Confident-hate"}
+-- {"id":95565,"ver":"1.2.1","libVer":"1.0.0","author":"Confident-hate"}
 
 local baseURL = "https://www.honeyfeed.fm"
 local HoneyfeedLogo = "https://www.honeyfeed.fm/assets/main/pages/home/logo-honey-bomon-70595250eae88d365db99bd83ecdc51c917f32478fa535a6b3b6cffb9357c1b4.png"
@@ -211,38 +211,24 @@ local function parseListing(listingURL)
 end
 
 local function getListing(data)
-    local page = data[PAGE]
+    local page = data[PAGE] or 1
     local genre = data[GENRE_FILTER]
-    local genreValue = ""
     local sortby = data[SORT_BY_FILTER]
-    local sortByValue = ""
     local adult = data[ADULT_FILTER]
-    local adultValue = ""
-    if adult ~= nil then
-        adultValue = ADULT_PARAMS[adult+1]
-    end
-    if genre ~= nil then
-        genreValue = GENRE_PARAMS[genre+1]
-    end
-    if sortby ~= nil then
-        sortByValue = SORT_BY_PARAMS[sortby+1]
-    end
+
+    local sortByValue = sortby and SORT_BY_PARAMS[sortby+1] or ""
+    local adultValue = adult and ADULT_PARAMS[adult+1] or ""
 
     local basePath = baseURL .. adultValue .. sortByValue
-    local hasQuery = genreValue ~= "" and genreValue ~= "All"
+    local url
 
-    if hasQuery then
-        local genreParam = genreValue:gsub("^%?", "")
+    if genre and genre ~= 0 then
+        local genreParam = GENRE_PARAMS[genre+1]:gsub("^%?", "")
         url = basePath .. "?" .. genreParam .. "&page=" .. page
     else
         url = basePath .. "?page=" .. page
     end
-    if genreValue == "All" then
-        url = baseURL .. sortByValue .. "&page=" .. page
-    end
-    if adultValue == "/nsfw" then
-        url = baseURL .. adultValue .. sortByValue .. "&page=" .. page
-    end
+
     return parseListing(url)
 end
 
