@@ -1280,7 +1280,8 @@ return {
 				return NovelChapter {
 					order = v:attr("order"),
 					title = a:text(),
-					link = shrinkURL(a:attr("href"))
+					link = shrinkURL(a:attr("href")),
+                    release = (a_time and (a_time:attr("title") or a_time:attr("unixtime") or v:selectLast("a"):text())) or nil
 				}
 			end))
 			Reverse(chapters)
