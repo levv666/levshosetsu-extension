@@ -141,9 +141,9 @@
 			"fileName": "Honeyfeed",
 			"imageURL": "https://www.honeyfeed.fm/assets/main/pages/home/logo-honey-bomon-70595250eae88d365db99bd83ecdc51c917f32478fa535a6b3b6cffb9357c1b4.png",
 			"lang": "en",
-			"ver": "1.0.7",
+			"ver": "1.0.8",
 			"libVer": "1.0.0",
-			"md5": "af81ad6328f4de7718e0ff134d68c1113a3f1b5f43d853309fc60b0ecf5f2820",
+			"md5": "016429c6c4b1ae947fcf3e0bd98f82a89c9a4107a28a6ca6bd17560b074caf16",
 			"type": "LuaScript"
 		}
 	],
