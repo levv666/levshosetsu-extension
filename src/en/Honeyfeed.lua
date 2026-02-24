@@ -1,4 +1,4 @@
--- {"id":95565,"ver":"1.0.8","libVer":"1.0.0","author":"Confident-hate"}
+-- {"id":95565,"ver":"1.0.9","libVer":"1.0.0","author":"Confident-hate"}
 
 local baseURL = "https://www.honeyfeed.fm"
 local HoneyfeedLogo = "https://www.honeyfeed.fm/assets/main/pages/home/logo-honey-bomon-70595250eae88d365db99bd83ecdc51c917f32478fa535a6b3b6cffb9357c1b4.png"
@@ -187,7 +187,7 @@ local function parseNovel(novelURL)
                         order = v,
                         title = "[" .. v:selectFirst("div.f12"):text() .. "] " .. v:selectFirst("div.text-bold"):text(),
                         link = baseURL .. v:attr("href"),
-                        release = v:selectFirst("div.f14 text-no-break text-muted-gray-1"):text() or nil
+                        release = v:selectFirst("div.f14text-no-break.text-muted-gray-1") and v:selectFirst("div.f14text-no-break.text-muted-gray-1"):text() or nil
                     }
                 end)
         )
