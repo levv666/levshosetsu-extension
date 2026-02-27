@@ -1,4 +1,4 @@
--- {"id":1244231,"ver":"1.0.5","libVer":"1.0.0","author":"Lev616"}
+-- {"id":1244231,"ver":"1.0.7","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://dobytranslations.com"
 
@@ -81,6 +81,7 @@ local function parseNovel(novelURL, loadChapters)
         title = titleElement and titleElement:text() or "No Title",
         imageURL = imageElement and imageElement:attr("src") or nil,
         description = descriptionElement and descriptionElement:text() or "",
+        genres = map(document:selectFirst("div.sertogenre"):select("a.rel"), text ),
         status = NovelStatus.UNKNOWN
     }
 
