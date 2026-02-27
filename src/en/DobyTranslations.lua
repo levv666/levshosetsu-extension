@@ -1,4 +1,4 @@
--- {"id":1244231,"ver":"1.0.8","libVer":"1.0.0","author":"Lev616"}
+-- {"id":1244231,"ver":"1.0.9","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://dobytranslations.com"
 local HTMLToString = Require("unhtml").HTMLToString
@@ -144,12 +144,13 @@ end
 -- =========================
 
 local function getPassage(chapterURL)
-    local url = expandURL(chapterURL)
-    local document = GETDocument(url)
-
-    local content = document:selectFirst("article")
-
-    return pageOfElem(content, true)
+    local htmlElement = GETDocument(chapterURL)
+    local title = htmlElement:selectFirst("h1.entry-title"):text()
+    htmlElement = htmlElement:selectFirst("div.epcontent.entry-content")
+    htmlElement:select("#wrap-button-remove-blur"):remove()
+    htmlElement:selectFirst("div.code-block"):remove()
+    htmlElement:child(0):before("<h1>" .. title .. "</h1>");
+    return pageOfElem(htmlElement, true)
 end
 
 return {
