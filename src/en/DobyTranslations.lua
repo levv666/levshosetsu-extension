@@ -1,6 +1,7 @@
 -- {"id":1244231,"ver":"1.0.9","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://dobytranslations.com"
+local DobyTranslationsLogo = "https://dobytranslations.com/wp-content/uploads/2024/05/a-adult-male-maltes-white-dog-reading-a-book.jpg"
 local HTMLToString = Require("unhtml").HTMLToString
 
 local function shrinkURL(url)
@@ -156,6 +157,7 @@ end
 return {
     id = 1244231,
     name = "Doby Translations",
+    imageURL = DobyTranslationsLogo,
     baseURL = baseURL,
     hasSearch = true,
     listings = {
