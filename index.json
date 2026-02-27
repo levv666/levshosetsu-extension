@@ -15,6 +15,13 @@
 			"website": ""
 		},
 		{
+			"id": 0,
+			"name": "",
+			"desc": "Worked on Example",
+			"imageURL": "",
+			"website": ""
+		},
+		{
 			"id": -980691669,
 			"name": "Confident-hate",
 			"desc": "Worked on Honeyfeed",
@@ -46,13 +53,6 @@
 			"id": 1667018484,
 			"name": "StormX4 (updated by lev616)",
 			"desc": "Worked on ScribbleHub",
-			"imageURL": "",
-			"website": ""
-		},
-		{
-			"id": -1106174562,
-			"name": "lev616",
-			"desc": "Worked on Doby Translations",
 			"imageURL": "",
 			"website": ""
 		}
@@ -121,6 +121,17 @@
 	],
 	"scripts": [
 		{
+			"id": -1,
+			"name": "Example",
+			"fileName": "DobyTranslations",
+			"imageURL": "https://example.web/asset/logo.png",
+			"lang": "en",
+			"ver": "1.0.0",
+			"libVer": "1.0.0",
+			"md5": "ec524003b4e1d7fbd9c1a056b7f72fa5b66d3aa83b73a84c4c0cac5266129689",
+			"type": "LuaScript"
+		},
+		{
 			"id": 36833,
 			"name": "RoyalRoad",
 			"fileName": "RoyalRoad",
@@ -151,17 +162,6 @@
 			"ver": "1.2.1",
 			"libVer": "1.0.0",
 			"md5": "543321da13759b6cebd3bd7c809ea608a04ee3f0e622e5d599525575ac85fda9",
-			"type": "LuaScript"
-		},
-		{
-			"id": 91919124,
-			"name": "Doby Translations",
-			"fileName": "DobyTranslations",
-			"imageURL": "https://dobytranslations.com/wp-content/uploads/2024/05/a-adult-male-maltes-white-dog-reading-a-book.jpg",
-			"lang": "en",
-			"ver": "1.0.0",
-			"libVer": "1.0.0",
-			"md5": "796cecabf859e01456dcb5bb24589fb87fa69f3f90d73b5988b967b8f53646f4",
 			"type": "LuaScript"
 		}
 	],

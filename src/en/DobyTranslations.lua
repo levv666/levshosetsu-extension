@@ -1,52 +1,91 @@
--- {"id": 91919124, "ver": "1.0.0", "libVer": "1.0.0", "author": "lev616", "dep": ["Madara>=2.2.0"]}
+-- {"id":1244231,"ver":"1.0.0","libVer":"1.0.0","author":"Lev616"}
 
-return Require("Madara")("https://dobytranslations.com", {
-    id = 91919124,
-    name = "Doby Translations",
-    imageURL = "https://dobytranslations.com/wp-content/uploads/2024/05/a-adult-male-maltes-white-dog-reading-a-book.jpg",
+local baseURL = "https://dobytranslations.com"
 
-    shrinkURLNovel = "series",
+local function shrinkURL(url)
+    return url:gsub(baseURL, "")
+end
 
-    latestNovelSel = "article.maindet",
-    searchNovelSel = "article.maindet",
+local function expandURL(url)
+    return baseURL .. url
+end
 
-    novelPageTitleSel = "h1",
+-- =========================
+-- LISTING (Homepage)
+-- =========================
 
-    chaptersScriptLoaded = true,
-    chaptersOrderReversed = true,
+local function getListing(data)
+    local page = data[PAGE]
+    local url = baseURL .. "/page/" .. page .. "/"
 
-    hasCloudFlare = false,
-    isSearchIncrementing = true,
+    local document = GETDocument(url)
 
-    -- ✅ CORRECT pagination override
-    listingURL = function(self, page)
-        page = page or 1
-        return "/series/?page=" .. page .. "&m_orderby=latest"
-    end,
+    -- Each project card
+    return map(document:select("div.excstf > div"), function(card)
 
-    genres = {
-        "Antihero Protagonist",
-        "Comedy",
-        "Completed Premium/Ongoing Free Unlock",
-        "Completely Free",
-        "Cthulhu",
-        "Drama",
-        "Ecchi",
-        "Fantasy",
-        "Farming",
-        "Female Protagonist",
-        "Gender Bender",
-        "Harem",
-        "Horror",
-        "Male Protagonist",
-        "Male to Female",
-        "No Romance",
-        "Psychological",
-        "Revenge",
-        "Romance",
-        "Slice of Life",
-        "System",
-        "Villain Protagonist",
-        "Yuri"
+        local linkElement = card:selectFirst("a.series-link")
+        if linkElement == nil then return nil end
+
+        local titleElement = linkElement:selectFirst("h3.epic-title")
+        local imageElement = card:selectFirst("div.imgu img")
+
+        return Novel {
+            title = titleElement and titleElement:text() or "No Title",
+            link = shrinkURL(linkElement:attr("href")),
+            imageURL = imageElement and imageElement:attr("src") or nil
+        }
+    end)
+end
+
+-- =========================
+-- PARSE NOVEL
+-- =========================
+
+local function parseNovel(novelURL)
+    local url = expandURL(novelURL)
+    local document = GETDocument(url)
+
+    local title = document:selectFirst("h1"):text()
+
+    local content = document:selectFirst("article")
+
+    return NovelInfo {
+        title = title,
+        description = "",
+        imageURL = "",
+        chapters = {
+            NovelChapter {
+                title = title,
+                link = novelURL,
+                order = 1
+            }
+        }
     }
-})
+end
+
+-- =========================
+-- GET PASSAGE
+-- =========================
+
+local function getPassage(chapterURL)
+    local url = expandURL(chapterURL)
+    local document = GETDocument(url)
+
+    local content = document:selectFirst("article")
+
+    return pageOfElem(content, true)
+end
+
+return {
+    id = 95561,
+    name = "Doby Translations",
+    baseURL = baseURL,
+    listings = {
+        Listing("Latest", true, getListing)
+    },
+    parseNovel = parseNovel,
+    getPassage = getPassage,
+    shrinkURL = shrinkURL,
+    expandURL = expandURL,
+    chapterType = ChapterType.HTML
+}
