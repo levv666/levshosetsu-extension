@@ -7,8 +7,8 @@ return Require("Madara")("https://dobytranslations.com", {
 
     shrinkURLNovel = "series",
 
-    latestNovelSel = "div.listupd > article",
-    searchNovelSel = "div.listupd > article",
+    latestNovelSel = "article.maindet",
+    searchNovelSel = "article.maindet",
 
     novelPageTitleSel = "h1",
 
