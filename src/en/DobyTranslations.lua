@@ -1,11 +1,8 @@
--- {"id": 91919124, "ver": "1.0.0", "libVer": "1.0.0", "author": "lev616", "dep": ["Madara>=2.2.0"]}
-
 return Require("Madara")("https://dobytranslations.com", {
-    id = 91919124, -- ⚠️ change to unique ID
+    id = 91919124,
     name = "Doby Translations",
     imageURL = "https://dobytranslations.com/wp-content/uploads/2024/05/a-adult-male-maltes-white-dog-reading-a-book.jpg",
 
-    novelListingURLPath = "series",
     shrinkURLNovel = "series",
 
     latestNovelSel = "div.listupd > article",
@@ -19,10 +16,10 @@ return Require("Madara")("https://dobytranslations.com", {
     hasCloudFlare = false,
     isSearchIncrementing = true,
 
-    latest = function(self, page)
+    -- ✅ CORRECT pagination override
+    listingURL = function(self, page)
         page = page or 1
-        local url = "https://dobytranslations.com/series/?page=" .. page .. "&m_orderby=latest"
-        return self:parse(GETDocument(url))
+        return "/series/?page=" .. page .. "&m_orderby=latest"
     end,
 
     genres = {
