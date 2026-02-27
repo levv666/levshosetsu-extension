@@ -96,7 +96,7 @@ local function getPassage(chapterURL)
 end
 
 return {
-    id = 95561,
+    id = 1244231,
     name = "Doby Translations",
     baseURL = baseURL,
     hasSearch = true,
