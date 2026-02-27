@@ -1268,7 +1268,7 @@ return {
 
         -- Merge tags into genres (because app likely doesn't display tags)
         for _, tag in ipairs(tagsList) do
-            table.insert(genresList, tag)
+            table.insert(genresList, "tag: " .. tag)
         end
 
         local info = NovelInfo {
