@@ -85,46 +85,53 @@ local function parseNovel(novelURL, loadChapters)
     }
 
     if loadChapters then
-        local chapterItems = content:select("li[data-id]") or {}
+        local chapterItems = content:select("li[data-id]")
 
-        local temp = {}
-
-        for _, v in ipairs(chapterItems) do
+        local temp = map(chapterItems, function(v)
             local a = v:selectFirst("a")
             local titleDiv = v:selectFirst(".epl-title")
 
-            if a ~= nil and titleDiv ~= nil then
-                -- Skip premium
-                if titleDiv:selectFirst(".mycred-price") == nil then
-                    local dateDiv = v:selectFirst(".epl-date")
-                    local dataId = tonumber(v:attr("data-id")) or 0
-
-                    table.insert(temp, {
-                        id = dataId,
-                        chapter = NovelChapter {
-                            title = titleDiv:text()
-                                            :gsub("%s+", " ")
-                                            :gsub("^%s*(.-)%s*$", "%1"),
-                            link = shrinkURL(a:attr("href")),
-                            release = dateDiv and dateDiv:text() or nil
-                        }
-                    })
-                end
+            if a == nil or titleDiv == nil then
+                return nil
             end
-        end
+
+            -- Skip premium chapters
+            if titleDiv:selectFirst(".mycred-price") ~= nil then
+                return nil
+            end
+
+            local dateDiv = v:selectFirst(".epl-date")
+            local dataId = tonumber(v:attr("data-id")) or 0
+
+            return {
+                id = dataId,
+                title = titleDiv:text()
+                                :gsub("%s+", " ")
+                                :gsub("^%s*(.-)%s*$", "%1"),
+                link = shrinkURL(a:attr("href")),
+                release = dateDiv and dateDiv:text() or nil
+            }
+        end)
+
+        -- Remove nils
+        temp = filter(temp, function(v) return v ~= nil end)
 
         -- Sort by data-id ascending
         table.sort(temp, function(a, b)
             return a.id < b.id
         end)
 
-        -- Now convert to Shosetsu list
-        local final = AsList(map(temp, function(v, i)
-            v.chapter.order = i
-            return v.chapter
+        -- Convert to Shosetsu List
+        local chapters = AsList(map(temp, function(v, i)
+            return NovelChapter {
+                order = i,
+                title = v.title,
+                link = v.link,
+                release = v.release
+            }
         end))
 
-        info:setChapters(final)
+        info:setChapters(chapters)
     end
 
     return info
