@@ -1,72 +1,90 @@
--- {"id":1244231,"ver":"1.0.1","libVer":"1.0.0","author":"Lev616"}
+-- {"id":1244231,"ver":"1.0.1","libVer":"1.0.0","author":"Lev616","repo":"","dep":[]}
 
+----------------
+-- METADATA
+----------------
+
+local id = 1244231
+local name = "Doby Translations"
 local baseURL = "https://dobytranslations.com"
+local imageURL = ""
+local hasCloudFlare = false
+local hasSearch = true
+local isSearchIncrementing = false
+local chapterType = ChapterType.HTML
+local startIndex = 1
 
-local function shrinkURL(url)
+----------------
+-- URL HELPERS
+----------------
+
+local function shrinkURL(url, type)
     return url:gsub(baseURL, "")
 end
 
-local function expandURL(url)
+local function expandURL(url, type)
     return baseURL .. url
 end
 
--- =========================
--- LISTING (Homepage)
--- =========================
+----------------
+-- LISTING (Latest)
+----------------
 
-local function getListing(data)
-    local page = data[PAGE]
-    local url = baseURL .. "/page/" .. page .. "/"
+local listings = {
+    Listing("Latest", true, function(data)
 
-    local document = GETDocument(url)
+        local page = data[PAGE]
+        local url = baseURL .. "/page/" .. page .. "/"
 
-    -- Each project card
-    return map(document:select("div.excstf > div"), function(card)
+        local document = GETDocument(url)
 
-        local linkElement = card:selectFirst("a.series-link")
-        if linkElement == nil then return nil end
+        return map(document:select("div.excstf > div"), function(card)
 
-        local titleElement = linkElement:selectFirst("h3.epic-title")
-        local imageElement = card:selectFirst("div.imgu img")
+            local linkElement = card:selectFirst("a.series-link")
+            if linkElement == nil then return nil end
 
-        return Novel {
-            title = titleElement and titleElement:text() or "No Title",
-            link = shrinkURL(linkElement:attr("href")),
-            imageURL = imageElement and imageElement:attr("src") or nil
-        }
+            local titleElement = linkElement:selectFirst("h3.epic-title")
+            local imageElement = card:selectFirst("div.imgu img")
+
+            return Novel {
+                title = titleElement and titleElement:text() or "No Title",
+                link = shrinkURL(linkElement:attr("href"), KEY_NOVEL_URL),
+                imageURL = imageElement and imageElement:attr("src") or nil
+            }
+        end)
     end)
-end
+}
+
+----------------
+-- SEARCH
+----------------
 
 local function search(data)
-    local function getSearchResult(queryContent)
-        return GETDocument(baseURL .. "/search/?keywords=" .. queryContent)
-    end
 
+    local query = data[QUERY]
+    local url = baseURL .. "/search/?keywords=" .. query
 
-    local queryContent = data[QUERY]
-    local doc = getSearchResult(queryContent)
+    local doc = GETDocument(url)
 
     return map(doc:select(".UpdateList .clearfix.itemBox"), function(v)
         return Novel {
             title = v:selectFirst(".itemTxt .title"):text(),
             imageURL = v:selectFirst(".itemImg a img"):attr("src"),
-            link = v:selectFirst("a"):attr("href")
+            link = shrinkURL(v:selectFirst("a"):attr("href"), KEY_NOVEL_URL)
         }
     end)
 end
 
-
--- =========================
+----------------
 -- PARSE NOVEL
--- =========================
+----------------
 
 local function parseNovel(novelURL)
-    local url = expandURL(novelURL)
+
+    local url = expandURL(novelURL, KEY_NOVEL_URL)
     local document = GETDocument(url)
 
     local title = document:selectFirst("h1"):text()
-
-    local content = document:selectFirst("article")
 
     return NovelInfo {
         title = title,
@@ -82,12 +100,13 @@ local function parseNovel(novelURL)
     }
 end
 
--- =========================
+----------------
 -- GET PASSAGE
--- =========================
+----------------
 
 local function getPassage(chapterURL)
-    local url = expandURL(chapterURL)
+
+    local url = expandURL(chapterURL, KEY_CHAPTER_URL)
     local document = GETDocument(url)
 
     local content = document:selectFirst("article")
@@ -95,18 +114,29 @@ local function getPassage(chapterURL)
     return pageOfElem(content, true)
 end
 
+----------------
+-- RETURN
+----------------
+
 return {
-    id = 1244231,
-    name = "Doby Translations",
+    -- Required
+    id = id,
+    name = name,
     baseURL = baseURL,
-    hasSearch = true,
-    listings = {
-        Listing("Latest", true, getListing)
-    },
-    parseNovel = parseNovel,
+    listings = listings,
     getPassage = getPassage,
+    parseNovel = parseNovel,
     shrinkURL = shrinkURL,
     expandURL = expandURL,
-    chapterType = ChapterType.HTML,
-    search = search
+
+    -- Optional
+    imageURL = imageURL,
+    hasCloudFlare = hasCloudFlare,
+    hasSearch = hasSearch,
+    isSearchIncrementing = isSearchIncrementing,
+    chapterType = chapterType,
+    startIndex = startIndex,
+
+    -- Required because hasSearch = true
+    search = search,
 }
