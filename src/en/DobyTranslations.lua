@@ -1,6 +1,7 @@
 -- {"id":1244231,"ver":"1.0.8","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://dobytranslations.com"
+local HTMLToString = Require("unhtml").HTMLToString
 
 local function shrinkURL(url)
     return url:gsub(baseURL, "")
