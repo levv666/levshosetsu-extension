@@ -19,22 +19,24 @@ local function getListing(data)
     local url = baseURL .. "/page/" .. page .. "/"
 
     local document = GETDocument(url)
+    local results = {}
 
-    -- Each project card
-    return map(document:select("div.excstf > div"), function(card)
+    for _, card in ipairs(document:select("div.excstf > div")) do
 
         local linkElement = card:selectFirst("a.series-link")
-        if linkElement == nil then return nil end
-
-        local titleElement = linkElement:selectFirst("h3.epic-title")
+        local titleElement = card:selectFirst("h3.epic-title")
         local imageElement = card:selectFirst("div.imgu img")
 
-        return Novel {
-            title = titleElement and titleElement:text() or "No Title",
-            link = shrinkURL(linkElement:attr("href")),
-            imageURL = imageElement and imageElement:attr("src") or nil
-        }
-    end)
+        if linkElement ~= nil and titleElement ~= nil then
+            table.insert(results, Novel {
+                title = titleElement:text(),
+                link = shrinkURL(linkElement:attr("href")),
+                imageURL = imageElement and imageElement:attr("src") or nil
+            })
+        end
+    end
+
+    return results
 end
 
 local function search(data)
