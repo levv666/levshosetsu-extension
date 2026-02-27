@@ -10,8 +10,8 @@ return Require("Madara")("https://dobytranslations.com", {
     novelListingURLPath = "series",
     shrinkURLNovel = "series",
 
-    latestNovelSel = "a.series-link",
-    searchNovelSel = "a.series-link",
+    latestNovelSel = "div.listupd > article",
+    searchNovelSel = "div.listupd > article",
 
     novelPageTitleSel = "h1",
 
