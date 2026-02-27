@@ -81,15 +81,9 @@ local function parseNovel(novelURL, loadChapters)
     local descriptionElement = doc:selectFirst(".entry-content")
     local genrelist = doc:selectFirst("div.sertogenre")
 
-    local s = NovelStatus.UNKNOWN
-
-    if doc:selectFirst("span.Completed") ~= nil then
-        s = NovelStatus.COMPLETED
-    elseif doc:selectFirst("span.Ongoing") ~= nil then
-        s = NovelStatus.ONGOING
-    elseif doc:selectFirst("span.Hiatus") ~= nil then
-        s = NovelStatus.HIATUS
-    end
+    local s = doc:selectFirst("span.Completed") and NovelStatus.COMPLETED
+            or doc:selectFirst("span.Hiatus") and NovelStatus.PAUSED
+            or NovelStatus.PUBLISHING
 
 
     local info = NovelInfo {
