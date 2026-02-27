@@ -1266,8 +1266,8 @@ return {
 			title = novel:selectFirst(".fic_title"):text(),
 			imageURL = novel:selectFirst(".fic_image img"):attr("src"),
 			description = HTMLToString(wrap:selectFirst(".wi_fic_desc")),
-			genres = map(wrap:selectFirst(".wi_fic_genre"):select("a"), text),
-			tags = map(wrap:selectFirst(".wi_fic_showtags"):select("a"), text),
+            genres = map(doc:select(".wi_fic_genre a"), text),
+            tags = map(doc:select(".wi_fic_showtags a"), text),
 			authors = { novel:selectFirst("span[property=name] .auth_name_fic"):text() },
 			status = s
 		}
