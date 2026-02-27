@@ -84,9 +84,8 @@ local function parseNovel(novelURL, loadChapters)
     }
 
     if loadChapters then
-        -- Prepare "fake" POST body if needed (ScribbleHub uses pagenum=-1 to get all)
-        -- For DobyTranslations, you can just fetch the page directly, no AJAX needed
-        local chapterItems = doc:select("li[data-id]")  -- all <li> with chapters
+        -- Select all chapter <li> elements
+        local chapterItems = doc:select("li[data-id]")
 
         local chapters = AsList(map(chapterItems, function(v, i)
             local a = v:selectFirst("a")
@@ -101,10 +100,10 @@ local function parseNovel(novelURL, loadChapters)
             }
         end))
 
-        -- Reverse chapters if the site lists newest first
+        -- Reverse if the site lists newest first
         Reverse(chapters)
 
-        -- Set chapters to novel info
+        -- Set chapters
         info:setChapters(chapters)
     end
 
