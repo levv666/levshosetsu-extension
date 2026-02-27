@@ -81,13 +81,23 @@ local function parseNovel(novelURL, loadChapters)
     local descriptionElement = doc:selectFirst(".entry-content")
     local genrelist = doc:selectFirst("div.sertogenre")
 
+    local s = NovelStatus.UNKNOWN
+
+    if doc:selectFirst("span.Completed") ~= nil then
+        status = NovelStatus.COMPLETED
+    elseif doc:selectFirst("span.Ongoing") ~= nil then
+        status = NovelStatus.ONGOING
+    elseif doc:selectFirst("span.Hiatus") ~= nil then
+        status = NovelStatus.HIATUS
+    end
+
 
     local info = NovelInfo {
         title = titleElement and titleElement:text() or "No Title",
         imageURL = imageElement and imageElement:attr("src") or nil,
         description = descriptionElement and HTMLToString(descriptionElement) or "",
         genres = genrelist and map(genrelist:select("a[rel=tag]"), function(v) return v:text() end) or nil,
-        status = NovelStatus.UNKNOWN
+        status = s
     }
 
     if loadChapters then
