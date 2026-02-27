@@ -84,30 +84,26 @@ local function parseNovel(novelURL, loadChapters)
     }
 
     if loadChapters then
-        -- Select all chapter <li> elements
         local chapterItems = doc:select("li[data-id]")
-
         local chapters = AsList(map(chapterItems, function(v, i)
+            local titleDiv = v:selectFirst(".epl-title")
+            -- skip premium/paid chapters
+            if titleDiv:selectFirst(".mycred-price") ~= nil then return end
+
             local a = v:selectFirst("a")
-            local titleDiv = a:selectFirst(".epl-title")
-            local dateDiv = a:selectFirst(".epl-date")
+            local dateDiv = v:selectFirst(".epl-date")
 
             return NovelChapter {
                 order = i + 1,
-                title = titleDiv and titleDiv:text() or a:text(),
+                title = titleDiv:text():gsub("%s+", " "):gsub("^%s*(.-)%s*$", "%1"), -- clean spaces
                 link = shrinkURL(a:attr("href")),
                 release = dateDiv and dateDiv:text() or nil
             }
         end))
 
-        -- Reverse if the site lists newest first
         Reverse(chapters)
-
-        -- Set chapters
         info:setChapters(chapters)
     end
-
-    return info
 end
 
 -- =========================
