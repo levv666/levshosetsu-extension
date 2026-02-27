@@ -76,12 +76,14 @@ local function parseNovel(novelURL, loadChapters)
     local titleElement = doc:selectFirst("h1")
     local imageElement = doc:selectFirst("img.ts-post-image")
     local descriptionElement = doc:selectFirst(".entry-content")
+    local genrelist = doc:selectFirst("div.sertogenre")
+
 
     local info = NovelInfo {
         title = titleElement and titleElement:text() or "No Title",
         imageURL = imageElement and imageElement:attr("src") or nil,
         description = descriptionElement and descriptionElement:text() or "",
-        genres = map(document:selectFirst("div.sertogenre"):select("a.rel"), text ) or nil,
+        genres = map(doc:select("div.sertogenre a"), text),
         status = NovelStatus.UNKNOWN
     }
 
