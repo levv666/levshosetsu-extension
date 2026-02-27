@@ -15,6 +15,13 @@
 			"website": ""
 		},
 		{
+			"id": -2022307394,
+			"name": "Lev616",
+			"desc": "Worked on Doby Translations, Lovely Blossoms",
+			"imageURL": "",
+			"website": ""
+		},
+		{
 			"id": -980691669,
 			"name": "Confident-hate",
 			"desc": "Worked on Honeyfeed",
@@ -32,13 +39,6 @@
 			"id": -931466336,
 			"name": "JFronny",
 			"desc": "Worked on XenForo",
-			"imageURL": "",
-			"website": ""
-		},
-		{
-			"id": -2022307394,
-			"name": "Lev616",
-			"desc": "Worked on Doby Translations",
 			"imageURL": "",
 			"website": ""
 		},
@@ -162,6 +162,17 @@
 			"ver": "1.0.9",
 			"libVer": "1.0.0",
 			"md5": "fc52c240bc9ec5a95c9c1c6c122a9f67ddaf7eeff3057af61df5ba1bb42e836c",
+			"type": "LuaScript"
+		},
+		{
+			"id": 1742321,
+			"name": "Lovely Blossoms",
+			"fileName": "LovelyBlossoms",
+			"imageURL": "https://github.com/shosetsuorg/extensions/raw/dev/icons/SleepyTranslations.png",
+			"lang": "en",
+			"ver": "1.0.0",
+			"libVer": "1.0.0",
+			"md5": "5cdd5f1d8059b0626d01b2eddc6cc400a758c8af729267c987897195e9263669",
 			"type": "LuaScript"
 		}
 	],
