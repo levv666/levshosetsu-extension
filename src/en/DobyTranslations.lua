@@ -49,11 +49,11 @@ local function search(data)
     local queryContent = data[QUERY]
     local doc = getSearchResult(queryContent)
 
-    return map(doc:select(".UpdateList .clearfix.itemBox"), function(v)
+    return map(doc:select("div.listupd > article"), function(v)
         return Novel {
-            title = v:selectFirst(".itemTxt .title"):text(),
-            imageURL = v:selectFirst(".itemImg a img"):attr("src"),
-            link = v:selectFirst("a"):attr("href")
+            title = v:selectFirst("h2 a"):text(),
+            imageURL = v:selectFirst(".mdthumb img"):attr("src"),
+            link = v:selectFirst("h2 a"):attr("href")
         }
     end)
 end
