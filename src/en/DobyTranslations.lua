@@ -1,4 +1,4 @@
--- {"id":1244231,"ver":"1.0.7","libVer":"1.0.0","author":"Lev616"}
+-- {"id":1244231,"ver":"1.0.8","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://dobytranslations.com"
 
