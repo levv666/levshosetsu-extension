@@ -154,14 +154,14 @@
 			"type": "LuaScript"
 		},
 		{
-			"id": 8437659,
+			"id": 91919124,
 			"name": "Doby Translations",
 			"fileName": "DobyTranslations",
 			"imageURL": "https://dobytranslations.com/wp-content/uploads/2024/05/a-adult-male-maltes-white-dog-reading-a-book.jpg",
 			"lang": "en",
 			"ver": "1.0.0",
 			"libVer": "1.0.0",
-			"md5": "d127da76adf08e9e914a59ed5bc47d77dc83d7f5620878f64517a6cf443ed436",
+			"md5": "0565a7f1eac62c9ae8ca48b61b1c082aac904b68df0e098c53254ef9509f79f9",
 			"type": "LuaScript"
 		}
 	],

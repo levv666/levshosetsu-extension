@@ -1,6 +1,4 @@
--- {"id":8437659,"ver":"1.0.0","libVer":"1.0.0","author":"lev616"}
-
--- {"id": 91919124, "ver": "1.0.0", "libVer": "2.9.2", "author": "muzdalifah", "dep": ["Madara>=2.2.0"]}
+-- {"id": 91919124, "ver": "1.0.0", "libVer": "1.0.0", "author": "lev616", "dep": ["Madara>=2.2.0"]}
 
 return Require("Madara")("https://dobytranslations.com", {
     id = 91919124, -- ⚠️ change to unique ID
