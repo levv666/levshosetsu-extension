@@ -41,14 +41,14 @@ local function getListing(data)
 end
 
 local function search(data)
-    local function getSearchResult(queryContent)
-        return GETDocument(baseURL .. "?s=" .. queryContent)
-    end
+    local query = data[QUERY] or ""
+    local page  = data[PAGE] or 1
 
+    local url = page == 1
+            and (baseURL .. "?s=" .. query)
+            or  (baseURL .. "/page/" .. page .. "/?s=" .. query)
 
-    local queryContent = data[QUERY]
-    local doc = getSearchResult(queryContent)
-
+    local doc = GETDocument(url)
     return map(doc:select("div.listupd > article"), function(v)
         return Novel {
             title = v:selectFirst("h2 a"):text(),
