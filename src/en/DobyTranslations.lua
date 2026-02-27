@@ -21,7 +21,7 @@ return Require("Madara")("https://dobytranslations.com", {
 
     latest = function(self, page)
         page = page or 1
-        local url = self.baseURL .. "/series/?page=" .. page .. "&m_orderby=latest"
+        local url = "https://dobytranslations.com/series/?page=" .. page .. "&m_orderby=latest"
         return self:parse(GETDocument(url))
     end,
 
