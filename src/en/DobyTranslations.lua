@@ -1,4 +1,4 @@
--- {"id":1244231,"ver":"1.0.2","libVer":"1.0.0","author":"Lev616"}
+-- {"id":1244231,"ver":"1.0.3","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://dobytranslations.com"
 
@@ -73,7 +73,7 @@ local function parseNovel(novelURL, loadChapters)
 
     -- Basic info
     local titleElement = doc:selectFirst("h1")
-    local imageElement = doc:selectFirst(".thumb img")
+    local imageElement = doc:selectFirst("img.ts-post-image")
     local descriptionElement = doc:selectFirst(".entry-content")
 
     local info = NovelInfo {
