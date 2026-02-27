@@ -53,7 +53,7 @@ local function search(data)
         return Novel {
             title = v:selectFirst("h2 a"):text(),
             imageURL = v:selectFirst(".mdthumb img"):attr("src"),
-            link = v:selectFirst("h2 a"):attr("href")
+            link = shrinkURL(v:selectFirst("h2 a"):attr("href"))
         }
     end)
 end
