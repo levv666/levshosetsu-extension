@@ -23,14 +23,6 @@ local function parseListing(listingURL)
         local titleElement = card:selectFirst("h3.epic-title")
         local imageElement = card:selectFirst("div.imgu img")
 
-        -- IMPORTANT: Never return nil
-        if linkElement == nil or titleElement == nil then
-            return Novel {
-                title = "Unknown",
-                link = ""
-            }
-        end
-
         return Novel {
             title = titleElement:text(),
             link = shrinkURL(linkElement:attr("href")),
