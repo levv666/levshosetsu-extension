@@ -86,16 +86,20 @@ local function parseNovel(novelURL, loadChapters)
     if loadChapters then
         local chapterItems = doc:select("li[data-id]")
         local chapters = AsList(map(chapterItems, function(v, i)
+            local a = v:selectFirst("a")
+            if a == nil then return end
+
             local titleDiv = v:selectFirst(".epl-title")
-            -- skip premium/paid chapters
+            if titleDiv == nil then return end
+
+            -- Skip premium chapters based on .mycred-price span
             if titleDiv:selectFirst(".mycred-price") ~= nil then return end
 
-            local a = v:selectFirst("a")
             local dateDiv = v:selectFirst(".epl-date")
 
             return NovelChapter {
                 order = i + 1,
-                title = titleDiv:text():gsub("%s+", " "):gsub("^%s*(.-)%s*$", "%1"), -- clean spaces
+                title = titleDiv:text():gsub("%s+", " "):gsub("^%s*(.-)%s*$", "%1"),
                 link = shrinkURL(a:attr("href")),
                 release = dateDiv and dateDiv:text() or nil
             }
