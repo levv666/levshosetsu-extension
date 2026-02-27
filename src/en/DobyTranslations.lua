@@ -84,31 +84,28 @@ local function parseNovel(novelURL, loadChapters)
     }
 
     if loadChapters then
-        local chapters = {}
+        -- Prepare "fake" POST body if needed (ScribbleHub uses pagenum=-1 to get all)
+        -- For DobyTranslations, you can just fetch the page directly, no AJAX needed
+        local chapterItems = doc:select("li[data-id]")  -- all <li> with chapters
 
-        -- Select all chapter list items
-        local chapters = {}
+        local chapters = AsList(map(chapterItems, function(v, i)
+            local a = v:selectFirst("a")
+            local titleDiv = a:selectFirst(".epl-title")
+            local dateDiv = a:selectFirst(".epl-date")
 
-        -- Select all chapter list items
-        local chapterItems = doc:select("li[data-id]")
+            return NovelChapter {
+                order = i + 1,
+                title = titleDiv and titleDiv:text() or a:text(),
+                link = shrinkURL(a:attr("href")),
+                release = dateDiv and dateDiv:text() or nil
+            }
+        end))
 
-        for i = 0, chapterItems:size() - 1 do
-            local li = chapterItems:get(i)
-            local a = li:selectFirst("a")
-            if a then
-                local chapterTitle = a:selectFirst(".epl-title")
-                local chapterDate = a:selectFirst(".epl-date")
+        -- Reverse chapters if the site lists newest first
+        Reverse(chapters)
 
-                table.insert(chapters, NovelChapter {
-                    order = i + 1,
-                    title = chapterTitle and chapterTitle:text() or ("Chapter " .. (i + 1)),
-                    link = shrinkURL(a:attr("href")),
-                    release = chapterDate and chapterDate:text() or nil
-                })
-            end
-        end
-
-        info:setChapters(AsList(chapters))
+        -- Set chapters to novel info
+        info:setChapters(chapters)
     end
 
     return info
