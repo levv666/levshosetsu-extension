@@ -17,27 +17,19 @@ end
 
 local function parseListing(listingURL)
     local doc = GETDocument(listingURL)
-    if doc == nil then
-        return {}
-    end
+    if not doc then return {} end
 
-    local cards = doc:select("div.excstf > div")
+    return mapNotNil(doc:select("div.excstf > div"), function(card)
+        local linkEl  = card:selectFirst("a.series-link")
+        local titleEl = card:selectFirst("h3.epic-title")
+        if not (linkEl and titleEl) then return nil end
 
-    return map(filter(cards, function(card)
-        return card:selectFirst("a.series-link") ~= nil
-                and card:selectFirst("h3.epic-title") ~= nil
-    end), function(card)
-
-        local linkElement = card:selectFirst("a.series-link")
-        local titleElement = card:selectFirst("h3.epic-title")
-        local imageElement = card:selectFirst("div.imgu img")
-
-        local href = linkElement:attr("href")
+        local imgEl = card:selectFirst("div.imgu img")
 
         return Novel {
-            title = titleElement:text(),
-            link = href and shrinkURL(href) or "",
-            imageURL = imageElement and imageElement:attr("src") or nil
+            title = titleEl:text(),
+            link = shrinkURL(linkEl:attr("href") or ""),
+            imageURL = imgEl and imgEl:attr("src")
         }
     end)
 end
