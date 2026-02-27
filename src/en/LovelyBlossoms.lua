@@ -6,7 +6,8 @@ return Require("Madara")("https://lovelyblossoms.com", {
     imageURL = "https://github.com/shosetsuorg/extensions/raw/dev/icons/SleepyTranslations.png",
     chaptersScriptLoaded = true,
     novelPageTitleSel = "div.post-title > h1",
-    latestNovelSel = ".col-6.col-md-3.badge-pos-2",
+
+    latestNovelSel = "div.page-listing-item",
     novelListingURLPath = "novel",
     shrinkURLNovel = "novel",
     searchHasOper = true,
