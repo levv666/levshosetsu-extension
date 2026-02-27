@@ -84,11 +84,11 @@ local function parseNovel(novelURL, loadChapters)
     local s = NovelStatus.UNKNOWN
 
     if doc:selectFirst("span.Completed") ~= nil then
-        status = NovelStatus.COMPLETED
+        s = NovelStatus.COMPLETED
     elseif doc:selectFirst("span.Ongoing") ~= nil then
-        status = NovelStatus.ONGOING
+        s = NovelStatus.ONGOING
     elseif doc:selectFirst("span.Hiatus") ~= nil then
-        status = NovelStatus.HIATUS
+        s = NovelStatus.HIATUS
     end
 
 
