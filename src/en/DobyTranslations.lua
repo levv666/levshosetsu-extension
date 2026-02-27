@@ -144,7 +144,7 @@ end
 -- =========================
 
 local function getPassage(chapterURL)
-    local htmlElement = GETDocument(chapterURL)
+    local htmlElement = GETDocument(expandURL(chapterURL))
     local title = htmlElement:selectFirst("h1.entry-title"):text()
     htmlElement = htmlElement:selectFirst("div.epcontent.entry-content")
     htmlElement:select("#wrap-button-remove-blur"):remove()
