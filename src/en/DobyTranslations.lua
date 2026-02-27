@@ -1,3 +1,5 @@
+-- {"id": 91919124, "ver": "1.0.0", "libVer": "1.0.0", "author": "lev616", "dep": ["Madara>=2.2.0"]}
+
 return Require("Madara")("https://dobytranslations.com", {
     id = 91919124,
     name = "Doby Translations",
