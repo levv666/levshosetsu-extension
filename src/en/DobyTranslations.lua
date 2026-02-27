@@ -86,22 +86,21 @@ local function parseNovel(novelURL, loadChapters)
 
     if loadChapters then
         local chapterItems = content:select("li[data-id]") or {}
-        local chapters = {}
+
+        local temp = {}
 
         for _, v in ipairs(chapterItems) do
             local a = v:selectFirst("a")
             local titleDiv = v:selectFirst(".epl-title")
 
             if a ~= nil and titleDiv ~= nil then
-
-                -- Skip premium chapters
+                -- Skip premium
                 if titleDiv:selectFirst(".mycred-price") == nil then
-
                     local dateDiv = v:selectFirst(".epl-date")
                     local dataId = tonumber(v:attr("data-id")) or 0
 
-                    table.insert(chapters, {
-                        dataId = dataId,
+                    table.insert(temp, {
+                        id = dataId,
                         chapter = NovelChapter {
                             title = titleDiv:text()
                                             :gsub("%s+", " ")
@@ -114,19 +113,18 @@ local function parseNovel(novelURL, loadChapters)
             end
         end
 
-        -- Sort by data-id ascending (reading order)
-        table.sort(chapters, function(a, b)
-            return a.dataId < b.dataId
+        -- Sort by data-id ascending
+        table.sort(temp, function(a, b)
+            return a.id < b.id
         end)
 
-        -- Extract sorted chapters only
-        local sortedChapters = {}
-        for i, item in ipairs(chapters) do
-            item.chapter.order = i
-            table.insert(sortedChapters, item.chapter)
-        end
+        -- Now convert to Shosetsu list
+        local final = AsList(map(temp, function(v, i)
+            v.chapter.order = i
+            return v.chapter
+        end))
 
-        info:setChapters(sortedChapters)
+        info:setChapters(final)
     end
 
     return info
