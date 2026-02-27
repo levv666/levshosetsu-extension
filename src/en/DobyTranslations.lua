@@ -50,7 +50,7 @@ end
 
 local function search(data)
     local function getSearchResult(queryContent)
-        return GETDocument(baseURL .. "/search/?keywords=" .. queryContent)
+        return GETDocument(baseURL .. "?s=" .. queryContent)
     end
 
 
