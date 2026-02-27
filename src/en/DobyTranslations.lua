@@ -70,6 +70,7 @@ end
 
 local function parseNovel(novelURL, loadChapters)
     local doc = GETDocument(expandURL(novelURL))
+    local content = doc:selectFirst("main#primary") or doc  -- ensure content is not nil
 
     -- Basic info
     local titleElement = doc:selectFirst("h1")
@@ -105,7 +106,7 @@ local function parseNovel(novelURL, loadChapters)
             }
         end)) or AsList({})
 
-        Reverse(chapters)  -- optional: ascending order
+        Reverse(chapters)
         info:setChapters(chapters)
     end
 
