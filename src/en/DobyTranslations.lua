@@ -14,29 +14,35 @@ end
 -- LISTING (Homepage)
 -- =========================
 
-local function getListing(data)
-    local page = data[PAGE]
-    local url = baseURL .. "/page/" .. page .. "/"
+local function parseListing(listingURL)
+    local doc = GETDocument(listingURL)
 
-    local document = GETDocument(url)
-    local results = {}
-
-    for _, card in ipairs(document:select("div.excstf > div")) do
+    return map(doc:select("div.excstf > div"), function(card)
 
         local linkElement = card:selectFirst("a.series-link")
         local titleElement = card:selectFirst("h3.epic-title")
         local imageElement = card:selectFirst("div.imgu img")
 
-        if linkElement ~= nil and titleElement ~= nil then
-            table.insert(results, Novel {
-                title = titleElement:text(),
-                link = shrinkURL(linkElement:attr("href")),
-                imageURL = imageElement and imageElement:attr("src") or nil
-            })
+        -- IMPORTANT: Never return nil
+        if linkElement == nil or titleElement == nil then
+            return Novel {
+                title = "Unknown",
+                link = ""
+            }
         end
-    end
 
-    return results
+        return Novel {
+            title = titleElement:text(),
+            link = shrinkURL(linkElement:attr("href")),
+            imageURL = imageElement and imageElement:attr("src") or nil
+        }
+    end)
+end
+
+local function getListing(data)
+    local page = data[PAGE]
+    local url = baseURL .. "/page/" .. page .. "/"
+    return parseListing(url)
 end
 
 local function search(data)
