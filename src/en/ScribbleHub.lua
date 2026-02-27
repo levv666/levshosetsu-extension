@@ -1,4 +1,4 @@
--- {"id":86802,"ver":"1.2.8","libVer":"1.0.0","author":"TechnoJo4, StormX4 (updated by lev616)","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
+-- {"id":86802,"ver":"1.2.9","libVer":"1.0.0","author":"TechnoJo4, StormX4 (updated by lev616)","dep":["url>=1.0.0","CommonCSS>=1.0.0","unhtml>=1.0.0"]}
 
 local baseURL = "https://www.scribblehub.com"
 local qs = Require("url").querystring
@@ -1262,15 +1262,23 @@ return {
 		end
 
 		local text = function(v) return v:text() end
+
+        local genresList = map(doc:select(".wi_fic_genre a"), text)
+        local tagsList = map(doc:select(".wi_fic_showtags a"), text)
+
+        -- Merge tags into genres (because app likely doesn't display tags)
+        for _, tag in ipairs(tagsList) do
+            table.insert(genresList, tag)
+        end
+
         local info = NovelInfo {
-			title = novel:selectFirst(".fic_title"):text(),
-			imageURL = novel:selectFirst(".fic_image img"):attr("src"),
-			description = HTMLToString(wrap:selectFirst(".wi_fic_desc")),
-            genres = map(doc:select(".wi_fic_genre a"), text),
-            tags = map(doc:select(".wi_fic_showtags a"), text),
-			authors = { novel:selectFirst("span[property=name] .auth_name_fic"):text() },
-			status = s
-		}
+            title = novel:selectFirst(".fic_title"):text(),
+            imageURL = novel:selectFirst(".fic_image img"):attr("src"),
+            description = HTMLToString(doc:selectFirst(".wi_fic_desc")),
+            genres = genresList,  -- use merged list
+            authors = { novel:selectFirst("span[property=name] .auth_name_fic"):text() },
+            status = s
+        }
 
 		if loadChapters then
 			local body = RequestBody("action=wi_getreleases_pagination&pagenum=-1&mypostid="..url, MTYPE)
