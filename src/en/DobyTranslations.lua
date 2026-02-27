@@ -21,6 +21,12 @@ return Require("Madara")("https://dobytranslations.com", {
     hasCloudFlare = false,
     isSearchIncrementing = true,
 
+    latest = function(self, data)
+        local page = data[PAGE]
+        local url = self.baseURL .. "/series/?page=" .. page .. "&m_orderby=latest"
+        return self.parse(GETDocument(url))
+    end,
+
     genres = {
         "Antihero Protagonist",
         "Comedy",
