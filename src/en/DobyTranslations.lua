@@ -1,4 +1,4 @@
--- {"id":1244231,"ver":"1.0.0","libVer":"1.0.0","author":"Lev616"}
+-- {"id":1244231,"ver":"1.0.1","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://dobytranslations.com"
 
@@ -36,6 +36,25 @@ local function getListing(data)
         }
     end)
 end
+
+local function search(data)
+    local function getSearchResult(queryContent)
+        return GETDocument(baseURL .. "/search/?keywords=" .. queryContent)
+    end
+
+
+    local queryContent = data[QUERY]
+    local doc = getSearchResult(queryContent)
+
+    return map(doc:select(".UpdateList .clearfix.itemBox"), function(v)
+        return Novel {
+            title = v:selectFirst(".itemTxt .title"):text(),
+            imageURL = v:selectFirst(".itemImg a img"):attr("src"),
+            link = v:selectFirst("a"):attr("href")
+        }
+    end)
+end
+
 
 -- =========================
 -- PARSE NOVEL
@@ -80,6 +99,7 @@ return {
     id = 95561,
     name = "Doby Translations",
     baseURL = baseURL,
+    hasSearch = true,
     listings = {
         Listing("Latest", true, getListing)
     },
@@ -87,5 +107,6 @@ return {
     getPassage = getPassage,
     shrinkURL = shrinkURL,
     expandURL = expandURL,
-    chapterType = ChapterType.HTML
+    chapterType = ChapterType.HTML,
+    search = search
 }

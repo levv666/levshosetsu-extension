@@ -15,13 +15,6 @@
 			"website": ""
 		},
 		{
-			"id": 0,
-			"name": "",
-			"desc": "Worked on Example",
-			"imageURL": "",
-			"website": ""
-		},
-		{
 			"id": -980691669,
 			"name": "Confident-hate",
 			"desc": "Worked on Honeyfeed",
@@ -39,6 +32,13 @@
 			"id": -931466336,
 			"name": "JFronny",
 			"desc": "Worked on XenForo",
+			"imageURL": "",
+			"website": ""
+		},
+		{
+			"id": -2022307394,
+			"name": "Lev616",
+			"desc": "Worked on Doby Translations",
 			"imageURL": "",
 			"website": ""
 		},
@@ -121,17 +121,6 @@
 	],
 	"scripts": [
 		{
-			"id": -1,
-			"name": "Example",
-			"fileName": "DobyTranslations",
-			"imageURL": "https://example.web/asset/logo.png",
-			"lang": "en",
-			"ver": "1.0.0",
-			"libVer": "1.0.0",
-			"md5": "ec524003b4e1d7fbd9c1a056b7f72fa5b66d3aa83b73a84c4c0cac5266129689",
-			"type": "LuaScript"
-		},
-		{
 			"id": 36833,
 			"name": "RoyalRoad",
 			"fileName": "RoyalRoad",
@@ -162,6 +151,17 @@
 			"ver": "1.2.1",
 			"libVer": "1.0.0",
 			"md5": "543321da13759b6cebd3bd7c809ea608a04ee3f0e622e5d599525575ac85fda9",
+			"type": "LuaScript"
+		},
+		{
+			"id": 1244231,
+			"name": "Doby Translations",
+			"fileName": "DobyTranslations",
+			"imageURL": "",
+			"lang": "en",
+			"ver": "1.0.1",
+			"libVer": "1.0.0",
+			"md5": "4de63d4b24704a878654ae51aaaf3664ecaa150cd545afefca30a257b2a1efb8",
 			"type": "LuaScript"
 		}
 	],
