@@ -1,4 +1,4 @@
--- {"id":1244231,"ver":"1.0.3","libVer":"1.0.0","author":"Lev616"}
+-- {"id":1244231,"ver":"1.0.4","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://dobytranslations.com"
 
@@ -87,19 +87,21 @@ local function parseNovel(novelURL, loadChapters)
         local chapters = {}
 
         -- Select all chapter list items
+        local chapters = {}
+
+        -- Select all chapter list items
         local chapterItems = doc:select("li[data-id]")
 
         for i = 0, chapterItems:size() - 1 do
             local li = chapterItems:get(i)
             local a = li:selectFirst("a")
-
-            if a ~= nil then
-                local chapterTitle = li:selectFirst(".epl-title")
-                local chapterDate = li:selectFirst(".epl-date")
+            if a then
+                local chapterTitle = a:selectFirst(".epl-title")
+                local chapterDate = a:selectFirst(".epl-date")
 
                 table.insert(chapters, NovelChapter {
                     order = i + 1,
-                    title = chapterTitle and chapterTitle:text() or a:text(),
+                    title = chapterTitle and chapterTitle:text() or ("Chapter " .. (i + 1)),
                     link = shrinkURL(a:attr("href")),
                     release = chapterDate and chapterDate:text() or nil
                 })
