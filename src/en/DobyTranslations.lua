@@ -83,7 +83,7 @@ local function parseNovel(novelURL, loadChapters)
         title = titleElement and titleElement:text() or "No Title",
         imageURL = imageElement and imageElement:attr("src") or nil,
         description = descriptionElement and descriptionElement:text() or "",
-        genres = genrelist and map(genrelist:select("a[rel=tag]"), text),
+        genres = genrelist and map(genrelist:select("a[rel=tag]"), function(v) return v:text() end) or nil,
         status = NovelStatus.UNKNOWN
     }
 
