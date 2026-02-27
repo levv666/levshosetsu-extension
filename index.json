@@ -48,6 +48,13 @@
 			"desc": "Worked on ScribbleHub",
 			"imageURL": "",
 			"website": ""
+		},
+		{
+			"id": -1106174562,
+			"name": "lev616",
+			"desc": "Worked on Doby Translations",
+			"imageURL": "",
+			"website": ""
 		}
 	],
 	"libraries": [
@@ -144,6 +151,17 @@
 			"ver": "1.2.1",
 			"libVer": "1.0.0",
 			"md5": "543321da13759b6cebd3bd7c809ea608a04ee3f0e622e5d599525575ac85fda9",
+			"type": "LuaScript"
+		},
+		{
+			"id": 8437659,
+			"name": "Doby Translations",
+			"fileName": "DobyTranslations",
+			"imageURL": "https://dobytranslations.com/wp-content/uploads/2024/05/a-adult-male-maltes-white-dog-reading-a-book.jpg",
+			"lang": "en",
+			"ver": "1.0.0",
+			"libVer": "1.0.0",
+			"md5": "ae677eaea20d4a1be4af3613abfe8208b8c70c5a1072cd99d4099953b5ca3d6e",
 			"type": "LuaScript"
 		}
 	],
