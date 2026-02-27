@@ -1,4 +1,4 @@
--- {"id":1244231,"ver":"1.0.4","libVer":"1.0.0","author":"Lev616"}
+-- {"id":1244231,"ver":"1.0.5","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://dobytranslations.com"
 
@@ -86,31 +86,47 @@ local function parseNovel(novelURL, loadChapters)
 
     if loadChapters then
         local chapterItems = content:select("li[data-id]") or {}
-        local chapters = AsList(map(chapterItems, function(v, i)
+        local chapters = {}
+
+        for _, v in ipairs(chapterItems) do
             local a = v:selectFirst("a")
-            if a == nil then return nil end  -- return nil explicitly
-
             local titleDiv = v:selectFirst(".epl-title")
-            if titleDiv == nil then return nil end
 
-            -- Skip premium chapters
-            if titleDiv:selectFirst(".mycred-price") ~= nil then return nil end
+            if a ~= nil and titleDiv ~= nil then
 
-            local dateDiv = v:selectFirst(".epl-date")
+                -- Skip premium chapters
+                if titleDiv:selectFirst(".mycred-price") == nil then
 
-            return NovelChapter {
-                order = i + 1,
-                title = titleDiv:text():gsub("%s+", " "):gsub("^%s*(.-)%s*$", "%1"),
-                link = shrinkURL(a:attr("href")),
-                release = dateDiv and dateDiv:text() or nil
-            }
-        end))
+                    local dateDiv = v:selectFirst(".epl-date")
+                    local dataId = tonumber(v:attr("data-id")) or 0
 
-        -- Filter out nils
-        local cleanChapters = AsList(filter(chapters, function(ch) return ch ~= nil end))
+                    table.insert(chapters, {
+                        dataId = dataId,
+                        chapter = NovelChapter {
+                            title = titleDiv:text()
+                                            :gsub("%s+", " ")
+                                            :gsub("^%s*(.-)%s*$", "%1"),
+                            link = shrinkURL(a:attr("href")),
+                            release = dateDiv and dateDiv:text() or nil
+                        }
+                    })
+                end
+            end
+        end
 
-        Reverse(cleanChapters)
-        info:setChapters(cleanChapters)
+        -- Sort by data-id ascending (reading order)
+        table.sort(chapters, function(a, b)
+            return a.dataId < b.dataId
+        end)
+
+        -- Extract sorted chapters only
+        local sortedChapters = {}
+        for i, item in ipairs(chapters) do
+            item.chapter.order = i
+            table.insert(sortedChapters, item.chapter)
+        end
+
+        info:setChapters(sortedChapters)
     end
 
     return info
