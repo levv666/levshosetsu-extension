@@ -159,9 +159,9 @@
 			"fileName": "DobyTranslations",
 			"imageURL": "",
 			"lang": "en",
-			"ver": "1.0.1",
+			"ver": "1.0.2",
 			"libVer": "1.0.0",
-			"md5": "8c5457649bfdb48d3a31db5110a0680961a0b721e5fc6d0a80b9bc836c5e861a",
+			"md5": "fa9bd5474bb584c61deaafe462184960d98ac3631fe0007de76025b1e5d4df87",
 			"type": "LuaScript"
 		}
 	],

@@ -1,4 +1,4 @@
--- {"id":1244231,"ver":"1.0.1","libVer":"1.0.0","author":"Lev616"}
+-- {"id":1244231,"ver":"1.0.2","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://dobytranslations.com"
 
@@ -68,26 +68,48 @@ end
 -- PARSE NOVEL
 -- =========================
 
-local function parseNovel(novelURL)
-    local url = expandURL(novelURL)
-    local document = GETDocument(url)
+local function parseNovel(novelURL, loadChapters)
+    local doc = GETDocument(expandURL(novelURL))
 
-    local title = document:selectFirst("h1"):text()
+    -- Basic info
+    local titleElement = doc:selectFirst("h1")
+    local imageElement = doc:selectFirst(".thumb img")
+    local descriptionElement = doc:selectFirst(".entry-content")
 
-    local content = document:selectFirst("article")
-
-    return NovelInfo {
-        title = title,
-        description = "",
-        imageURL = "",
-        chapters = {
-            NovelChapter {
-                title = title,
-                link = novelURL,
-                order = 1
-            }
-        }
+    local info = NovelInfo {
+        title = titleElement and titleElement:text() or "No Title",
+        imageURL = imageElement and imageElement:attr("src") or nil,
+        description = descriptionElement and descriptionElement:text() or "",
+        status = NovelStatus.UNKNOWN
     }
+
+    if loadChapters then
+        local chapters = {}
+
+        -- Select all chapter list items
+        local chapterItems = doc:select("li[data-id]")
+
+        for i = 0, chapterItems:size() - 1 do
+            local li = chapterItems:get(i)
+            local a = li:selectFirst("a")
+
+            if a ~= nil then
+                local chapterTitle = li:selectFirst(".epl-title")
+                local chapterDate = li:selectFirst(".epl-date")
+
+                table.insert(chapters, NovelChapter {
+                    order = i + 1,
+                    title = chapterTitle and chapterTitle:text() or a:text(),
+                    link = shrinkURL(a:attr("href")),
+                    release = chapterDate and chapterDate:text() or nil
+                })
+            end
+        end
+
+        info:setChapters(AsList(chapters))
+    end
+
+    return info
 end
 
 -- =========================
