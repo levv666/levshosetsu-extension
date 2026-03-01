@@ -37,7 +37,14 @@ local defaults = {
 	customStyle = "",
 }
 
-local ORDER_BY_FILTER_EXT = { "Relevance", "Latest", "A-Z", "Rating", "Trending", "Most Views", "New" }
+local ORDER_BY_FILTER_EXT = { "Relevance",
+							  "Latest",
+							  "A-Z",
+							  "Rating",
+							  "Trending",
+							  "Most Views",
+							  "New" }
+
 local ORDER_BY_FILTER_KEY = 2
 local AUTHOR_FILTER_KEY = 3
 local ARTIST_FILTER_KEY = 4
