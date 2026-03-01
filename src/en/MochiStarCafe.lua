@@ -1,4 +1,4 @@
--- {"id":134652,"ver":"1.0.6","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134652,"ver":"1.0.7","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://mochistar.org"
 local DobyTranslationsLogo = "https://mochistar.org/wp-content/uploads/2026/02/stardust_mochi_129x129.png"
@@ -146,8 +146,8 @@ end
 
 local function getPassage(chapterURL)
     local htmlElement = GETDocument(expandURL(chapterURL))
-    local title = htmlElement:selectFirst("h1.entry-title"):text()
-    htmlElement = htmlElement:selectFirst("div.epcontent.entry-content")
+    local title = htmlElement:selectFirst("h1.chapter__title"):text()
+    htmlElement = htmlElement:selectFirst("div.chapter-formatting")
     htmlElement:select("#wrap-button-remove-blur"):remove()
     htmlElement:selectFirst("div.code-block"):remove()
     htmlElement:child(0):before("<h1>" .. title .. "</h1>");
