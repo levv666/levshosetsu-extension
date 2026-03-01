@@ -170,9 +170,9 @@
 			"fileName": "LovelyBlossoms",
 			"imageURL": "https://lovelyblossoms.com/wp-content/uploads/2025/09/lovely-blossoms-2-Photoroom-1.png",
 			"lang": "en",
-			"ver": "1.0.8",
+			"ver": "1.0.0",
 			"libVer": "1.0.0",
-			"md5": "7428cb07e8c56f0d0f3a0b3f8ffbcc87c56293eb5a50d80fe83e6515b0e39aed",
+			"md5": "50b73a18e4bfdac1d5a9219521f4d81b4fe2771a07110446ef4f9d15dc9bdb8a",
 			"type": "LuaScript"
 		}
 	],
