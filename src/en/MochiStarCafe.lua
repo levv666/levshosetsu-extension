@@ -158,7 +158,7 @@ local function getPassage(chapterURL)
     --        end
     --    end
     htmlElement:child(0):before("<h1>" .. title .. "</h1>");
-    return HTMLToString(pageOfElem(htmlElement, true))
+    return pageOfElem(htmlElement, true)
 end
 
 return {
