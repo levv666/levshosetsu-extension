@@ -99,7 +99,7 @@ function defaults:createSearchString(tbl)
 	end
 
 	if self.searchHasOper then
-		url = url .. "&op=" .. (tbl[self.searchOperId] and "0" or "1")
+		url = url .. "&op=" .. (tbl[self.searchOperId] and "" or "1")
 	end
 
 	return self.appendToSearchURL(url, tbl)
