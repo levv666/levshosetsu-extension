@@ -161,6 +161,17 @@
 			"type": "LuaScript"
 		},
 		{
+			"id": 134652,
+			"name": "Doby Translations",
+			"fileName": "MochiStarCafe",
+			"imageURL": "https://mochistar.org/wp-content/uploads/2026/02/stardust_mochi_129x129.png",
+			"lang": "en",
+			"ver": "1.0.9",
+			"libVer": "1.0.0",
+			"md5": "326029ca402bf3a7aae3ea67abd3b01cf0a443457ce5b362ce39729fb3ee6560",
+			"type": "LuaScript"
+		},
+		{
 			"id": 1244231,
 			"name": "Doby Translations",
 			"fileName": "DobyTranslations",
