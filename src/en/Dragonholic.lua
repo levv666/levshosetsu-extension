@@ -1,4 +1,4 @@
--- {"id":1567186593,"ver":"1.0.5","libVer":"1.0.0","author":"","repo":"","dep":[]}
+-- {"id":1567186593,"ver":"1.0.6","libVer":"1.0.0","author":"","repo":"","dep":[]}
 local dkjson = Require("dkjson")
 --- Identification number of the extension.
 --- Should be unique. Should be consistent in all references.
@@ -131,9 +131,9 @@ local function parseNovel(novelURL)
     })
 end
 
-local function getListing(data)
+local function parseListing(listingURL)
     local page = data[PAGE]
-    local document = GETDocument(expandURL("/browse/page/" .. page .. "/?sort=new&order=desc"))
+    local document = GETDocument(listingURL)
     return map(document:select("#series-list-container > div > a"), function(v)
         local img = v:selectFirst("img")
         img = img and img:attr("src") or imageURL
@@ -143,6 +143,12 @@ local function getListing(data)
             imageURL = img
         }
     end)
+end
+
+local function getListing(data)
+    local page = data[PAGE]
+    local url = baseURL .. "/page/" .. page .. "/"
+    return parseListing(url)
 end
 
 local function search(data)
