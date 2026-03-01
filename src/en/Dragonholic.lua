@@ -1,13 +1,12 @@
--- {"id":8456567,"ver":"1.0.9","libVer":"1.0.0","author":"","repo":"","dep":[]}
+-- {"id":1567186593,"ver":"1.0.3","libVer":"1.0.0","author":"","repo":"","dep":[]}
 local dkjson = Require("dkjson")
 --- Identification number of the extension.
 --- Should be unique. Should be consistent in all references.
 ---
 --- Required.
---- Required.
 ---
 --- @type int
-local id = 8456567
+local id = 1567186593
 
 --- Name of extension to display to the user.
 --- Should match index.
@@ -29,7 +28,7 @@ local baseURL = "https://dragonholictranslations.com/"
 --- Optional, Default is empty.
 ---
 --- @type string
-local iconurl = "https://dragonholic.com/wp-content/uploads/2024/09/cropped-favicon-32x32.png"
+local imageURL = "https://dragonholic.com/wp-content/uploads/2024/09/cropped-favicon-32x32.png"
 --- ChapterType provided by the extension.
 ---
 --- Optional, Default is STRING. But please do HTML.
@@ -53,16 +52,6 @@ local startIndex = 0
 --- @return string Shrunk URL.
 local function shrinkURL(url, _)
     return url:gsub(".-dragonholictranslations.com/", "")
-end
-
-local function htmlDecode(str)
-    if not str then return nil end
-    str = str:gsub("&amp;", "&")
-    str = str:gsub("&lt;", "<")
-    str = str:gsub("&gt;", ">")
-    str = str:gsub("&quot;", '"')
-    str = str:gsub("&#39;", "'")
-    return str
 end
 
 --- Expand a given URL.
@@ -145,15 +134,14 @@ end
 local function getListing(data)
     local page = data[PAGE]
     local document = GETDocument(expandURL("/browse/page/" .. page .. "/?sort=new&order=desc"))
-
-    return mapNotNil(document:select("#series-list-container > div > a"), function(v)
-        local imgElem = v:selectFirst("img")
-        local imgURL = imgElem and htmlDecode(imgElem:attr("src")) -- decode HTML entities
-
+    return map(document:select("#series-list-container > div > a"), function(v)
+        local img = document:selectFirst("#series-list-container > div > a:nth-child(1) > div > div.aspect-2\\/3.relative.w-32.shrink-0 > img")
+        img = img and img:attr("src") or imageURL
+        img = img or imageURL
         return Novel {
             title = v:selectFirst("h3"):text(),
             link = shrinkURL(v:attr("href")),
-            imageURL = imgURL -- use the actual cover
+            imageURL = img
         }
     end)
 end
@@ -192,7 +180,7 @@ return {
     hasSearch = true,
     isSearchIncrementing = true,
     search = search,
-    imageURL = iconurl,
+    imageURL = imageURL,
     chapterType = chapterType,
     startIndex = startIndex,
 }

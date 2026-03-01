@@ -183,14 +183,14 @@
 			"type": "LuaScript"
 		},
 		{
-			"id": 8456567,
+			"id": 1567186593,
 			"name": "Dragonholic",
 			"fileName": "Dragonholic",
 			"imageURL": "https://dragonholic.com/wp-content/uploads/2024/09/cropped-favicon-32x32.png",
 			"lang": "en",
-			"ver": "1.0.9",
+			"ver": "1.0.3",
 			"libVer": "1.0.0",
-			"md5": "c58ecf5411188403ef55deb3dacb175909a967cc0b0b85c269f950c87ffba37c",
+			"md5": "bab42a3f9aad0307265b4cb154f4aa6f9e657b47850d46e89d4e0bfe418faece",
 			"type": "LuaScript"
 		}
 	],
