@@ -1,10 +1,10 @@
--- {"id":1742321,"ver":"1.0.6","libVer":"1.0.0","author":"Lev616","dep":["Madara>=2.2.0"]}
+-- {"id":1742321,"ver":"1.0.7","libVer":"1.0.0","author":"Lev616","dep":["Madara>=2.2.0"]}
 
-
-return Require("Madara")("https://lovelyblossoms.com", {
+local madara = Require("Madara")("https://lovelyblossoms.com", {
     id = 1742321,
     name = "Lovely Blossoms",
     imageURL = "https://lovelyblossoms.com/wp-content/uploads/2025/09/lovely-blossoms-2-Photoroom-1.png",
+
     chaptersScriptLoaded = true,
     novelPageTitleSel = "div.post-title > h1",
 
@@ -12,7 +12,7 @@ return Require("Madara")("https://lovelyblossoms.com", {
     novelListingURLPath = "novel",
     shrinkURLNovel = "novel",
     searchHasOper = true,
-    chaptersListSelector= "li.wp-manga-chapter.free-chap",
+    chaptersListSelector = "li.wp-manga-chapter.free-chap",
 
     genres = {
         "Action",
@@ -46,11 +46,11 @@ return Require("Madara")("https://lovelyblossoms.com", {
         "Yaoi",
         "Yuri",
     },
-
-    listings = {
-        Listing("Novels", true, function(data)
-            return search(data)
-        end)
-    },
 })
 
+-- 🔥 Force the main listing tab to use search() instead of latest()
+madara.listings = {
+    Listing("Novels", true, madara.search)
+}
+
+return madara
