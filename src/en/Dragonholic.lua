@@ -135,7 +135,7 @@ local function getListing(data)
     local page = data[PAGE]
     local document = GETDocument(expandURL("/browse/page/" .. page .. "/?sort=new&order=desc"))
     return map(document:select("#series-list-container > div > a"), function(v)
-        local img = document:selectFirst("#series-list-container > div > a:nth-child(1) > div > div.aspect-2\\/3.relative.w-32.shrink-0 > img")
+        local img = v:selectFirst("div > div.aspect-2\\/3.relative.w-32.shrink-0 > img")
         img = img and img:attr("src") or imageURL
         img = img or imageURL
         return Novel {
