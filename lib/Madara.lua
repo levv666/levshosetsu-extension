@@ -37,14 +37,7 @@ local defaults = {
 	customStyle = "",
 }
 
-local ORDER_BY_FILTER_EXT = { "Relevance",
-							  "Latest",
-							  "A-Z",
-							  "Rating",
-							  "Trending",
-							  "Most Views",
-							  "New" }
-
+local ORDER_BY_FILTER_EXT = { "Relevance", "Latest", "A-Z", "Rating", "Trending", "Most Views", "New" }
 local ORDER_BY_FILTER_KEY = 2
 local AUTHOR_FILTER_KEY = 3
 local ARTIST_FILTER_KEY = 4
@@ -97,11 +90,9 @@ function defaults:createSearchString(tbl)
 	if tbl[STATUS_FILTER_KEY_ON_HOLD] then
 		url = url .. "&status[]=on-hold"
 	end
-	-- Iterate through your saved map
-	for keyID, slug in pairs(self.genres_map) do
-		-- Check if this specific ID was toggled in the UI table
-		if tbl[tonumber(keyID)] then
-			url = url .. "&genre[]=" .. slug
+	for key, value in pairs(self.genres_map) do
+		if tbl[key] then
+			url = url .. "&genre[]=" .. value
 		end
 	end
 
@@ -221,14 +212,14 @@ function defaults:parseNovel(url, loadChapters)
 		title = titleElement:text(),
 		imageURL = imgUrl,
 		status = ({
-					OnGoing = NovelStatus.PUBLISHING,
-					Completed = NovelStatus.COMPLETED,
-					Canceled = NovelStatus.PAUSED,
-					["On Hold"] = NovelStatus.PAUSED,
-					Ongoing = NovelStatus.PUBLISHING -- Never spotted, but better safe than sorry.
-				-- If there is a 'Release' content item then it comes before the 'Status'.
-				-- Therefore, select last content item.
-				})[selectedContent:get(selectedContent:size()-1):select("div.summary-content"):text()]
+			OnGoing = NovelStatus.PUBLISHING,
+			Completed = NovelStatus.COMPLETED,
+			Canceled = NovelStatus.PAUSED,
+			["On Hold"] = NovelStatus.PAUSED,
+			Ongoing = NovelStatus.PUBLISHING -- Never spotted, but better safe than sorry.
+			-- If there is a 'Release' content item then it comes before the 'Status'.
+			-- Therefore, select last content item.
+		})[selectedContent:get(selectedContent:size()-1):select("div.summary-content"):text()]
 	}
 	-- Not every Novel has an guaranteed author, artist or genres (looking at you NovelTrench).
 	selectedContent = content:selectFirst("div.author-content")
@@ -344,19 +335,11 @@ return function(baseURL, _self)
 			CheckboxFilter(STATUS_FILTER_KEY_CANCELED, "Canceled"),
 			CheckboxFilter(STATUS_FILTER_KEY_ON_HOLD, "On Hold")
 		}),
-		FilterGroup("Genres", map(_self.genres, function(v)
-			-- Increment the ID
+		FilterGroup("Genres", map(_self.genres, function(v, k)
 			keyID = keyID + 1
-
-			-- 2. Create the slug (e.g., "Action" -> "action")
-			local slug = v:lower():gsub(" ", "-")
-
-			-- 3. Store the slug in the map using the ID as the key
-			self.genres_map[keyID] = slug
-
-			-- 4. Return the checkbox with the ID as the primary value
+			_self.genres_map[keyID] = k or v:lower():gsub(" ", "-")
 			return CheckboxFilter(keyID, v)
-		end))
+		end)) -- 6
 	}
 
 	if _self.searchHasOper then

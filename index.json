@@ -74,7 +74,7 @@
 			"name": "Madara",
 			"ver": "2.9.2",
 			"url": null,
-			"hash": "f9a15f8f074a2abdbb993b186c4a1b0c238c1ffc7ff07e93980a6e59d1d36330"
+			"hash": "820b538501c7c7baeca3c02716a2af427507923230b9aec8cbaee4dc3147c6dd"
 		},
 		{
 			"name": "WWVolare",
@@ -170,9 +170,9 @@
 			"fileName": "LovelyBlossoms",
 			"imageURL": "https://lovelyblossoms.com/wp-content/uploads/2025/09/lovely-blossoms-2-Photoroom-1.png",
 			"lang": "en",
-			"ver": "1.0.2",
+			"ver": "1.0.4",
 			"libVer": "1.0.0",
-			"md5": "f50d4c1da9d0ae07e9b2441fe289de0ac53b42406c83ef685bba7163af5517f7",
+			"md5": "30fe0ec94575318b9a9ac879305cdb878640cb90d975cd6b1b1ac489d85e29b9",
 			"type": "LuaScript"
 		}
 	],
