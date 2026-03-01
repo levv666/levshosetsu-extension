@@ -197,11 +197,11 @@
 			"id": 1567186593,
 			"name": "Dragonholic",
 			"fileName": "Dragonholic",
-			"imageURL": "https://dragonholic.com/wp-content/uploads/2024/09/cropped-favicon-32x32.png",
+			"imageURL": "https://cdn.discordapp.com/icons/1259711953690165360/a_462f6d95cbd29f232d078bf136e73720.webp",
 			"lang": "en",
 			"ver": "1.0.1",
 			"libVer": "1.0.0",
-			"md5": "13599b92ae2fb58619e69cb37c06e4e6e4a4faae1ee36bc5b09340b4f81dc6d6",
+			"md5": "bfd23ee76a607f2ed7f843f031bfb6e1572fdbc8bd3e85e3e71eb7524378fa9c",
 			"type": "LuaScript"
 		}
 	],

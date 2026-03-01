@@ -28,7 +28,7 @@ local baseURL = "https://dragonholictranslations.com/"
 --- Optional, Default is empty.
 ---
 --- @type string
-local imageURL = "https://dragonholic.com/wp-content/uploads/2024/09/cropped-favicon-32x32.png"
+local imageURL = "https://cdn.discordapp.com/icons/1259711953690165360/a_462f6d95cbd29f232d078bf136e73720.webp"
 --- ChapterType provided by the extension.
 ---
 --- Optional, Default is STRING. But please do HTML.
