@@ -1,4 +1,4 @@
--- {"id":134652,"ver":"1.0.5","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134652,"ver":"1.0.6","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://mochistar.org"
 local DobyTranslationsLogo = "https://mochistar.org/wp-content/uploads/2026/02/stardust_mochi_129x129.png"
@@ -45,9 +45,7 @@ local function search(data)
     local query = data[QUERY] or ""
     local page  = data[PAGE] or 1
 
-    local url = page == 1
-            and (baseURL .. "?s=" .. query)
-            or  (baseURL .. "/page/" .. page .. "/?s=" .. query .. "&post_type=fcn_story")
+    local url = baseURL .. "/page/" .. page .. "/?s=" .. query .. "&post_type=fcn_story"
 
     local doc = GETDocument(url)
     return mapNotNil(doc:select("#search-result-list li.card"), function(card)
