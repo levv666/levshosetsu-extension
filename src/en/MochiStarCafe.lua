@@ -1,4 +1,4 @@
--- {"id":134652,"ver":"1.0.1","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134652,"ver":"1.0.2","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://mochistar.org"
 local DobyTranslationsLogo = "https://mochistar.org/wp-content/uploads/2026/02/stardust_mochi_129x129.png"
@@ -96,7 +96,7 @@ local function parseNovel(novelURL, loadChapters)
 
         local temp = map(chapterItems, function(v)
             local a = v:selectFirst("a")
-            local titleDiv = v:selectFirst(".epl-title")
+            local titleDiv = v:selectFirst("a")
 
             if a == nil or titleDiv == nil then
                 return nil
