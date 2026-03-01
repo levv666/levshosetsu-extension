@@ -1,6 +1,4 @@
--- {"id":1742321,"ver":"1.0.2","libVer":"1.0.0","author":"Lev616","dep":["Madara>=2.2.0"]}
-
-
+-- {"id":1742321,"ver":"1.0.3","libVer":"1.0.0","author":"Lev616","dep":["Madara>=2.2.0"]}
 
 
 return Require("Madara")("https://lovelyblossoms.com", {
@@ -17,36 +15,36 @@ return Require("Madara")("https://lovelyblossoms.com", {
     chaptersListSelector= "li.wp-manga-chapter.free-chap",
 
     genres = {
-        "Action",
-        "Adult",
-        "Adventure",
-        "Comedy",
-        "Drama",
-        "Ecchi",
-        "Fantasy",
-        "Fighting",
-        "Fun",
-        "Games",
-        "Harem",
-        "Historical",
-        "Horror",
-        ["lgbt"] = "LGBT+",
+        action = "Action",
+        adult = "Adult",
+        adventure = "Adventure",
+        comedy = "Comedy",
+        drama = "Drama",
+        ecchi = "Ecchi",
+        fantasy = "Fantasy",
+        fighting = "Fighting",
+        fun = "Fun",
+        games = "Games",
+        harem = "Harem",
+        historical = "Historical",
+        horror = "Horror",
+        lgbt = "LGBT+",
         ["martial-arts"] = "Martial Arts",
-        "Mystery",
-        "Psychological",
-        "Realistic",
-        "Reincarnation",
-        "Romance",
+        mystery = "Mystery",
+        psychological = "Psychological",
+        realistic = "Realistic",
+        reincarnation = "Reincarnation",
+        romance = "Romance",
         ["school-life"] = "School Life",
-        ["sci-fi"] = "Sci-fi",
-        ["shouju-ai"] = "Shoujo Ai",
-        "Smut",
-        "Sports",
-        "Supernatural",
-        "Tragedy",
-        "Urban",
-        "Yaoi",
-        "Yuri",
+        ["sci-fi"] = "Sci-Fi",
+        ["shoujo-ai"] = "Shoujo Ai",
+        smut = "Smut",
+        sports = "Sports",
+        supernatural = "Supernatural",
+        tragedy = "Tragedy",
+        urban = "Urban",
+        yaoi = "Yaoi",
+        yuri = "Yuri",
     }
 })
 
