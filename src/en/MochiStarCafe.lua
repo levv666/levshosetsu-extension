@@ -151,12 +151,12 @@ local function getPassage(chapterURL)
     htmlElement:select("#wrap-button-remove-blur"):remove()
     -- htmlElement:selectFirst("div.code-block"):remove() (for ads)
     -- Remove empty paragraphs
-    --    for _, p in ipairs(htmlElement:select("p")) do
-    --        local text = p:text():gsub("%s+", "")
-    --        if text == "" then
-    --            p:remove()
-    --        end
-    --    end
+        for _, p in ipairs(htmlElement:select("p")) do
+            local text = p:text():gsub("%s+", "")
+            if text == "" then
+                p:remove()
+            end
+        end
     htmlElement:child(0):before("<h1>" .. title .. "</h1>");
     return pageOfElem(htmlElement, true)
 end
