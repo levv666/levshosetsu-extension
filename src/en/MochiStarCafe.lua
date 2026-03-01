@@ -1,6 +1,6 @@
 -- {"id":134652,"ver":"1.0.9","libVer":"1.0.0","author":"Lev616"}
 
-local baseURL = "https://mochistar.org.com"
+local baseURL = "https://mochistar.org"
 local DobyTranslationsLogo = "https://mochistar.org/wp-content/uploads/2026/02/stardust_mochi_129x129.png"
 local HTMLToString = Require("unhtml").HTMLToString
 
@@ -156,7 +156,7 @@ end
 
 return {
     id = 134652,
-    name = "Doby Translations",
+    name = "MochiStar Cafe",
     imageURL = DobyTranslationsLogo,
     baseURL = baseURL,
     hasSearch = true,
