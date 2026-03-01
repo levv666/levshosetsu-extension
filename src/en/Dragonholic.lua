@@ -1,4 +1,4 @@
--- {"id":1567186593,"ver":"1.0.7","libVer":"1.0.0","author":"","repo":"","dep":[]}
+-- {"id":1567186593,"ver":"1.0.8","libVer":"1.0.0","author":"","repo":"","dep":[]}
 local dkjson = Require("dkjson")
 --- Identification number of the extension.
 --- Should be unique. Should be consistent in all references.
@@ -146,7 +146,7 @@ end
 
 local function getListing(data)
     local page = data[PAGE]
-    local url = baseURL .. "/page/" .. page .. "/"
+    local url = expandURL("/browse/page/" .. page .. "/?sort=new&order=desc")
     return parseListing(url)
 end
 
