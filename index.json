@@ -74,7 +74,7 @@
 			"name": "Madara",
 			"ver": "2.9.2",
 			"url": null,
-			"hash": "0beb4bde2e9491ad2bbdfe1a3399bb45b70864aefbc1d1b24d4ff0caff217450"
+			"hash": "820b538501c7c7baeca3c02716a2af427507923230b9aec8cbaee4dc3147c6dd"
 		},
 		{
 			"name": "WWVolare",
@@ -172,7 +172,7 @@
 			"lang": "en",
 			"ver": "1.0.4",
 			"libVer": "1.0.0",
-			"md5": "7f45648bba59e348eb095b87bca74935175e94bc46f5146567ad1e8a6e69a066",
+			"md5": "30fe0ec94575318b9a9ac879305cdb878640cb90d975cd6b1b1ac489d85e29b9",
 			"type": "LuaScript"
 		}
 	],

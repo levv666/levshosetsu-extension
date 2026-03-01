@@ -90,16 +90,14 @@ function defaults:createSearchString(tbl)
 	if tbl[STATUS_FILTER_KEY_ON_HOLD] then
 		url = url .. "&status[]=on-hold"
 	end
-	local genreIndex = 0
 	for key, value in pairs(self.genres_map) do
 		if tbl[key] then
-			url = url .. "&genre[" .. genreIndex .. "]=" .. value
-			genreIndex = genreIndex + 1
+			url = url .. "&genre[]=" .. value
 		end
 	end
 
 	if self.searchHasOper then
-		url = url .. "&op=" .. (tbl[self.searchOperId] and "" or "1")
+		url = url .. "&op=" .. (tbl[self.searchOperId] and "0" or "1")
 	end
 
 	return self.appendToSearchURL(url, tbl)
@@ -339,7 +337,7 @@ return function(baseURL, _self)
 		}),
 		FilterGroup("Genres", map(_self.genres, function(v, k)
 			keyID = keyID + 1
-			_self.genres_map[keyID] = v:lower():gsub(" ", "-")
+			_self.genres_map[keyID] = k or v:lower():gsub(" ", "-")
 			return CheckboxFilter(keyID, v)
 		end)) -- 6
 	}
