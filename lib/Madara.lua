@@ -337,7 +337,7 @@ return function(baseURL, _self)
 		}),
 		FilterGroup("Genres", map(_self.genres, function(v, k)
 			keyID = keyID + 1
-			_self.genres_map[keyID] = k or v:lower():gsub(" ", "-")
+			_self.genres_map[keyID] = v:lower():gsub(" ", "-")
 			return CheckboxFilter(keyID, v)
 		end)) -- 6
 	}
