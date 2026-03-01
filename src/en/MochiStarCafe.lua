@@ -1,4 +1,4 @@
--- {"id":134652,"ver":"1.0.4","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134652,"ver":"1.0.5","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://mochistar.org"
 local DobyTranslationsLogo = "https://mochistar.org/wp-content/uploads/2026/02/stardust_mochi_129x129.png"
@@ -149,13 +149,27 @@ local function getPassage(chapterURL)
     local title = htmlElement:selectFirst("h1.chapter__title"):text()
     htmlElement = htmlElement:selectFirst("div.chapter-formatting")
     htmlElement:select("#wrap-button-remove-blur"):remove()
-    -- htmlElement:selectFirst("div.code-block"):remove() (for ads)
-    for _, p in ipairs(htmlElement:select("p")) do
-        local text = p:text():gsub("%s", ""):gsub("　", "")  -- remove spaces and full-width spaces
-        if text == "" then
-            p:remove()
+    -- Collect empty <p> tags for removal
+    local toRemove = {}
+    htmlElement:traverse(NodeVisitor(function(v)
+        if v:tagName() == "p" then
+            -- Get text without normal or full-width spaces
+            local text = v:text():gsub("%s", ""):gsub("　", "")
+            if text == "" and v:childrenSize() == 0 then
+                toRemove[#toRemove + 1] = v
+            end
         end
+        -- Optional: remove border attribute if present
+        if v:hasAttr("border") then
+            v:removeAttr("border")
+        end
+    end, nil, true))
+
+    -- Remove all collected nodes
+    for _, v in pairs(toRemove) do
+        v:remove()
     end
+
     htmlElement:child(0):before("<h1>" .. title .. "</h1>");
     return pageOfElem(htmlElement, true)
 end
