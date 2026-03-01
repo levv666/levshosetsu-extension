@@ -1,4 +1,4 @@
--- {"id":134652,"ver":"1.0.2","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134652,"ver":"1.0.3","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://mochistar.org"
 local DobyTranslationsLogo = "https://mochistar.org/wp-content/uploads/2026/02/stardust_mochi_129x129.png"
@@ -102,21 +102,14 @@ local function parseNovel(novelURL, loadChapters)
                 return nil
             end
 
-            -- Skip premium chapters
-            if titleDiv:selectFirst(".mycred-price") ~= nil then
-                return nil
-            end
-
-            local dateDiv = v:selectFirst(".epl-date")
-            local dataId = tonumber(v:attr("data-id")) or 0
-
             return {
                 id = dataId,
                 title = titleDiv:text()
                                 :gsub("%s+", " ")
                                 :gsub("^%s*(.-)%s*$", "%1"),
                 link = shrinkURL(a:attr("href")),
-                release = dateDiv and dateDiv:text() or nil
+                release = dateDiv and dateDiv:text() or nil,
+                order = tonumber(title:match("Chapter%s+(%d+)")) or 0
             }
         end)
 
@@ -129,9 +122,9 @@ local function parseNovel(novelURL, loadChapters)
         end)
 
         -- Convert to Shosetsu List
-        local chapters = AsList(map(temp, function(v, i)
+        local chapters = AsList(map(temp, function(v)
             return NovelChapter {
-                order = i,
+                order = v.order,
                 title = v.title,
                 link = v.link,
                 release = v.release
