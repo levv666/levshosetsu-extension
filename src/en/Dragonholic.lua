@@ -1,4 +1,4 @@
--- {"id":1567186593,"ver":"1.0.8","libVer":"1.0.0","author":"","repo":"","dep":[]}
+-- {"id":1567186593,"ver":"1.0.1","libVer":"1.0.0","author":"","repo":"","dep":[]}
 local dkjson = Require("dkjson")
 --- Identification number of the extension.
 --- Should be unique. Should be consistent in all references.
@@ -41,7 +41,7 @@ local chapterType = ChapterType.HTML
 --- Optional, Default is 1.
 ---
 --- @type number
-local startIndex = 0
+local startIndex = 1
 
 --- Shrink the website url down. This is for space saving purposes.
 ---
