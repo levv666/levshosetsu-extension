@@ -1,4 +1,4 @@
--- {"id":8456567,"ver":"1.0.8","libVer":"1.0.0","author":"","repo":"","dep":[]}
+-- {"id":8456567,"ver":"1.0.9","libVer":"1.0.0","author":"","repo":"","dep":[]}
 local dkjson = Require("dkjson")
 --- Identification number of the extension.
 --- Should be unique. Should be consistent in all references.
@@ -119,8 +119,8 @@ local function parseNovel(novelURL)
     end)
     local title = document:selectFirst("h1")
     title = title and title:text():gsub("\n" ,"") or "Failed to obtain title"
-    local img = document:selectFirst(".summary_image img")
-    img = img and img:attr("data-src") or imageURL
+    local img = document:selectFirst("#main > section.bg-gradient-to-b.from-primary\\/5.to-background.dark\\:from-primary\\/10.dark\\:to-background.py-12 img")
+    img = img and img:attr("src") or imageURL
     local ch_list = document:selectFirst("#chapter-list-container")
     local series_id = ch_list:attr("x-data"):match("seriesId:%s+(%d+)")
     local chapters_doc = dkjson.GET(expandURL("/api/chapters?series_id=" .. series_id .. "&sort_order=asc&per_page=1000000000"))
