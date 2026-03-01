@@ -28,7 +28,7 @@ local baseURL = "https://dragonholictranslations.com/"
 --- Optional, Default is empty.
 ---
 --- @type string
-local imageURL = "https://dragonholic.com/wp-content/uploads/2024/09/cropped-favicon-32x32.png"
+local iconurl = "https://dragonholic.com/wp-content/uploads/2024/09/cropped-favicon-32x32.png"
 --- ChapterType provided by the extension.
 ---
 --- Optional, Default is STRING. But please do HTML.
@@ -178,7 +178,7 @@ return {
     hasSearch = true,
     isSearchIncrementing = true,
     search = search,
-    imageURL = imageURL,
+    imageURL = iconurl,
     chapterType = chapterType,
     startIndex = startIndex,
 }
