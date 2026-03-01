@@ -135,7 +135,7 @@ local function getListing(data)
     local page = data[PAGE]
     local document = GETDocument(expandURL("/browse/page/" .. page .. "/?sort=new&order=desc"))
     return mapNotNil(document:select("#series-list-container > div > a"), function(v)
-        local img = v:selectFirst("div.aspect-2/3 img")
+        local img = v:selectFirst("div.relative img")
         return Novel {
             title = v:selectFirst("h3"):text(),
             link = shrinkURL(v:attr("href")),
