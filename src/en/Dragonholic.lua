@@ -132,7 +132,6 @@ local function parseNovel(novelURL)
 end
 
 local function parseListing(listingURL)
-    local page = data[PAGE]
     local document = GETDocument(listingURL)
     return map(document:select("#series-list-container > div > a"), function(v)
         local img = v:selectFirst("img")
