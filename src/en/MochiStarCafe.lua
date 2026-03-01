@@ -151,7 +151,7 @@ local function getPassage(chapterURL)
     htmlElement:select("#wrap-button-remove-blur"):remove()
     --- htmlElement:selectFirst("div.code-block"):remove() (for ads)
     htmlElement:child(0):before("<h1>" .. title .. "</h1>");
-    return pageOfElem(htmlElement, true)
+    return HTMLToString(pageOfElem(htmlElement, true))
 end
 
 return {
