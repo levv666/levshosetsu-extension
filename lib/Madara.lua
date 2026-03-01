@@ -97,9 +97,11 @@ function defaults:createSearchString(tbl)
 	if tbl[STATUS_FILTER_KEY_ON_HOLD] then
 		url = url .. "&status[]=on-hold"
 	end
-	for key, value in pairs(self.genres_map) do
-		if tbl[key] then
-			url = url .. "&genre[]=" .. value
+	-- Iterate through your saved map
+	for keyID, slug in pairs(self.genres_map) do
+		-- Check if this specific ID was toggled in the UI table
+		if tbl[tonumber(keyID)] then
+			url = url .. "&genre[]=" .. slug
 		end
 	end
 
@@ -343,9 +345,18 @@ return function(baseURL, _self)
 			CheckboxFilter(STATUS_FILTER_KEY_ON_HOLD, "On Hold")
 		}),
 		FilterGroup("Genres", map(_self.genres, function(v)
+			-- Increment the ID
+			keyID = keyID + 1
+
+			-- 2. Create the slug (e.g., "Action" -> "action")
 			local slug = v:lower():gsub(" ", "-")
-			return CheckboxFilter(slug, v)
-		end)) -- 6
+
+			-- 3. Store the slug in the map using the ID as the key
+			self.genres_map[keyID] = slug
+
+			-- 4. Return the checkbox with the ID as the primary value
+			return CheckboxFilter(keyID, v)
+		end))
 	}
 
 	if _self.searchHasOper then
