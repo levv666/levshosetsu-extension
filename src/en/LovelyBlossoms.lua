@@ -1,4 +1,4 @@
--- {"id":1742321,"ver":"1.0.5","libVer":"1.0.0","author":"Lev616","dep":["Madara>=2.2.0"]}
+-- {"id":1742321,"ver":"1.0.6","libVer":"1.0.0","author":"Lev616","dep":["Madara>=2.2.0"]}
 
 
 return Require("Madara")("https://lovelyblossoms.com", {
@@ -49,7 +49,7 @@ return Require("Madara")("https://lovelyblossoms.com", {
 
     listings = {
         Listing("Novels", true, function(data)
-            return self.search(data)
+            return search(data)
         end)
     },
 })
