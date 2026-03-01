@@ -1,4 +1,4 @@
--- {"id":8456567,"ver":"1.0.7","libVer":"1.0.0","author":"","repo":"","dep":[]}
+-- {"id":8456567,"ver":"1.0.8","libVer":"1.0.0","author":"","repo":"","dep":[]}
 local dkjson = Require("dkjson")
 --- Identification number of the extension.
 --- Should be unique. Should be consistent in all references.
@@ -53,6 +53,16 @@ local startIndex = 0
 --- @return string Shrunk URL.
 local function shrinkURL(url, _)
     return url:gsub(".-dragonholictranslations.com/", "")
+end
+
+local function htmlDecode(str)
+    if not str then return nil end
+    str = str:gsub("&amp;", "&")
+    str = str:gsub("&lt;", "<")
+    str = str:gsub("&gt;", ">")
+    str = str:gsub("&quot;", '"')
+    str = str:gsub("&#39;", "'")
+    return str
 end
 
 --- Expand a given URL.
@@ -135,12 +145,15 @@ end
 local function getListing(data)
     local page = data[PAGE]
     local document = GETDocument(expandURL("/browse/page/" .. page .. "/?sort=new&order=desc"))
+
     return mapNotNil(document:select("#series-list-container > div > a"), function(v)
-        local img = v:selectFirst("img")
+        local imgElem = v:selectFirst("img")
+        local imgURL = imgElem and htmlDecode(imgElem:attr("src")) -- decode HTML entities
+
         return Novel {
             title = v:selectFirst("h3"):text(),
             link = shrinkURL(v:attr("href")),
-            imageURL = img and img:attr("src")
+            imageURL = imgURL -- use the actual cover
         }
     end)
 end
