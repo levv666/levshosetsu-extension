@@ -342,7 +342,7 @@ return function(baseURL, _self)
 			CheckboxFilter(STATUS_FILTER_KEY_CANCELED, "Canceled"),
 			CheckboxFilter(STATUS_FILTER_KEY_ON_HOLD, "On Hold")
 		}),
-		FilterGroup("Genres", map(_self.genres, function(v, k)
+		FilterGroup("Genres", map(_self.genres, function(v)
 			keyID = keyID + 1
 			_self.genres_map[keyID] = v:lower():gsub(" ", "-")
 			return CheckboxFilter(keyID, v)
