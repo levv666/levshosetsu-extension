@@ -22,6 +22,13 @@
 			"website": ""
 		},
 		{
+			"id": 0,
+			"name": "",
+			"desc": "Worked on Dragonholic",
+			"imageURL": "",
+			"website": ""
+		},
+		{
 			"id": -980691669,
 			"name": "Confident-hate",
 			"desc": "Worked on Honeyfeed",
@@ -173,6 +180,17 @@
 			"ver": "1.0.4",
 			"libVer": "1.0.0",
 			"md5": "30fe0ec94575318b9a9ac879305cdb878640cb90d975cd6b1b1ac489d85e29b9",
+			"type": "LuaScript"
+		},
+		{
+			"id": 8456567,
+			"name": "Dragonholic",
+			"fileName": "Dragonholic",
+			"imageURL": "https://dragonholic.com/wp-content/uploads/2024/09/cropped-favicon-32x32.png",
+			"lang": "en",
+			"ver": "1.0.1",
+			"libVer": "1.0.0",
+			"md5": "5be01df5b4fc327c267f7529f7b412c8f8db22776bcc5d06b5fd934965bb85a0",
 			"type": "LuaScript"
 		}
 	],
