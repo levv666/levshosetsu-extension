@@ -1,4 +1,4 @@
--- {"id":134652,"ver":"1.0.2","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134652,"ver":"1.0.3","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://mochistar.org"
 local DobyTranslationsLogo = "https://mochistar.org/wp-content/uploads/2026/02/stardust_mochi_129x129.png"
@@ -20,9 +20,9 @@ local function parseListing(listingURL)
     local doc = GETDocument(listingURL)
     if not doc then return {} end
 
-    return mapNotNil(doc:select("#list-of-stories > div.card__body.polygon"), function(card)
-        local linkEl  = card:selectFirst("h3.card__title")
-        local titleEl = card:selectFirst("h3.card__title")
+    return mapNotNil(doc:select("#list-of-stories li.card"), function(card)
+        local linkEl  = card:selectFirst("h3.card__title a")
+        local titleEl = card:selectFirst("h3.card__title a")
         if not (linkEl and titleEl) then return nil end
 
         local imgEl = card:selectFirst("a.card__image")
