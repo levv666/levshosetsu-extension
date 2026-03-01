@@ -1,4 +1,4 @@
--- {"id":134652,"ver":"1.0.3","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134652,"ver":"1.0.4","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://mochistar.org"
 local DobyTranslationsLogo = "https://mochistar.org/wp-content/uploads/2026/02/stardust_mochi_129x129.png"
@@ -102,7 +102,7 @@ local function parseNovel(novelURL, loadChapters)
                 return nil
             end
 
-            local dateDiv = v:selectFirst("span.list-view"):text()
+            local dateDiv = v:selectFirst("span.list-view")
             local cleanTitle = titleDiv:text():
                                         gsub("%s+", " "):
                                         gsub("^%s*(.-)%s*$", "%1")
