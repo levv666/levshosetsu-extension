@@ -10,47 +10,6 @@ return Require("Madara")("https://lovelyblossoms.com", {
     searchHasOper = true,
     chaptersListSelector = "li.wp-manga-chapter.free-chap",
 
-    -------------------------------------------------
-    -- 🔥 CUSTOM SEARCH BUILDER
-    -------------------------------------------------
-    createSearchString = function(self, tbl)
-        local query = tbl[QUERY] or ""
-        local url = self.baseURL .. "/?s=" .. Require("url").encode(query)
-                .. "&post_type=wp-manga"
-
-        -- genres
-        for key, value in pairs(self.genres_map) do
-            if tbl[key] then
-                url = url .. "&genre[]=" .. value
-            end
-        end
-
-        -- operator
-        url = url .. "&op=" .. (tbl[self.searchOperId] and "0" or "")
-
-        -- required empty fields
-        url = url .. "&author=&artist=&release=&adult="
-
-        -- status filters
-        if tbl[STATUS_FILTER_KEY_ONGOING] then
-            url = url .. "&status[]=on-going"
-        end
-        if tbl[STATUS_FILTER_KEY_COMPLETED] then
-            url = url .. "&status[]=end"
-        end
-        if tbl[STATUS_FILTER_KEY_CANCELED] then
-            url = url .. "&status[]=canceled"
-        end
-
-        -- LovelyBlossoms has upcoming
-        if tbl[STATUS_FILTER_KEY_ON_HOLD] then
-            url = url .. "&status[]=upcoming"
-        end
-
-        return url
-    end,
-    -------------------------------------------------
-
     genres = {
         "Action",
         "Adult",
