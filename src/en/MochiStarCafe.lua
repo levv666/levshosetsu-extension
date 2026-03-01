@@ -1,4 +1,4 @@
--- {"id":134652,"ver":"1.0.7","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134652,"ver":"1.0.8","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://mochistar.org"
 local DobyTranslationsLogo = "https://mochistar.org/wp-content/uploads/2026/02/stardust_mochi_129x129.png"
@@ -92,7 +92,7 @@ local function parseNovel(novelURL, loadChapters)
     }
 
     if loadChapters then
-        local chapterItems = content:select("li[data-id]")
+        local chapterItems = content:select("li[data-group='free']")
 
         local temp = map(chapterItems, function(v)
             local a = v:selectFirst("a")
