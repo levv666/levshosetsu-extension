@@ -140,7 +140,7 @@ local function getListing(data)
         return Novel {
             title = v:selectFirst("h3"):text(),
             link = shrinkURL(v:attr("href")),
-            imageURL = img and expandURL(img:attr("src"))
+            imageURL = img and img:attr("src")
         }
     end)
 end
