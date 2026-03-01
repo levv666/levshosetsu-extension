@@ -111,7 +111,7 @@ local function parseNovel(novelURL, loadChapters)
                 id = chapterNum,
                 title = cleanTitle,
                 link = shrinkURL(a:attr("href")),
-                release = dateDiv and dateDiv:text() or nil,
+                release = dateDiv,
                 order = chapterNum
             }
         end)
