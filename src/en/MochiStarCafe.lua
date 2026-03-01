@@ -1,4 +1,4 @@
--- {"id":134652,"ver":"1.0.6","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134652,"ver":"1.0.7","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://mochistar.org"
 local DobyTranslationsLogo = "https://mochistar.org/wp-content/uploads/2026/02/stardust_mochi_129x129.png"
@@ -74,20 +74,20 @@ local function parseNovel(novelURL, loadChapters)
 
     -- Basic info
     local titleElement = doc:selectFirst("h1")
-    local imageElement = doc:selectFirst("img.ts-post-image")
-    local descriptionElement = doc:selectFirst(".entry-content")
-    local genrelist = doc:selectFirst("div.sertogenre")
+    local imageElement = doc:selectFirst("div.main__wrapper a")
+    local descriptionElement = doc:selectFirst("section.story__summary")
+    local genrelist = doc:selectFirst("div.tag-group")
 
-    local s = doc:selectFirst("span.Completed") and NovelStatus.COMPLETED
-            or doc:selectFirst("span.Hiatus") and NovelStatus.PAUSED
+    local s = doc:selectFirst("span.story__meta-item.story__status._completed") and NovelStatus.COMPLETED
+            or doc:selectFirst("span.story__meta-item.story__status._hiatus") and NovelStatus.PAUSED
             or NovelStatus.PUBLISHING
 
 
     local info = NovelInfo {
         title = titleElement and titleElement:text() or "No Title",
-        imageURL = imageElement and imageElement:attr("src") or nil,
+        imageURL = imageElement and imageElement:attr("href") or nil,
         description = descriptionElement and HTMLToString(descriptionElement) or "",
-        genres = genrelist and map(genrelist:select("a[rel=tag]"), function(v) return v:text() end) or nil,
+        genres = genrelist and map(genrelist:select("a.tag-pill"), function(v) return v:text() end) or nil,
         status = s
     }
 
