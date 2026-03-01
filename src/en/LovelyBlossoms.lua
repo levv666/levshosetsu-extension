@@ -1,17 +1,14 @@
--- {"id":1742321,"ver":"1.0.0","libVer":"1.0.0","author":"Lev616","dep":["Madara>=2.2.0"]}
+-- {"id":1742321,"ver":"1.0.1","libVer":"1.0.0","author":"Lev616","dep":["Madara>=2.2.0"]}
 
 return Require("Madara")("https://lovelyblossoms.com", {
     id = 1742321,
     name = "Lovely Blossoms",
     imageURL = "https://lovelyblossoms.com/wp-content/uploads/2025/09/lovely-blossoms-2-Photoroom-1.png",
+
     chaptersScriptLoaded = true,
     novelPageTitleSel = "div.post-title > h1",
-
-    latestNovelSel = "div.page-listing-item",
-    novelListingURLPath = "novel",
-    shrinkURLNovel = "novel",
     searchHasOper = true,
-    chaptersListSelector= "li.wp-manga-chapter.free-chap",
+    chaptersListSelector = "li.wp-manga-chapter.free-chap",
 
     genres = {
         ["action"] = "Action",
@@ -36,14 +33,14 @@ return Require("Madara")("https://lovelyblossoms.com", {
         ["romance"] = "Romance",
         ["school-life"] = "School Life",
         ["sci-fi"] = "Sci-Fi",
-        ["shouju-ai"] = "Shoujo Ai",
+        ["shoujo-ai"] = "Shoujo Ai",
         ["smut"] = "Smut",
         ["sports"] = "Sports",
         ["supernatural"] = "Supernatural",
         ["tragedy"] = "Tragedy",
         ["urban"] = "Urban",
         ["yaoi"] = "Yaoi",
-        ["yuri"] = "Yuri",
-    },
+        ["yuri"] = "Yuri"
+    }
 })
 
