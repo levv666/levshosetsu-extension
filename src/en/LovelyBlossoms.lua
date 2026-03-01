@@ -14,6 +14,7 @@ return Require("Madara")("https://lovelyblossoms.com", {
 
     searchHasOper = true,
     chaptersListSelector = "li.wp-manga-chapter.free-chap",
+    isSearchIncrementing = false,
 
     -------------------------------------------------
     -- 🔥 CUSTOM SEARCH BUILDER (no genres_map usage)
