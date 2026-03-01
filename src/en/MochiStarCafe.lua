@@ -1,4 +1,4 @@
--- {"id":134652,"ver":"1.0.2","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134652,"ver":"1.0.3","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://mochistar.org"
 local DobyTranslationsLogo = "https://mochistar.org/wp-content/uploads/2026/02/stardust_mochi_129x129.png"
@@ -150,11 +150,14 @@ local function getPassage(chapterURL)
     htmlElement = htmlElement:selectFirst("div.chapter-formatting")
     htmlElement:select("#wrap-button-remove-blur"):remove()
     -- htmlElement:selectFirst("div.code-block"):remove() (for ads)
-    map(htmlElement:select("p"), function(p)
-        if p:text():gsub("%s+", "") == "" then
+    local paragraphs = htmlElement:select("p")
+    for i = 0, paragraphs:size() - 1 do
+        local p = paragraphs:get(i)
+        -- matches empty strings or strings containing only whitespace characters
+        if p:text():match("^%s*$") or p:text() == "　" then
             p:remove()
         end
-    end)
+    end
     htmlElement:child(0):before("<h1>" .. title .. "</h1>");
     return pageOfElem(htmlElement, true)
 end
