@@ -102,14 +102,17 @@ local function parseNovel(novelURL, loadChapters)
                 return nil
             end
 
+            local dateDiv = v:selectFirst("span.list-view"):text()
+            local cleanTitle = titleDiv:text():
+                                        gsub("%s+", " "):
+                                        gsub("^%s*(.-)%s*$", "%1")
+            local chapterNum = tonumber(cleanTitle:match("Chapter%s+(%d+)")) or 0
             return {
-                id = dataId,
-                title = titleDiv:text()
-                                :gsub("%s+", " ")
-                                :gsub("^%s*(.-)%s*$", "%1"),
+                id = chapterNum,
+                title = cleanTitle,
                 link = shrinkURL(a:attr("href")),
                 release = dateDiv and dateDiv:text() or nil,
-                order = tonumber(title:match("Chapter%s+(%d+)")) or 0
+                order = chapterNum
             }
         end)
 
@@ -122,9 +125,9 @@ local function parseNovel(novelURL, loadChapters)
         end)
 
         -- Convert to Shosetsu List
-        local chapters = AsList(map(temp, function(v)
+        local chapters = AsList(map(temp, function(v, i)
             return NovelChapter {
-                order = v.order,
+                order = i,
                 title = v.title,
                 link = v.link,
                 release = v.release
