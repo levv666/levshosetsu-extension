@@ -343,9 +343,10 @@ return function(baseURL, _self)
 			CheckboxFilter(STATUS_FILTER_KEY_ON_HOLD, "On Hold")
 		}),
 		FilterGroup("Genres", map(_self.genres, function(v)
+			local slug = v:lower():gsub(" ", "-")
 			keyID = keyID + 1
-			_self.genres_map[keyID] = v:lower():gsub(" ", "-")
-			return CheckboxFilter(keyID, v)
+			_self.genres_map[keyID] = slug
+			return CheckboxFilter(slug, v)
 		end)) -- 6
 	}
 
