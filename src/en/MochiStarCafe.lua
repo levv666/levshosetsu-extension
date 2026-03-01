@@ -1,4 +1,4 @@
--- {"id":134652,"ver":"1.0.3","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134652,"ver":"1.0.4","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://mochistar.org"
 local DobyTranslationsLogo = "https://mochistar.org/wp-content/uploads/2026/02/stardust_mochi_129x129.png"
@@ -20,7 +20,7 @@ local function parseListing(listingURL)
     local doc = GETDocument(listingURL)
     if not doc then return {} end
 
-    return mapNotNil(doc:select("#list-of-stories li.card"), function(card)
+    return mapNotNil(doc:select("#search-result-list li.card"), function(card)
         local linkEl  = card:selectFirst("h3.card__title a")
         local titleEl = card:selectFirst("h3.card__title a")
         if not (linkEl and titleEl) then return nil end
@@ -47,14 +47,20 @@ local function search(data)
 
     local url = page == 1
             and (baseURL .. "?s=" .. query)
-            or  (baseURL .. "/page/" .. page .. "/?s=" .. query)
+            or  (baseURL .. "/page/" .. page .. "/?s=" .. query .. "&post_type=fcn_story")
 
     local doc = GETDocument(url)
-    return map(doc:select("div.listupd > article"), function(v)
+    return mapNotNil(doc:select("#search-result-list li.card"), function(card)
+        local linkEl  = card:selectFirst("h3.card__title a")
+        local titleEl = card:selectFirst("h3.card__title a")
+        if not (linkEl and titleEl) then return nil end
+
+        local imgEl = card:selectFirst("a.card__image")
+
         return Novel {
-            title = v:selectFirst("h2 a"):text(),
-            imageURL = v:selectFirst(".mdthumb img"):attr("src"),
-            link = shrinkURL(v:selectFirst("h2 a"):attr("href"))
+            title = titleEl:text(),
+            link = shrinkURL(linkEl:attr("href") or ""),
+            imageURL = imgEl and imgEl:attr("href")
         }
     end)
 end
