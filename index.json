@@ -166,9 +166,9 @@
 			"fileName": "MochiStarCafe",
 			"imageURL": "https://mochistar.org/wp-content/uploads/2026/02/stardust_mochi_129x129.png",
 			"lang": "en",
-			"ver": "1.0.3",
+			"ver": "1.0.4",
 			"libVer": "1.0.0",
-			"md5": "5b5626417c6b091e2a0f296ea2071f7b7c496fe05f23a3b84641c75e81be52ab",
+			"md5": "9ea2f35184beb6dd332598cefa9f7c0439c5d6a8869c975e466e7e5802282847",
 			"type": "LuaScript"
 		},
 		{
