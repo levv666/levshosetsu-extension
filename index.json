@@ -188,9 +188,9 @@
 			"fileName": "Dragonholic",
 			"imageURL": "https://dragonholic.com/wp-content/uploads/2024/09/cropped-favicon-32x32.png",
 			"lang": "en",
-			"ver": "1.0.4",
+			"ver": "1.0.5",
 			"libVer": "1.0.0",
-			"md5": "65560b49e06f7d2e9cfdbace55bb922d5aaaa6f3b0a94ca5c26d7990414a3764",
+			"md5": "6128ea55329bc3e4077e21e9584585b156fe76ab3a1aaddb427d4e609f259ce9",
 			"type": "LuaScript"
 		}
 	],
