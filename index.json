@@ -81,7 +81,7 @@
 			"name": "Fictioneer",
 			"ver": "2.0.2",
 			"url": null,
-			"hash": "d2649585856950c2cdeb1f64214c145324c209a95ca1cc8605934af6d10e0008"
+			"hash": "5a2a52e37a45fa9777cb519af95ec1d492d61a143b6c9fa51586570c08768bdb"
 		},
 		{
 			"name": "Madara",
@@ -190,17 +190,6 @@
 		},
 		{
 			"id": 1742321,
-			"name": "Gravity Tales",
-			"fileName": "GravityTales",
-			"imageURL": "https://lovelyblossoms.com/wp-content/uploads/2025/09/lovely-blossoms-2-Photoroom-1.png",
-			"lang": "en",
-			"ver": "1.0.4",
-			"libVer": "1.0.0",
-			"md5": "73adc22edca9fbb3c053df248ee780b28a53aff59eb1f57ccadd7a3fa5101dda",
-			"type": "LuaScript"
-		},
-		{
-			"id": 1742321,
 			"name": "Lovely Blossoms",
 			"fileName": "LovelyBlossoms",
 			"imageURL": "https://lovelyblossoms.com/wp-content/uploads/2025/09/lovely-blossoms-2-Photoroom-1.png",
@@ -219,6 +208,17 @@
 			"ver": "1.0.1",
 			"libVer": "1.0.0",
 			"md5": "f7f805911547aa174660721100e944100f19d123cb257ebac5917f0cd246e4eb",
+			"type": "LuaScript"
+		},
+		{
+			"id": 981363135,
+			"name": "Gravity Tales",
+			"fileName": "GravityTales",
+			"imageURL": "https://lovelyblossoms.com/wp-content/uploads/2025/09/lovely-blossoms-2-Photoroom-1.png",
+			"lang": "en",
+			"ver": "1.0.4",
+			"libVer": "1.0.0",
+			"md5": "d4642e4a152fc3159914fc06396359e9b77d9cc7b85b4eb665f97caf122ae85b",
 			"type": "LuaScript"
 		},
 		{
