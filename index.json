@@ -10,7 +10,7 @@
 		{
 			"id": -2022307394,
 			"name": "Lev616",
-			"desc": "Worked on Doby Translations, Lovely Blossoms, MochiStar Cafe",
+			"desc": "Worked on BaiLianTales, Doby Translations, Lovely Blossoms, MochiStar Cafe",
 			"imageURL": "",
 			"website": ""
 		},
@@ -168,7 +168,7 @@
 			"lang": "en",
 			"ver": "1.0.6",
 			"libVer": "1.0.0",
-			"md5": "259a3144f6945d5a308422801a100d6bc8484d6764a4a11dfa105d11650ca2b1",
+			"md5": "d723819314cd11e91a04d63f39d51d3831af317723d83e36394c184f4d5770e9",
 			"type": "LuaScript"
 		},
 		{
@@ -191,6 +191,17 @@
 			"ver": "1.0.4",
 			"libVer": "1.0.0",
 			"md5": "30fe0ec94575318b9a9ac879305cdb878640cb90d975cd6b1b1ac489d85e29b9",
+			"type": "LuaScript"
+		},
+		{
+			"id": 48761468,
+			"name": "BaiLianTales",
+			"fileName": "BaiLianTales",
+			"imageURL": "https://bailiantales.com/wp-content/uploads/2025/08/Add-a-heading-Tag-US-2-1.png",
+			"lang": "en",
+			"ver": "1.0.1",
+			"libVer": "1.0.0",
+			"md5": "f7f805911547aa174660721100e944100f19d123cb257ebac5917f0cd246e4eb",
 			"type": "LuaScript"
 		},
 		{

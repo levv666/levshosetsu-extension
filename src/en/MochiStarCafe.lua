@@ -1,7 +1,7 @@
 -- {"id":134652,"ver":"1.0.6","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://mochistar.org"
-local DobyTranslationsLogo = "https://mochistar.org/wp-content/uploads/2026/02/stardust_mochi_129x129.png"
+local MochistarLogo = "https://mochistar.org/wp-content/uploads/2026/02/stardust_mochi_129x129.png"
 local HTMLToString = Require("unhtml").HTMLToString
 
 local function shrinkURL(url)
@@ -167,7 +167,7 @@ end
 return {
     id = 134652,
     name = "MochiStar Cafe",
-    imageURL = DobyTranslationsLogo,
+    imageURL = MochistarLogo,
     baseURL = baseURL,
     hasSearch = true,
     listings = {
