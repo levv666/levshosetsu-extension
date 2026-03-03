@@ -1,4 +1,4 @@
--- {"id":977513,"ver":"1.1.2","libVer":"1.0.0","author":"Lev616"}
+-- {"id":977513,"ver":"1.1.3","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://katreadingcafe.com/"
 local CatReadingCafeLogo = "https://katreadingcafe.com/wp-content/uploads/2025/01/2717291-2-3-e1737942920628.png"
@@ -72,20 +72,21 @@ local ORDER_OPTIONS = {
 local function createFilterString(data)
     local parts = {}
 
-    -- genres
+    -- Genres checkboxes
     for _, g in ipairs(GENRES) do
         if data[g.key] then
             parts[#parts + 1] = "genre[]=" .. g.slug
         end
     end
 
-    -- order by
-    local selectedOrderKey = data[301]  -- dropdown key
-    if selectedOrderKey then
-        local orderValue = ORDER_OPTIONS[selectedOrderKey - 301 + 1].value
-        parts[#parts + 1] = "order=" .. orderValue
-    else
-        parts[#parts + 1] = "order=update"
+    -- Order dropdown
+    local selectedIndex = data[301] or 0
+    local orderValue = ORDER_OPTIONS[selectedIndex + 1].value
+    parts[#parts + 1] = "order=" .. orderValue
+
+    -- Page
+    if data[PAGE] then
+        parts[#parts + 1] = "page=" .. data[PAGE]
     end
 
     if #parts > 0 then
