@@ -1,4 +1,4 @@
--- {"id":977513,"ver":"1.0.4","libVer":"1.0.0","author":"Lev616"}
+-- {"id":977513,"ver":"1.0.6","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://katreadingcafe.com/"
 local CatReadingCafeLogo = "https://katreadingcafe.com/wp-content/uploads/2025/01/2717291-2-3-e1737942920628.png"
@@ -101,7 +101,9 @@ local function parseNovel(novelURL, loadChapters)
             end
 
             -- Skip premium chapters (check from HTML element)
-            if v:selectFirst(".epl-num img") ~= nil then
+            local numDiv = v:selectFirst(".epl-num")
+
+            if numDiv and numDiv:text():find("🔒") then
                 return nil
             end
 
