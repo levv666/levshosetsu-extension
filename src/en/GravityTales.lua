@@ -1,4 +1,4 @@
--- {"id":981363135,"ver":"1.0.7","libVer":"1.0.0","author":"Lev616","dep":["Fictioneer>=2.0.0"]}
+-- {"id":981363135,"ver":"1.0.8","libVer":"1.0.0","author":"Lev616","dep":["Fictioneer>=2.0.0"]}
 
 return Require("Fictioneer")("https://gravitytales.com", {
     id = 981363135,
@@ -16,7 +16,7 @@ return Require("Fictioneer")("https://gravitytales.com", {
 
         local url = self.baseURL ..
                 "/page/" .. page ..
-                "/?s&post_type=" .. self.searchPostType ..
+                "/?s&post_type=" .. searchPostType ..
                 "&orderby=modified"
 
         return self.parse(GETDocument(url))
