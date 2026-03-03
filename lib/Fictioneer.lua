@@ -53,6 +53,37 @@ return function(baseURL, _self)
         return self:parseListing(url)
     end
 
+
+    -- =========================
+    -- SEARCH BUT LATEST FOR SITE WITH BROKEN HOMEPAGE
+    -- =========================
+    function defaults:search2(data)
+        data = data or {}
+
+        local query = (QUERY and data[QUERY]) or ""
+        local page  = (PAGE and data[PAGE]) or 1
+
+        local url = self.baseURL ..
+                "/page/" .. page ..
+                "/?s=" .. query ..
+                "&post_type=" .. self.searchPostType
+
+        local doc = GETDocument(url)
+
+        return mapNotNil(doc:select(self.searchSelector), function(card)
+            local a = card:selectFirst("h3.card__title a")
+            if not a then return nil end
+
+            local imgEl = card:selectFirst("a.card__image")
+
+            return Novel {
+                title = a:text(),
+                link = self:shrinkURL(a:attr("href") or ""),
+                imageURL = imgEl and imgEl:attr("href")
+            }
+        end)
+    end
+
     -- =========================
     -- SEARCH
     -- =========================
@@ -142,7 +173,9 @@ return function(baseURL, _self)
 
     -- =========================
     -- INIT ENGINE
-    -- =========================
+    -- =========================\
+
+    _self.baseURL = baseURL
     _self = setmetatable(_self or {}, {
         __index = function(_, k)
             local d = defaults[k]
@@ -152,7 +185,7 @@ return function(baseURL, _self)
         end
     })
 
-    _self.baseURL = baseURL
+
     _self.useSearchAsListing = _self.useSearchAsListing or false
 
     _self.listings = {
