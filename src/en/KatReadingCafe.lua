@@ -1,4 +1,4 @@
--- {"id":977513,"ver":"1.0.0","libVer":"1.0.0","author":"Lev616"}
+-- {"id":977513,"ver":"1.0.1","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://katreadingcafe.com/"
 local CatReadingCafeLogo = "https://katreadingcafe.com/wp-content/uploads/2025/01/2717291-2-3-e1737942920628.png"
@@ -95,40 +95,36 @@ local function parseNovel(novelURL, loadChapters)
             local title = v:selectFirst(".epl-title")
             local number = v:selectFirst(".epl-num")
 
-            -- You can then combine their text later
+            -- Check elements BEFORE using them
+            if a == nil or title == nil or number == nil then
+                return nil
+            end
+
+            -- Skip premium chapters (check from HTML element)
+            if v:selectFirst('[alt="🔒"]') ~= nil then
+                return nil
+            end
+
             local titleDiv = number:text() .. " - " .. title:text()
-
-            if a == nil or titleDiv == nil then
-                return nil
-            end
-
-            -- Skip premium chapters
-            if titleDiv:selectFirst(".mycred-price") ~= nil then
-                return nil
-            end
-
             local dateDiv = v:selectFirst(".epl-date")
             local dataId = tonumber(v:attr("data-id")) or 0
 
             return {
                 id = dataId,
-                title = titleDiv:text()
-                                :gsub("%s+", " ")
-                                :gsub("^%s*(.-)%s*$", "%1"),
+                title = titleDiv
+                        :gsub("%s+", " ")
+                        :gsub("^%s*(.-)%s*$", "%1"),
                 link = shrinkURL(a:attr("href")),
                 release = dateDiv and dateDiv:text() or nil
             }
         end)
 
-        -- Remove nils
         temp = filter(temp, function(v) return v ~= nil end)
 
-        -- Sort by data-id ascending
         table.sort(temp, function(a, b)
             return a.id < b.id
         end)
 
-        -- Convert to Shosetsu List
         local chapters = AsList(map(temp, function(v, i)
             return NovelChapter {
                 order = i,
