@@ -1,4 +1,4 @@
--- {"ver":"2.0.3","author":"Lev616","dep":["url"]}
+-- {"ver":"2.0.4","author":"Lev616","dep":["url"]}
 
 return function(baseURL, _self)
 
@@ -47,7 +47,8 @@ return function(baseURL, _self)
     end
 
     function defaults:latest(data)
-        local page = data[PAGE]
+        data = data or {}
+        local page = (PAGE and data[PAGE]) or 1
         local url = self.baseURL .. self.listingPath .. page .. "/"
         return self:parseListing(url)
     end
@@ -56,8 +57,10 @@ return function(baseURL, _self)
     -- SEARCH
     -- =========================
     function defaults:search(data)
-        local query = data[QUERY] or ""
-        local page  = data[PAGE] or 1
+        data = data or {}
+
+        local query = (QUERY and data[QUERY]) or ""
+        local page  = (PAGE and data[PAGE]) or 1
 
         local url = self.baseURL ..
                 "/page/" .. page ..
