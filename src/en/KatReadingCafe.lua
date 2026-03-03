@@ -1,4 +1,4 @@
--- {"id":977513,"ver":"1.1.4","libVer":"1.0.0","author":"Lev616"}
+-- {"id":977513,"ver":"1.1.5","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://katreadingcafe.com/"
 local CatReadingCafeLogo = "https://katreadingcafe.com/wp-content/uploads/2025/01/2717291-2-3-e1737942920628.png"
@@ -80,7 +80,7 @@ local function createFilterString(data)
     end
 
     -- Order dropdown
-    local selectedIndex = data[301] or 0
+    local selectedIndex = data[301]
     if selectedIndex ~= nil then
         -- Lua arrays start at 1, Shosetsu dropdown index starts at 0
         local orderValue = ORDER_OPTIONS[selectedIndex + 1].value
