@@ -1,4 +1,4 @@
--- {"id":981363135,"ver":"1.0.3","libVer":"1.0.0","author":"Lev616","dep":["Fictioneer>=2.0.0"]}
+-- {"id":981363135,"ver":"1.0.4","libVer":"1.0.0","author":"Lev616","dep":["Fictioneer>=2.0.0"]}
 
 local baseURL = "https://gravitytales.com"
 local GravityTalesLogo = "https://th.bing.com/th/id/ODF.cEEqnSt1RywCg37Cq5NC4w"
@@ -17,10 +17,9 @@ end
 -- =========================
 
 local function parseListing(data)
-    local query = data[QUERY] or ""
     local page  = data[PAGE] or 1
 
-    local url = baseURL .. "/page/" .. page .. "/?s=" .. query .. "&post_type=fcn_story&orderby=modified"
+    local url = baseURL .. "/page/" .. page .. "/?s&post_type=fcn_story&orderby=modified"
 
     local doc = GETDocument(url)
     return mapNotNil(doc:select("#search-result-list li.card"), function(card)
@@ -39,7 +38,7 @@ local function parseListing(data)
 end
 
 local function getListing(data)
-    local page = data[PAGE]
+    local page = data[PAGE] or 1
     local url = baseURL .. "/page/" .. page .. "/?s&post_type=fcn_story&orderby=modified"
     return parseListing(url)
 end
