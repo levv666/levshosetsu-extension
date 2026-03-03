@@ -80,16 +80,12 @@ local function createFilterString(data)
     end
 
     -- Order dropdown
-    local selectedIndex = data[301]
-    if selectedIndex then
-        -- Lua arrays start at 1, Shosetsu dropdown index starts at 0
-        local orderValue = ORDER_OPTIONS[selectedIndex + 1].value
+    local selectedOrderKey = data[301] -- dropdown key
+    if selectedOrderKey then
+        local orderValue = ORDER_OPTIONS[selectedOrderKey - 301 + 1].value
         parts[#parts + 1] = "order=" .. orderValue
-    else
-        parts[#parts + 1] = "order=update"  -- default order
+    else parts[#parts + 1] = "order=update"
     end
-
-
 
 
     -- Page
