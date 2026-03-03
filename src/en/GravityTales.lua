@@ -1,7 +1,7 @@
 -- {"id":981363135,"ver":"1.0.1","libVer":"1.0.0","author":"Lev616","dep":["Fictioneer>=2.0.0"]}
 
 local baseURL = "https://gravitytales.com"
-local MochistarLogo = "https://mochistar.org/wp-content/uploads/2026/02/stardust_mochi_129x129.png"
+local GravityTalesLogo = "https://th.bing.com/th/id/ODF.cEEqnSt1RywCg37Cq5NC4w"
 local HTMLToString = Require("unhtml").HTMLToString
 
 local function shrinkURL(url)
@@ -170,7 +170,7 @@ end
 return {
     id = 981363135,
     name = "Gravity Tales",
-    imageURL = MochistarLogo,
+    imageURL = GravityTalesLogo,
     baseURL = baseURL,
     hasSearch = true,
     listings = {
