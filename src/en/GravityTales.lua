@@ -1,4 +1,4 @@
--- {"id":981363135,"ver":"1.0.5","libVer":"1.0.0","author":"Lev616","dep":["Fictioneer>=2.0.0"]}
+-- {"id":981363135,"ver":"1.0.6","libVer":"1.0.0","author":"Lev616","dep":["Fictioneer>=2.0.0"]}
 
 return Require("Fictioneer")("https://gravitytales.com", {
     id = 981363135,
