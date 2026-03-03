@@ -227,9 +227,9 @@
 			"fileName": "GravityTales",
 			"imageURL": "https://th.bing.com/th/id/ODF.cEEqnSt1RywCg37Cq5NC4w",
 			"lang": "en",
-			"ver": "1.0.2",
+			"ver": "1.0.3",
 			"libVer": "1.0.0",
-			"md5": "91406e967f67ba201776e2a93ef41e4b843b95ea547a02d92dc62fa91b09096a",
+			"md5": "db798a5b01404f5d5dddf3aa8136bed227a1e4256a705076db06d38ce4f260b3",
 			"type": "LuaScript"
 		},
 		{
