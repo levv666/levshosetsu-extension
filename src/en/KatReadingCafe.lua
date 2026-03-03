@@ -1,4 +1,4 @@
--- {"id":977513,"ver":"1.1.1","libVer":"1.0.0","author":"Lev616"}
+-- {"id":977513,"ver":"1.1.2","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://katreadingcafe.com/"
 local CatReadingCafeLogo = "https://katreadingcafe.com/wp-content/uploads/2025/01/2717291-2-3-e1737942920628.png"
@@ -94,7 +94,7 @@ local function createFilterString(data)
 
     -- status dropdown
     local selectedStatusIndex = data[401]  -- 401 is the dropdown key
-    local statusValue = STATUS_OPTIONS[selectedStatusIndex - 401 + 1].value
+    local statusValue = STATUS_OPTIONS[selectedStatusIndex + 1].value
     parts[#parts + 1] = "status=" .. statusValue
 
     if #parts > 0 then
