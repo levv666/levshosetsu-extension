@@ -16,7 +16,7 @@ return Require("Fictioneer")("https://gravitytales.com", {
 
         local url = self.baseURL ..
                 "/page/" .. page ..
-                "/?s&post_type=" .. searchPostType ..
+                "/?s&post_type=" .. self.searchPostType ..
                 "&orderby=modified"
 
         return self.parse(GETDocument(url))
