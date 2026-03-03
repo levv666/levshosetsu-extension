@@ -1,4 +1,4 @@
--- {"id":977513,"ver":"1.0.8","libVer":"1.0.0","author":"Lev616"}
+-- {"id":977513,"ver":"1.0.9","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://katreadingcafe.com/"
 local CatReadingCafeLogo = "https://katreadingcafe.com/wp-content/uploads/2025/01/2717291-2-3-e1737942920628.png"
@@ -60,17 +60,38 @@ local GENRES = {
     { key = 244, name = "Yuri", slug = "yuri" },
 }
 
+local ORDER_OPTIONS = {
+    { key = 301, name = "A-Z", value = "title" },
+    { key = 302, name = "Z-A", value = "titlereverse" },
+    { key = 303, name = "Latest Updated", value = "update" },
+    { key = 304, name = "Latest Added", value = "latest" },
+    { key = 305, name = "Popular", value = "popular" },
+    { key = 306, name = "Rating", value = "rating" },
+}
 
 local function createFilterString(data)
     local parts = {}
 
+    -- genres
     for _, g in ipairs(GENRES) do
         if data[g.key] then
-            parts[#parts+1] = "genre[]=" .. g.slug
+            parts[#parts + 1] = "genre[]=" .. g.slug
         end
     end
 
-    parts[#parts+1] = "order=update"
+    -- order by
+    local selectedOrderKey = data[301]  -- dropdown key
+    if selectedOrderKey then
+        local orderValue = ORDER_OPTIONS[selectedOrderKey - 301 + 1].value
+        parts[#parts + 1] = "order=" .. orderValue
+    else
+        parts[#parts + 1] = "order=update"
+    end
+
+    -- page
+    if data[PAGE] then
+        parts[#parts + 1] = "page=" .. data[PAGE]
+    end
 
     if #parts > 0 then
         return "&" .. table.concat(parts, "&")
@@ -238,7 +259,8 @@ local searchFilters = {
             t[#t+1] = CheckboxFilter(g.key, g.name)
         end
         return t
-    end)())
+    end)()),
+    DropdownFilter(999, "Order By", {"A-Z", "Latest Updated", "Latest Added", "Popular", "Rating"}),
 }
 
 return {
