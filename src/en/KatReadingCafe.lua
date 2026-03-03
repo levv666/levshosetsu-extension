@@ -1,4 +1,4 @@
--- {"id":977513,"ver":"1.0.2","libVer":"1.0.0","author":"Lev616"}
+-- {"id":977513,"ver":"1.0.0","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://katreadingcafe.com/"
 local CatReadingCafeLogo = "https://katreadingcafe.com/wp-content/uploads/2025/01/2717291-2-3-e1737942920628.png"
@@ -96,7 +96,7 @@ local function parseNovel(novelURL, loadChapters)
             local number = v:selectFirst(".epl-num")
 
             -- You can then combine their text later
-            local titleDiv = number:text()() .. " - " .. title:text()
+            local titleDiv = number:text() .. " - " .. title:text()
 
             if a == nil or titleDiv == nil then
                 return nil
