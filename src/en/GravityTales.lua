@@ -1,4 +1,4 @@
--- {"id":981363135,"ver":"1.0.4","libVer":"1.0.0","author":"Lev616","dep":["Fictioneer>=2.0.0"]}
+-- {"id":981363135,"ver":"1.0.5","libVer":"1.0.0","author":"Lev616","dep":["Fictioneer>=2.0.0"]}
 
 local baseURL = "https://gravitytales.com"
 local GravityTalesLogo = "https://th.bing.com/th/id/ODF.cEEqnSt1RywCg37Cq5NC4w"
@@ -35,12 +35,6 @@ local function parseListing(data)
             imageURL = imgEl and imgEl:attr("href")
         }
     end)
-end
-
-local function getListing(data)
-    local page = data[PAGE] or 1
-    local url = baseURL .. "/page/" .. page .. "/?s&post_type=fcn_story&orderby=modified"
-    return parseListing(url)
 end
 
 local function search(data)
@@ -173,7 +167,7 @@ return {
     baseURL = baseURL,
     hasSearch = true,
     listings = {
-        Listing("Latest", true, getListing)
+        Listing("Latest", true, parseListing)
     },
     parseNovel = parseNovel,
     getPassage = getPassage,
