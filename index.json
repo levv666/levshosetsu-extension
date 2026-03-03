@@ -216,9 +216,9 @@
 			"fileName": "GravityTales",
 			"imageURL": "https://mochistar.org/wp-content/uploads/2026/02/stardust_mochi_129x129.png",
 			"lang": "en",
-			"ver": "1.1.2",
+			"ver": "1.0.1",
 			"libVer": "1.0.0",
-			"md5": "52dd64083ea69ce8337e6d886bd6457f81fbae22c22b0e0a6e6b346b24c270a0",
+			"md5": "3cd84f1d666e0227d7f34765591dfe8da9984ecaa57327b43fc1d9b69a0afacb",
 			"type": "LuaScript"
 		},
 		{

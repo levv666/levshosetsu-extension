@@ -1,4 +1,4 @@
--- {"id":981363135,"ver":"1.1.2","libVer":"1.0.0","author":"Lev616","dep":["Fictioneer>=2.0.0"]}
+-- {"id":981363135,"ver":"1.0.1","libVer":"1.0.0","author":"Lev616","dep":["Fictioneer>=2.0.0"]}
 
 local baseURL = "https://gravitytales.com"
 local MochistarLogo = "https://mochistar.org/wp-content/uploads/2026/02/stardust_mochi_129x129.png"
@@ -20,7 +20,7 @@ local function parseListing(data)
     local query = data[QUERY] or ""
     local page  = data[PAGE] or 1
 
-    local url = baseURL .. "/page/" .. page .. "/?s=" .. query .. "&post_type=fcn_story"
+    local url = baseURL .. "/page/" .. page .. "/?s=" .. query .. "&post_type=fcn_story&orderby=modified"
 
     local doc = GETDocument(url)
     return mapNotNil(doc:select("#search-result-list li.card"), function(card)
