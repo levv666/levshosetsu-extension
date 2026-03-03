@@ -12,7 +12,6 @@ return function(baseURL, _self)
 
         listingPath = "/stories/page/",
         searchPostType = "fcn_story",
-        latestMode = "default",
 
         chapterType = ChapterType.HTML,
         hasSearch = true,
@@ -188,27 +187,15 @@ return function(baseURL, _self)
     })
 
     _self.baseURL = baseURL
-
-    _self.latestMode = _self.latestMode or "default"
-
-    -- map available latest handlers
-    local latestMap = {
-        default = _self.latest,
-        search2 = _self.search2,
-        search  = _self.search
-    }
-
-    -- select handler safely
-    local latestHandler = latestMap[_self.latestMode] or _self.latest
+    _self.useSearchAsListing = _self.useSearchAsListing or false
 
     _self.listings = {
         Listing(
                 "Latest",
                 true,
-                latestHandler
+                _self.useSearchAsListing and _self.search or _self.latest
         )
     }
 
     return _self
-
 end

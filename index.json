@@ -81,7 +81,7 @@
 			"name": "Fictioneer",
 			"ver": "2.0.4",
 			"url": null,
-			"hash": "c1d931e532ba53d0cb3e8734ccd42f1227a872846c1ebfad7c0cc0769295e890"
+			"hash": "553ec2078d92cc3da97418b6f244762d6130cbcfee4876ba35c5f3f1b2cc3e78"
 		},
 		{
 			"name": "Madara",
@@ -214,11 +214,11 @@
 			"id": 981363135,
 			"name": "Gravity Tales",
 			"fileName": "GravityTales",
-			"imageURL": "https://lovelyblossoms.com/wp-content/uploads/2025/09/lovely-blossoms-2-Photoroom-1.png",
+			"imageURL": "https://mochistar.org/wp-content/uploads/2026/02/stardust_mochi_129x129.png",
 			"lang": "en",
 			"ver": "1.1.2",
 			"libVer": "1.0.0",
-			"md5": "ad83a5753e418fef4eeaf9d49c38acedc809346b747602136b375bfde8649a5e",
+			"md5": "52dd64083ea69ce8337e6d886bd6457f81fbae22c22b0e0a6e6b346b24c270a0",
 			"type": "LuaScript"
 		},
 		{
