@@ -1,4 +1,4 @@
--- {"id":1244231,"ver":"1.0.9","libVer":"1.0.0","author":"Lev616"}
+-- {"id":1244231,"ver":"1.1.0","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://dobytranslations.com"
 local DobyTranslationsLogo = "https://dobytranslations.com/wp-content/uploads/2024/05/a-adult-male-maltes-white-dog-reading-a-book.jpg"
@@ -81,7 +81,7 @@ local function parseNovel(novelURL, loadChapters)
 
     local info = NovelInfo {
         title = titleElement and titleElement:text() or "No Title",
-        imageURL = imageElement and imageElement:attr("src") or nil,
+        imageURL = imageElement and imageElement:attr("src"):match("^[^?]+") or nil,
         description = descriptionElement and HTMLToString(descriptionElement) or "",
         genres = genrelist and map(genrelist:select("a[rel=tag]"), function(v) return v:text() end) or nil,
         status = s

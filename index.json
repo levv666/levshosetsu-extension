@@ -194,9 +194,9 @@
 			"fileName": "DobyTranslations",
 			"imageURL": "https://dobytranslations.com/wp-content/uploads/2024/05/a-adult-male-maltes-white-dog-reading-a-book.jpg",
 			"lang": "en",
-			"ver": "1.0.9",
+			"ver": "1.1.0",
 			"libVer": "1.0.0",
-			"md5": "fc52c240bc9ec5a95c9c1c6c122a9f67ddaf7eeff3057af61df5ba1bb42e836c",
+			"md5": "f588e06525a72794e430e4140b8c7475981cff0ec219a32dc00ed32e85200734",
 			"type": "LuaScript"
 		},
 		{
