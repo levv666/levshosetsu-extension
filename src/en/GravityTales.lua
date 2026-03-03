@@ -1,4 +1,4 @@
--- {"id":981363135,"ver":"1.0.8","libVer":"1.0.0","author":"Lev616","dep":["Fictioneer>=2.0.0"]}
+-- {"id":981363135,"ver":"1.0.9","libVer":"1.0.0","author":"Lev616","dep":["Fictioneer>=2.0.0"]}
 
 return Require("Fictioneer")("https://gravitytales.com", {
     id = 981363135,
@@ -11,8 +11,13 @@ return Require("Fictioneer")("https://gravitytales.com", {
     searchPostType = "fcn_story",
 
     latest = function(self, data)
+        print("self.baseURL =", self.baseURL)
+        print("self.searchPostType =", self.searchPostType)
+        print("PAGE =", PAGE)
+
         data = data or {}
         local page = (PAGE and data[PAGE]) or 1
+        print("page =", page)
 
         local url = self.baseURL ..
                 "/page/" .. page ..

@@ -216,9 +216,9 @@
 			"fileName": "GravityTales",
 			"imageURL": "https://lovelyblossoms.com/wp-content/uploads/2025/09/lovely-blossoms-2-Photoroom-1.png",
 			"lang": "en",
-			"ver": "1.0.8",
+			"ver": "1.0.9",
 			"libVer": "1.0.0",
-			"md5": "b5e16e264cad270c760b3e3d49acf4a28c29420f2063e24079cf84602fb7ee0d",
+			"md5": "02c56376a724ee137dedabb648be012ca31cdfdd0ff13440e7a23ca0323d7b99",
 			"type": "LuaScript"
 		},
 		{
