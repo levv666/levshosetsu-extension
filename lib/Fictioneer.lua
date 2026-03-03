@@ -66,7 +66,8 @@ return function(baseURL, _self)
         local url = self.baseURL ..
                 "/page/" .. page ..
                 "/?s=" .. query ..
-                "&post_type=" .. self.searchPostType
+                "&post_type=" .. self.searchPostType ..
+                "&orderby=modified"
 
         local doc = GETDocument(url)
 
@@ -175,7 +176,7 @@ return function(baseURL, _self)
     -- INIT ENGINE
     -- =========================\
 
-    _self.baseURL = baseURL
+
     _self = setmetatable(_self or {}, {
         __index = function(_, k)
             local d = defaults[k]
@@ -185,16 +186,28 @@ return function(baseURL, _self)
         end
     })
 
+    _self.baseURL = baseURL
 
-    _self.useSearchAsListing = _self.useSearchAsListing or false
+    _self.latestMode = _self.latestMode or "default"
+
+    -- map available latest handlers
+    local latestMap = {
+        default = _self.latest,
+        search2 = _self.search2,
+        search  = _self.search
+    }
+
+    -- select handler safely
+    local latestHandler = latestMap[_self.latestMode] or _self.latest
 
     _self.listings = {
         Listing(
                 "Latest",
                 true,
-                _self.useSearchAsListing and _self.search or _self.latest
+                latestHandler
         )
     }
 
     return _self
+
 end
