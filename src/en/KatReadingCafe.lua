@@ -1,4 +1,4 @@
--- {"id":977513,"ver":"1.2.0","libVer":"1.0.0","author":"Lev616"}
+-- {"id":977513,"ver":"1.1.0","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://katreadingcafe.com/"
 local CatReadingCafeLogo = "https://katreadingcafe.com/wp-content/uploads/2025/01/2717291-2-3-e1737942920628.png"
@@ -61,10 +61,10 @@ local GENRES = {
 }
 
 local ORDER_OPTIONS = {
-    { key = 301, name = "A-Z", value = "title" },
-    { key = 302, name = "Z-A", value = "titlereverse" },
-    { key = 303, name = "Latest Updated", value = "update" },
-    { key = 304, name = "Latest Added", value = "latest" },
+    { key = 301, name = "Latest Updated", value = "update" },
+    { key = 302, name = "Latest Added", value = "latest" },
+    { key = 303, name = "A-Z", value = "title" },
+    { key = 304, name = "Z-A", value = "titlereverse" },
     { key = 305, name = "Popular", value = "popular" },
     { key = 306, name = "Rating", value = "rating" },
 }
@@ -81,20 +81,8 @@ local function createFilterString(data)
 
     -- Order dropdown
     local selectedIndex = data[301]
-    -- If 0 is the 'unselected' state in your UI
-    if selectedIndex ~= nil and selectedIndex ~= 0 then
         local orderValue = ORDER_OPTIONS[selectedIndex + 1].value
         parts[#parts + 1] = "order=" .. orderValue
-    else
-        parts[#parts + 1] = "order=update"
-    end
-
-
-
-    -- Page
-    if data[PAGE] then
-        parts[#parts + 1] = "page=" .. data[PAGE]
-    end
 
     if #parts > 0 then
         return "&" .. table.concat(parts, "&")
@@ -263,7 +251,7 @@ local searchFilters = {
         end
         return t
     end)()),
-    DropdownFilter(301, "Order By", {"A-Z", "Z-A", "Latest Updated", "Latest Added", "Popular", "Rating"}),
+    DropdownFilter(301, "Order By", {"Latest Updated", "Latest Added", "A-Z", "Z-A", "Popular", "Rating"}),
 }
 
 return {
