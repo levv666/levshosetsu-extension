@@ -1,4 +1,4 @@
--- {"id":977513,"ver":"1.1.0","libVer":"1.0.0","author":"Lev616"}
+-- {"id":977513,"ver":"1.1.1","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://katreadingcafe.com/"
 local CatReadingCafeLogo = "https://katreadingcafe.com/wp-content/uploads/2025/01/2717291-2-3-e1737942920628.png"
@@ -80,7 +80,7 @@ local function createFilterString(data)
     end
 
     -- order by
-    local selectedOrderKey = data[999]  -- dropdown key
+    local selectedOrderKey = data[301]  -- dropdown key
     if selectedOrderKey then
         local orderValue = ORDER_OPTIONS[selectedOrderKey - 301 + 1].value
         parts[#parts + 1] = "order=" .. orderValue
@@ -248,7 +248,7 @@ local function getPassage(chapterURL)
 end
 
 local searchFilters = {
-    DropdownFilter(999, "Order By", {"A-Z", "Z-A", "Latest Updated", "Latest Added", "Popular", "Rating"}),
+    DropdownFilter(301, "Order By", {"A-Z", "Z-A", "Latest Updated", "Latest Added", "Popular", "Rating"}),
     FilterGroup("Genres", (function()
         local t = {}
         for _, g in ipairs(GENRES) do
