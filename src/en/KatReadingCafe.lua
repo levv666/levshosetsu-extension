@@ -1,4 +1,4 @@
--- {"id":977513,"ver":"1.1.1","libVer":"1.0.0","author":"Lev616"}
+-- {"id":977513,"ver":"1.1.2","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://katreadingcafe.com/"
 local CatReadingCafeLogo = "https://katreadingcafe.com/wp-content/uploads/2025/01/2717291-2-3-e1737942920628.png"
@@ -248,14 +248,14 @@ local function getPassage(chapterURL)
 end
 
 local searchFilters = {
-    DropdownFilter(301, "Order By", {"A-Z", "Z-A", "Latest Updated", "Latest Added", "Popular", "Rating"}),
     FilterGroup("Genres", (function()
         local t = {}
         for _, g in ipairs(GENRES) do
             t[#t+1] = CheckboxFilter(g.key, g.name)
         end
         return t
-    end)())
+    end)()),
+    DropdownFilter(301, "Order By", {"A-Z", "Z-A", "Latest Updated", "Latest Added", "Popular", "Rating"}),
 }
 
 return {

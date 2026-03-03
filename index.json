@@ -183,9 +183,9 @@
 			"fileName": "KatReadingCafe",
 			"imageURL": "https://katreadingcafe.com/wp-content/uploads/2025/01/2717291-2-3-e1737942920628.png",
 			"lang": "en",
-			"ver": "1.1.1",
+			"ver": "1.1.2",
 			"libVer": "1.0.0",
-			"md5": "edf2ca3cc2cfdf8522efac9e7dcb0a53770e822a0c1c493ed626780d6ab36f46",
+			"md5": "b5d8351b58c565e3b9ed6fe1ec97767024ef341e89299e8dd5d8e40c996e65cd",
 			"type": "LuaScript"
 		},
 		{
