@@ -1,16 +1,16 @@
 {
 	"authors": [
 		{
-			"id": -821183208,
-			"name": "TechnoJo4",
-			"desc": "Worked on 247truyen, CommonCSS, Madara, RoyalRoad, ScribbleHub, WWVolare, url",
+			"id": -2022307394,
+			"name": "Lev616",
+			"desc": "Worked on BaiLianTales, Doby Translations, Fictioneer, Gravity Tales, Kat Reading Cafe, Lovely Blossoms, MochiStar Cafe",
 			"imageURL": "",
 			"website": ""
 		},
 		{
-			"id": -2022307394,
-			"name": "Lev616",
-			"desc": "Worked on BaiLianTales, Doby Translations, Fictioneer, Gravity Tales, Lovely Blossoms, MochiStar Cafe",
+			"id": -821183208,
+			"name": "TechnoJo4",
+			"desc": "Worked on 247truyen, CommonCSS, Madara, RoyalRoad, ScribbleHub, WWVolare, url",
 			"imageURL": "",
 			"website": ""
 		},
@@ -175,6 +175,17 @@
 			"ver": "1.0.6",
 			"libVer": "1.0.0",
 			"md5": "d723819314cd11e91a04d63f39d51d3831af317723d83e36394c184f4d5770e9",
+			"type": "LuaScript"
+		},
+		{
+			"id": 977513,
+			"name": "Kat Reading Cafe",
+			"fileName": "KatReadingCafe",
+			"imageURL": "https://katreadingcafe.com/wp-content/uploads/2025/01/2717291-2-3-e1737942920628.png",
+			"lang": "en",
+			"ver": "1.0.0",
+			"libVer": "1.0.0",
+			"md5": "ce643a376da4073e90b3e8906eaf9343b8cb1c01eaabe83cf253d7c9d116b59c",
 			"type": "LuaScript"
 		},
 		{
