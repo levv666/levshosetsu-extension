@@ -12,6 +12,7 @@ return function(baseURL, _self)
 
         listingPath = "/stories/page/",
         searchPostType = "fcn_story",
+        latestMode = "default",
 
         chapterType = ChapterType.HTML,
         hasSearch = true,

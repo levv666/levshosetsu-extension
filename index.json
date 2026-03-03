@@ -81,7 +81,7 @@
 			"name": "Fictioneer",
 			"ver": "2.0.4",
 			"url": null,
-			"hash": "587ca9e3b486d60bfe40a2eb7a50b35fd49cd5af3f0f31e56f1ce04e9150f4d2"
+			"hash": "c1d931e532ba53d0cb3e8734ccd42f1227a872846c1ebfad7c0cc0769295e890"
 		},
 		{
 			"name": "Madara",
@@ -216,9 +216,9 @@
 			"fileName": "GravityTales",
 			"imageURL": "https://lovelyblossoms.com/wp-content/uploads/2025/09/lovely-blossoms-2-Photoroom-1.png",
 			"lang": "en",
-			"ver": "1.1.1",
+			"ver": "1.1.2",
 			"libVer": "1.0.0",
-			"md5": "f166ff49365a3c2200707fd32384c6c1d03b55b3d639e2ffdcb41861a514ef1f",
+			"md5": "ad83a5753e418fef4eeaf9d49c38acedc809346b747602136b375bfde8649a5e",
 			"type": "LuaScript"
 		},
 		{
