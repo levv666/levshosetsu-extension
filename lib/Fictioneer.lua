@@ -1,4 +1,4 @@
--- {"ver":"2.0.2","author":"Lev616","dep":["url"]}
+-- {"ver":"2.0.3","author":"Lev616","dep":["url"]}
 
 return function(baseURL, _self)
 
@@ -56,7 +56,6 @@ return function(baseURL, _self)
     -- SEARCH
     -- =========================
     function defaults:search(data)
-        data = data or {}
         local query = data[QUERY] or ""
         local page  = data[PAGE] or 1
 
