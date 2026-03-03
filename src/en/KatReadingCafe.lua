@@ -1,4 +1,4 @@
--- {"id":977513,"ver":"1.1.0","libVer":"1.0.0","author":"Lev616"}
+-- {"id":977513,"ver":"1.1.1","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://katreadingcafe.com/"
 local CatReadingCafeLogo = "https://katreadingcafe.com/wp-content/uploads/2025/01/2717291-2-3-e1737942920628.png"
@@ -69,6 +69,14 @@ local ORDER_OPTIONS = {
     { key = 306, name = "Rating", value = "rating" },
 }
 
+local STATUS_OPTIONS = {
+    { key = 401, name = "All", value = "" },       -- empty for “All”
+    { key = 402, name = "Ongoing", value = "ongoing" },
+    { key = 403, name = "Completed", value = "completed" },
+    { key = 404, name = "Hiatus", value = "hiatus" },
+    { key = 405, name = "Dropped", value = "dropped" },
+}
+
 local function createFilterString(data)
     local parts = {}
 
@@ -81,8 +89,13 @@ local function createFilterString(data)
 
     -- Order dropdown
     local selectedIndex = data[301]
-        local orderValue = ORDER_OPTIONS[selectedIndex + 1].value
-        parts[#parts + 1] = "order=" .. orderValue
+    local orderValue = ORDER_OPTIONS[selectedIndex + 1].value
+    parts[#parts + 1] = "order=" .. orderValue
+
+    -- status dropdown
+    local selectedStatusIndex = data[401]  -- 401 is the dropdown key
+    local statusValue = STATUS_OPTIONS[selectedStatusIndex - 401 + 1].value
+    parts[#parts + 1] = "status=" .. statusValue
 
     if #parts > 0 then
         return "&" .. table.concat(parts, "&")
@@ -252,6 +265,7 @@ local searchFilters = {
         return t
     end)()),
     DropdownFilter(301, "Order By", {"Latest Updated", "Latest Added", "A-Z", "Z-A", "Popular", "Rating"}),
+    DropdownFilter(401, "Status", {"All", "Ongoing", "Completed", "Hiatus", "Dropped"}),
 }
 
 return {
