@@ -13,7 +13,6 @@ local function expandURL(url)
 end
 
 local GENRES = {
-    -- Genres
     { key = 201, name = "Action", slug = "action" },
     { key = 202, name = "Adult", slug = "adult" },
     { key = 203, name = "Adventure", slug = "adventure" },
@@ -255,6 +254,10 @@ local function getPassage(chapterURL)
     htmlElement:child(0):before("<h1>" .. title .. "</h1>");
     return pageOfElem(htmlElement, true)
 end
+
+-- =========================
+-- SEARCH FILTERS
+-- =========================
 
 local searchFilters = {
     FilterGroup("Genres", (function()

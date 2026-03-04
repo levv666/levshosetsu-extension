@@ -15,16 +15,16 @@
 			"website": ""
 		},
 		{
-			"id": 1550377221,
-			"name": "Bigrand",
-			"desc": "Worked on novelvault, unhtml",
+			"id": 0,
+			"name": "",
+			"desc": "Worked on Dragonholic, Fenrir Realm",
 			"imageURL": "",
 			"website": ""
 		},
 		{
-			"id": 0,
-			"name": "",
-			"desc": "Worked on Dragonholic",
+			"id": 1550377221,
+			"name": "Bigrand",
+			"desc": "Worked on novelvault, unhtml",
 			"imageURL": "",
 			"website": ""
 		},
@@ -145,6 +145,17 @@
 			"type": "LuaScript"
 		},
 		{
+			"id": 64531,
+			"name": "Fenrir Realm",
+			"fileName": "FenrirRealm",
+			"imageURL": "https://fenrirealm.com/img/logo/fenrir-logo.png",
+			"lang": "en",
+			"ver": "1.0.7",
+			"libVer": "1.0.6",
+			"md5": "f523bd68a47e548fee341883198f2f96eb7450664d8fc2f96c3a40794fda8091",
+			"type": "LuaScript"
+		},
+		{
 			"id": 86802,
 			"name": "ScribbleHub",
 			"fileName": "ScribbleHub",
@@ -185,7 +196,7 @@
 			"lang": "en",
 			"ver": "1.1.2",
 			"libVer": "1.0.0",
-			"md5": "1182a59f7e9ace512804e1137be266238b5f2bf06810aa7a5364c2bf88f7016b",
+			"md5": "f7de529d3fdc51d5c4afe932017779d7e1ed0dde43ba87a9945683f81ee91cc9",
 			"type": "LuaScript"
 		},
 		{
