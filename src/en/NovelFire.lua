@@ -1,6 +1,6 @@
 -- {"id":134867,"ver":"1.0.3","libVer":"1.0.0","author":"Lev616"}
 
-local baseURL = "https://fenrirealm.com/"
+local baseURL = "https://novelfire.net/"
 local FenrirLogo = "https://fenrirealm.com/img/logo/fenrir-logo.png"
 local HTMLToString = Require("unhtml").HTMLToString
 
@@ -20,16 +20,16 @@ local function parseListing(listingURL)
     local doc = GETDocument(listingURL)
     if not doc then return {} end
 
-    return mapNotNil(doc:select("div.grid.gap-5.py-5.grid-cols-1 a.transition-all"), function(card)
-        local linkEl  = card:selectFirst("h3")
-        local titleEl = card:selectFirst("h3")
+    return mapNotNil(doc:select("ul.novel-list.col6 li.novel-item"), function(card)
+        local linkEl  = card:selectFirst("a")
+        local titleEl = card:selectFirst("h4.novel-title.text2row")
         if not (linkEl and titleEl) then return nil end
 
-        local imgEl = card:selectFirst(".mdthumb img")
+        local imgEl = card:selectFirst("figure.novel-cover img")
 
         return Novel {
             title = titleEl:text(),
-            link = shrinkURL(card:attr("href")),
+            link = shrinkURL(linkEl:attr("href") or ""),
             imageURL = imgEl and imgEl:attr("src")
         }
     end)
@@ -37,7 +37,7 @@ end
 
 local function getListing(data)
     local page = data[PAGE]
-    local url = baseURL .. "series/?page=" .. page .. "&per_page=36&status=any&sort=latest"
+    local url = baseURL .. "genre-all/sort-new/status-all/all-novel?page=" .. page
     return parseListing(url)
 end
 
@@ -160,7 +160,7 @@ end
 
 return {
     id = 134867,
-    name = "Fenrir Realm",
+    name = "Novel Fire",
     imageURL = FenrirLogo,
     baseURL = baseURL,
     hasSearch = true,
