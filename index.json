@@ -183,9 +183,9 @@
 			"fileName": "FenrirRealm",
 			"imageURL": "https://fenrirealm.com/img/logo/fenrir-logo.png",
 			"lang": "en",
-			"ver": "1.0.1",
+			"ver": "1.0.2",
 			"libVer": "1.0.0",
-			"md5": "9cdeb6eb4c0364ba689ee1345b670bb4001703dc34239c8d89ecbed5432cc59a",
+			"md5": "523758ef4cbb7497a5b73ff827aed71020ea1fee67fa600b516dc5e42db9d956",
 			"type": "LuaScript"
 		},
 		{

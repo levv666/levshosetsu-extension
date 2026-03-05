@@ -1,4 +1,4 @@
--- {"id":134867,"ver":"1.0.1","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134867,"ver":"1.0.2","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://fenrirealm.com/"
 local FenrirLogo = "https://fenrirealm.com/img/logo/fenrir-logo.png"
@@ -20,7 +20,7 @@ local function parseListing(listingURL)
     local doc = GETDocument(listingURL)
     if not doc then return {} end
 
-    return mapNotNil(doc:select("grid.gap-5.py-5.grid-cols-1 > a.transition-all"), function(card)
+    return mapNotNil(doc:select("div.grid.gap-5.py-5.grid-cols-1 > a.transition-all"), function(card)
         local linkEl  = card:selectFirst("h3")
         local titleEl = card:attr("href") or ""
         if not (linkEl and titleEl) then return nil end
