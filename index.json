@@ -180,12 +180,12 @@
 		{
 			"id": 134867,
 			"name": "Fenrir Realm",
-			"fileName": "FenrirRealm",
+			"fileName": "NovelFire",
 			"imageURL": "https://fenrirealm.com/img/logo/fenrir-logo.png",
 			"lang": "en",
 			"ver": "1.0.3",
 			"libVer": "1.0.0",
-			"md5": "f8433d4ac95b3084643147890dfbe3d3764b5702046c253d09d7da00bcbacd2d",
+			"md5": "fb596fd61cfecf8c3668756efc1dd76b417e9525351f44e1a50080eacc0d4433",
 			"type": "LuaScript"
 		},
 		{

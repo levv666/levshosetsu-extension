@@ -20,7 +20,7 @@ local function parseListing(listingURL)
     local doc = GETDocument(listingURL)
     if not doc then return {} end
 
-    return mapNotNil(doc:select("div.grid.gap-5.py-5.grid-cols-1 > a.transition-all"), function(card)
+    return mapNotNil(doc:select("div.grid.gap-5.py-5.grid-cols-1 a.transition-all"), function(card)
         local linkEl  = card:selectFirst("h3")
         local titleEl = card:selectFirst("h3")
         if not (linkEl and titleEl) then return nil end
