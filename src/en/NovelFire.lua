@@ -1,4 +1,4 @@
--- {"id":134867,"ver":"1.0.9","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134867,"ver":"1.0.0","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://novelfire.net"
 local FenrirLogo = "https://fenrirealm.com/img/logo/fenrir-logo.png"
@@ -27,24 +27,10 @@ local function parseListing(listingURL)
 
         local imgEl = card:selectFirst("figure.novel-cover img")
 
-        local img = nil
-        if imgEl then
-            img = imgEl:attr("data-src")
-            if not img or img == "" then
-                img = imgEl:attr("src")
-            end
-        end
-
-        if img and not img:find("^http") then
-            img = expandURL(img)
-        end
-
-        print("FINAL IMG:", img)
-
         return Novel {
             title = titleEl:text(),
             link = linkEl:attr("href") or "",
-            imageURL = img
+            imageURL = imgEl and expandURL(imgEl:attr("src")) or nil
         }
     end)
 end
