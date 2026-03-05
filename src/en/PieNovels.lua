@@ -1,4 +1,4 @@
--- {"id":9915592,"ver":"1.1.3","libVer":"1.0.0","author":"Lev616"}
+-- {"id":9915592,"ver":"1.1.4","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://pienovels.com"
 local PieNovelsLogo = "https://pienovels.com/wp-content/uploads/2025/01/logo-pie-png.webp"
@@ -51,7 +51,7 @@ end
 local function search(data)
     local query = data[QUERY] or ""
     local page = data[PAGE] or 1
-    local url = baseURL .. "/novels/?search=" .. query .. "&page=" .. page .. "&sort_by=latest_updated"
+    local url = baseURL .. "/wp-admin/admin-ajax.php?action=filter_novels&search=" .. query .. "&sort_by=latest_updated&status=&language=&genre=&page=" .. page
     return parseListing(url)
 end
 
