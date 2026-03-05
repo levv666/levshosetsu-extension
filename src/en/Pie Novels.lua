@@ -22,17 +22,19 @@ local function parseListing(listingURL)
 
     return mapNotNil(doc:select("div.novel-grid div.novel-item"), function(card)
         local linkEl  = card:selectFirst("a")
-        local titleEl = card:selectFirst("div.novel-content-text h1")
+        local href = linkEl:attr("href") or ""
+        local slug = href:match("/novels/([^/]+)/?")
+        local title = slug and slug:gsub("-", " ") or titleEl:text()
         if not (linkEl and titleEl) then return nil end
 
         local imgEl = card:selectFirst("img")
 
-        print(titleEl:text())
-        print(shrinkURL(linkEl:attr("href") or ""))
-        print(imgEl and imgEl:attr("src"))
+        print("title : " + titleEl:text())
+        print("link: " + shrinkURL(linkEl:attr("href") or ""))
+        print("img : " + imgEl and imgEl:attr("src"))
 
         return Novel {
-            title = titleEl:text(),
+            title = title,
             link = shrinkURL(linkEl:attr("href") or ""),
             imageURL = imgEl and imgEl:attr("src")
         }
