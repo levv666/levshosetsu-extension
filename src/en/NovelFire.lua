@@ -1,4 +1,4 @@
--- {"id":134867,"ver":"1.0.7","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134867,"ver":"1.0.8","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://novelfire.net"
 local FenrirLogo = "https://fenrirealm.com/img/logo/fenrir-logo.png"
@@ -45,17 +45,20 @@ end
 local function search(data)
     local query = data[QUERY] or ""
     local page  = data[PAGE] or 1
-
-    local url = page == 1
-            and (baseURL .. "?s=" .. query)
-            or  (baseURL .. "/page/" .. page .. "/?s=" .. query)
+    local url = baseURL .. "/search?keyword=" .. query .. "&type=title&page=" .. page
 
     local doc = GETDocument(url)
-    return map(doc:select("div.listupd > article"), function(v)
+    return mapNotNil(doc:select("ul.novel-list.col6 li.novel-item"), function(card)
+        local linkEl  = card:selectFirst("a")
+        local titleEl = card:selectFirst("h4.novel-title.text2row")
+        if not (linkEl and titleEl) then return nil end
+
+        local imgEl = card:selectFirst("figure.novel-cover img")
+
         return Novel {
-            title = v:selectFirst("h2 a"):text(),
-            imageURL = v:selectFirst(".mdthumb img"):attr("src"),
-            link = shrinkURL(v:selectFirst("h2 a"):attr("href"))
+            title = titleEl:text(),
+            link = linkEl:attr("href") or "",
+            imageURL = imgEl and expandURL(imgEl:attr("data-src")) or nil
         }
     end)
 end
@@ -66,7 +69,6 @@ end
 
 local function parseNovel(novelURL, loadChapters)
     local doc = GETDocument(expandURL(novelURL))
-    local content = doc:selectFirst("main#primary") or doc
 
     -- Basic info
     local titleElement = doc:selectFirst("div.novel-info h1")

@@ -3,7 +3,7 @@
 		{
 			"id": -2022307394,
 			"name": "Lev616",
-			"desc": "Worked on BaiLianTales, Doby Translations, Fictioneer, Gravity Tales, Kat Reading Cafe, Lovely Blossoms, MochiStar Cafe, Pie Novels",
+			"desc": "Worked on BaiLianTales, Doby Translations, Fictioneer, Gravity Tales, Kat Reading Cafe, Lovely Blossoms, MochiStar Cafe, Novel Fire, Pie Novels",
 			"imageURL": "",
 			"website": ""
 		},
@@ -175,6 +175,17 @@
 			"ver": "1.0.6",
 			"libVer": "1.0.0",
 			"md5": "d723819314cd11e91a04d63f39d51d3831af317723d83e36394c184f4d5770e9",
+			"type": "LuaScript"
+		},
+		{
+			"id": 134867,
+			"name": "Novel Fire",
+			"fileName": "NovelFire",
+			"imageURL": "https://fenrirealm.com/img/logo/fenrir-logo.png",
+			"lang": "en",
+			"ver": "1.0.8",
+			"libVer": "1.0.0",
+			"md5": "f555d5b4ed073460f82bb5f77583ee7c1cd28f2b3e2a5def031410ad0815d317",
 			"type": "LuaScript"
 		},
 		{
