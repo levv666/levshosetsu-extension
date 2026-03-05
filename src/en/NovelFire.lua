@@ -129,8 +129,8 @@ end
 
 local function getPassage(chapterURL)
     local htmlElement = GETDocument(expandURL(chapterURL))
-    local title = htmlElement:selectFirst("h1.entry-title"):text()
-    htmlElement = htmlElement:selectFirst("div.epcontent.entry-content")
+    local title = htmlElement:selectFirst("span.chapter-tittle"):text()
+    htmlElement = htmlElement:selectFirst("div#content")
     htmlElement:select("#wrap-button-remove-blur"):remove()
     htmlElement:selectFirst("div.code-block"):remove()
     htmlElement:child(0):before("<h1>" .. title .. "</h1>");
