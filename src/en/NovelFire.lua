@@ -1,4 +1,4 @@
--- {"id":134867,"ver":"1.0.3","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134867,"ver":"1.0.4","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://novelfire.net"
 local FenrirLogo = "https://fenrirealm.com/img/logo/fenrir-logo.png"
@@ -97,7 +97,7 @@ local function parseNovel(novelURL, loadChapters)
             local chapterDoc = GETDocument(expandURL(novelURL) .. "/chapters?page=" .. page)
             if not chapterDoc then break end
 
-            local items = chapterDoc:select("li a")
+            local items = chapterDoc:select("ul.chapter-list li a")
             if items:size() == 0 then break end
 
             for i = 0, items:size() - 1 do
