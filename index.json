@@ -213,12 +213,12 @@
 		{
 			"id": 9915592,
 			"name": "Pie Novels",
-			"fileName": "Pie Novels",
+			"fileName": "PieNovels",
 			"imageURL": "https://pienovels.com/wp-content/uploads/2025/01/logo-pie-png.webp",
 			"lang": "en",
-			"ver": "1.0.5",
+			"ver": "1.0.6",
 			"libVer": "1.0.0",
-			"md5": "52b37690bf4e6149d178c63e620d80633fe7c6464b22347e30362d39f31bfa4a",
+			"md5": "ff0ecf677be95ea81188bb768c85b512aeb93c5b3e6f862f2869abe4228b83e0",
 			"type": "LuaScript"
 		},
 		{

@@ -1,4 +1,4 @@
--- {"id":9915592,"ver":"1.0.5","libVer":"1.0.0","author":"Lev616"}
+-- {"id":9915592,"ver":"1.0.6","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://pienovels.com"
 local PieNovelsLogo = "https://pienovels.com/wp-content/uploads/2025/01/logo-pie-png.webp"
@@ -146,10 +146,10 @@ end
 
 local function getPassage(chapterURL)
     local htmlElement = GETDocument(expandURL(chapterURL))
-    local title = htmlElement:selectFirst("h1.entry-title"):text()
-    htmlElement = htmlElement:selectFirst("div.epcontent.entry-content")
+    local title = htmlElement:selectFirst("h1.chapter-title"):text()
+    htmlElement = htmlElement:selectFirst("div.chapter-text")
     htmlElement:select("#wrap-button-remove-blur"):remove()
-    htmlElement:selectFirst("div.code-block"):remove()
+    htmlElement:selectFirst("div.reccomendation"):remove()
     htmlElement:child(0):before("<h1>" .. title .. "</h1>");
     return pageOfElem(htmlElement, true)
 end
