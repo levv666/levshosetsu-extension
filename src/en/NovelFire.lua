@@ -30,7 +30,7 @@ local function parseListing(listingURL)
         return Novel {
             title = titleEl:text(),
             link = linkEl:attr("href") or "",
-            imageURL = expandURL(imgEl and imgEl:attr("src"))
+            imageURL = imgEl and shrinkURL(imgEl:attr("data-src") or imgEl:attr("src"))
         }
     end)
 end
