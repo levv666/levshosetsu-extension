@@ -183,9 +183,9 @@
 			"fileName": "NovelFire",
 			"imageURL": "https://fenrirealm.com/img/logo/fenrir-logo.png",
 			"lang": "en",
-			"ver": "1.0.7",
+			"ver": "1.0.8",
 			"libVer": "1.0.0",
-			"md5": "3c14007b1f259f3ab4dff746ea1ac516364c910f19ed857dcec8c09880a6b2e8",
+			"md5": "9095ecb3547360d166c8317b0481b0b83022a0688333a3d1bf20926a1ce288e9",
 			"type": "LuaScript"
 		},
 		{
