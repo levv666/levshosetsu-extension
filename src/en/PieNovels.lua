@@ -1,4 +1,4 @@
--- {"id":9915592,"ver":"1.0.9","libVer":"1.0.0","author":"Lev616"}
+-- {"id":9915592,"ver":"1.1.0","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://pienovels.com"
 local PieNovelsLogo = "https://pienovels.com/wp-content/uploads/2025/01/logo-pie-png.webp"
@@ -72,7 +72,7 @@ local function search(data)
 
         print("tittle : " .. title)
         print("link : " .. shrinkURL(linkEl:attr("href") or ""))
-        print("image : " .. imgEl and imgEl:attr("src"))
+        print("image : " .. (imgEl and imgEl:attr("src")))
 
         return Novel {
             title = title,
