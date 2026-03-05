@@ -1,4 +1,4 @@
--- {"id":9915592,"ver":"1.1.2","libVer":"1.0.0","author":"Lev616"}
+-- {"id":9915592,"ver":"1.1.3","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://pienovels.com"
 local PieNovelsLogo = "https://pienovels.com/wp-content/uploads/2025/01/logo-pie-png.webp"
@@ -43,14 +43,14 @@ local function parseListing(listingURL)
 end
 
 local function getListing(data)
-    local page = data[PAGE]
+    local page = data[PAGE] or 1
     local url = baseURL .. "/novels/?page=" .. page .. "&sort_by=latest_updated"
     return parseListing(url)
 end
 
 local function search(data)
     local query = data[QUERY] or ""
-    local page = data[PAGE]
+    local page = data[PAGE] or 1
     local url = baseURL .. "/novels/?search=" .. query .. "&page=" .. page .. "&sort_by=latest_updated"
     return parseListing(url)
 end
