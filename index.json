@@ -216,9 +216,9 @@
 			"fileName": "PieNovels",
 			"imageURL": "https://pienovels.com/wp-content/uploads/2025/01/logo-pie-png.webp",
 			"lang": "en",
-			"ver": "1.1.1",
+			"ver": "1.1.2",
 			"libVer": "1.0.0",
-			"md5": "45ea8fb31812fa26e267a3006d2dd8d17f7896506a413c33be59789cd09cba5f",
+			"md5": "9026b267a104bc173c39008205162ca5fce632cf9359dacf81a016bc08924807",
 			"type": "LuaScript"
 		},
 		{
