@@ -1,4 +1,4 @@
--- {"id":9915592,"ver":"1.0.1","libVer":"1.0.0","author":"Lev616"}
+-- {"id":9915592,"ver":"1.0.2","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://pienovels.com"
 local PieNovelsLogo = "https://pienovels.com/wp-content/uploads/2025/01/logo-pie-png.webp"
@@ -76,10 +76,10 @@ local function parseNovel(novelURL, loadChapters)
     local content = doc:selectFirst("main#primary") or doc  -- ensure content is not nil
 
     -- Basic info
-    local titleElement = doc:selectFirst("h1")
-    local imageElement = doc:selectFirst("img.ts-post-image")
-    local descriptionElement = doc:selectFirst(".entry-content")
-    local genrelist = doc:selectFirst("div.sertogenre")
+    local titleElement = doc:selectFirst("h1.title")
+    local imageElement = doc:selectFirst("div.single-left-img img")
+    local descriptionElement = doc:selectFirst("div.description")
+    local genrelist = doc:selectFirst("div.single-novel-tags")
 
     local s = doc:selectFirst("span.Completed") and NovelStatus.COMPLETED
             or doc:selectFirst("span.Hiatus") and NovelStatus.PAUSED
@@ -90,16 +90,16 @@ local function parseNovel(novelURL, loadChapters)
         title = titleElement and titleElement:text() or "No Title",
         imageURL = imageElement and imageElement:attr("src"):match("^[^?]+") or nil,
         description = descriptionElement and HTMLToString(descriptionElement) or "",
-        genres = genrelist and map(genrelist:select("a[rel=tag]"), function(v) return v:text() end) or nil,
+        genres = genrelist and map(genrelist:select("span.single-tags"), function(v) return v:text() end) or nil,
         status = s
     }
 
     if loadChapters then
-        local chapterItems = content:select("li[data-id]")
+        local chapterItems = content:select("ul:has(.free-span)")
 
         local temp = map(chapterItems, function(v)
             local a = v:selectFirst("a")
-            local titleDiv = v:selectFirst(".epl-title")
+            local titleDiv = v:selectFirst("p")
 
             if a == nil or titleDiv == nil then
                 return nil
@@ -110,14 +110,12 @@ local function parseNovel(novelURL, loadChapters)
                 return nil
             end
 
-            local dateDiv = v:selectFirst(".epl-date")
+            local dateDiv = v:selectFirst("span.ch-time")
             local dataId = tonumber(v:attr("data-id")) or 0
 
             return {
                 id = dataId,
-                title = titleDiv:text()
-                                :gsub("%s+", " ")
-                                :gsub("^%s*(.-)%s*$", "%1"),
+                title = titleDiv:text(),
                 link = shrinkURL(a:attr("href")),
                 release = dateDiv and dateDiv:text() or nil
             }
