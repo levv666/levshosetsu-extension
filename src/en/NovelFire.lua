@@ -1,4 +1,4 @@
--- {"id":134867,"ver":"1.0.6","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134867,"ver":"1.0.7","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://novelfire.net"
 local FenrirLogo = "https://fenrirealm.com/img/logo/fenrir-logo.png"
@@ -128,13 +128,14 @@ end
 -- =========================
 
 local function getPassage(chapterURL)
-    local htmlElement = GETDocument(expandURL(chapterURL))
-    local title = htmlElement:selectFirst("span.chapter-tittle"):text()
-    htmlElement = htmlElement:selectFirst("div#content")
-    htmlElement:select("#wrap-button-remove-blur"):remove()
-    htmlElement:selectFirst("div.code-block"):remove()
-    htmlElement:child(0):before("<h1>" .. title .. "</h1>");
-    return pageOfElem(htmlElement, true)
+    local doc = GETDocument(expandURL(chapterURL))
+    local titleEl = doc:selectFirst("span.chapter-title")
+    local title = titleEl and titleEl:text() or ""
+    local content = doc:selectFirst("#content")
+    if not content then return nil end
+    content:select(".nf-ads, script, iframe, ins"):remove()
+    content:child(0):before("<h1>" .. title .. "</h1>")
+    return pageOfElem(content, true)
 end
 
 
