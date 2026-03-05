@@ -181,11 +181,11 @@
 			"id": 134867,
 			"name": "Novel Fire",
 			"fileName": "NovelFire",
-			"imageURL": "https://novelfire.net/logo.svg",
+			"imageURL": "https://github.com/shosetsuorg/extensions/raw/dev/icons/Novelfire.png",
 			"lang": "en",
-			"ver": "1.0.3",
+			"ver": "1.0.4",
 			"libVer": "1.0.0",
-			"md5": "ea9fa1a44867e9ffe08468f2ace4fdfd072ea107bc48e98342d20453d6398b2f",
+			"md5": "775bedd74a1ccf42a1d296980de127743412b2827e501c6b171f71dfddee307d",
 			"type": "LuaScript"
 		},
 		{

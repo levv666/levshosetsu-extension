@@ -1,7 +1,7 @@
--- {"id":134867,"ver":"1.0.3","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134867,"ver":"1.0.4","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://novelfire.net"
-local NovelFireLogo = "https://novelfire.net/logo.svg"
+local NovelFireLogo = "https://github.com/shosetsuorg/extensions/raw/dev/icons/Novelfire.png"
 local HTMLToString = Require("unhtml").HTMLToString
 
 local function shrinkURL(url)
@@ -58,7 +58,7 @@ local function search(data)
         return Novel {
             title = titleEl:text(),
             link = linkEl:attr("href") or "",
-            imageURL = imgEl and expandURL(imgEl:attr("data-src")) or nil
+            imageURL = imgEl and expandURL(imgEl:attr("src")) or nil
         }
     end)
 end
