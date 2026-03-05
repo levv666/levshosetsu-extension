@@ -1,4 +1,4 @@
--- {"id":134867,"ver":"1.0.1","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134867,"ver":"1.0.2","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://novelfire.net"
 local FenrirLogo = "https://fenrirealm.com/img/logo/fenrir-logo.png"
@@ -73,7 +73,7 @@ local function parseNovel(novelURL, loadChapters)
     local titleElement = doc:selectFirst("div.novel-info h1")
     local imageElement = doc:selectFirst("div.fixed-img img")
     local descriptionElement = doc:selectFirst("div.content.expand-wrapper")
-    local genrelist = doc:selectFirst("div.sertogenre")
+    local genrelist = doc:selectFirst("div.categories")
 
     local s = doc:selectFirst("span.Completed") and NovelStatus.COMPLETED
             or doc:selectFirst("span.Hiatus") and NovelStatus.PAUSED
@@ -84,7 +84,7 @@ local function parseNovel(novelURL, loadChapters)
         title = titleElement and titleElement:text() or "No Title",
         imageURL = imageElement and imageElement:attr("src") or nil,
         description = descriptionElement and HTMLToString(descriptionElement) or "",
-        genres = genrelist and map(genrelist:select("a[rel=tag]"), function(v) return v:text() end) or nil,
+        genres = genrelist and map(genrelist:select("a.property-item"), function(v) return v:text() end) or nil,
         status = s
     }
 
