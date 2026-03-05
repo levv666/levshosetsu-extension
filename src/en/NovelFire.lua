@@ -27,10 +27,24 @@ local function parseListing(listingURL)
 
         local imgEl = card:selectFirst("figure.novel-cover img")
 
+        local img = nil
+        if imgEl then
+            img = imgEl:attr("data-src")
+            if not img or img == "" then
+                img = imgEl:attr("src")
+            end
+        end
+
+        print("IMG:", img)
+
+        if img and not img:find("^http") then
+            img = expandURL(img)
+        end
+
         return Novel {
             title = titleEl:text(),
             link = linkEl:attr("href") or "",
-            imageURL = imgEl and expandURL(imgEl:attr("src"))
+            imageURL = img
         }
     end)
 end
