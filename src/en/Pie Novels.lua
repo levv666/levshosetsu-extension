@@ -1,4 +1,4 @@
--- {"id":9915592,"ver":"1.1.0","libVer":"1.0.0","author":"Lev616"}
+-- {"id":9915592,"ver":"1.1.1","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://pienovels.com"
 local PieNovelsLogo = "https://pienovels.com/wp-content/uploads/2025/01/logo-pie-png.webp"
@@ -31,7 +31,7 @@ local function parseListing(listingURL)
 
         local imgEl = card:selectFirst("img")
 
-        print("title : " .. titleEl:text())
+        print("title : " .. title)
         print("link: " .. shrinkURL(linkEl:attr("href") or ""))
         print("img : " .. (imgEl and imgEl:attr("src")))
 
