@@ -1,4 +1,4 @@
--- {"id":134867,"ver":"1.0.6","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134867,"ver":"1.0.7","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://novelfire.net"
 local FenrirLogo = "https://fenrirealm.com/img/logo/fenrir-logo.png"
@@ -70,9 +70,9 @@ local function parseNovel(novelURL, loadChapters)
     local content = doc:selectFirst("main#primary") or doc  -- ensure content is not nil
 
     -- Basic info
-    local titleElement = doc:selectFirst("h1")
-    local imageElement = doc:selectFirst("img.ts-post-image")
-    local descriptionElement = doc:selectFirst(".entry-content")
+    local titleElement = doc:selectFirst("div.novel-info h1")
+    local imageElement = doc:selectFirst("div.fixed-img img")
+    local descriptionElement = doc:selectFirst("div.content.expand-wrapper")
     local genrelist = doc:selectFirst("div.sertogenre")
 
     local s = doc:selectFirst("span.Completed") and NovelStatus.COMPLETED
