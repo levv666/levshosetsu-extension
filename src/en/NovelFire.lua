@@ -35,11 +35,11 @@ local function parseListing(listingURL)
             end
         end
 
-        print("IMG:", img)
-
         if img and not img:find("^http") then
             img = expandURL(img)
         end
+
+        print("FINAL IMG:", img)
 
         return Novel {
             title = titleEl:text(),
