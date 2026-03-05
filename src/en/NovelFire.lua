@@ -1,7 +1,7 @@
--- {"id":134867,"ver":"1.0.8","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134867,"ver":"1.0.9","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://novelfire.net"
-local FenrirLogo = "https://fenrirealm.com/img/logo/fenrir-logo.png"
+local NovelFireLogo = "https://novelfire.net/logo.svg?ver=6.5"
 local HTMLToString = Require("unhtml").HTMLToString
 
 local function shrinkURL(url)
@@ -144,7 +144,7 @@ end
 return {
     id = 134867,
     name = "Novel Fire",
-    imageURL = FenrirLogo,
+    imageURL = NovelFireLogo,
     baseURL = baseURL,
     hasSearch = true,
     listings = {
