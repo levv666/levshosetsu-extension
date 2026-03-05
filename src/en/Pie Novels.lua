@@ -1,4 +1,4 @@
--- {"id":9915592,"ver":"1.0.4","libVer":"1.0.0","author":"Lev616"}
+-- {"id":9915592,"ver":"1.0.5","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://pienovels.com"
 local PieNovelsLogo = "https://pienovels.com/wp-content/uploads/2025/01/logo-pie-png.webp"
@@ -116,9 +116,12 @@ local function parseNovel(novelURL, loadChapters)
         -- Remove nils
         temp = filter(temp, function(v) return v ~= nil end)
 
-        -- Sort by data-id ascending
+        local function chapterNumber(title)
+            return tonumber(title:match("Chapter%s*(%d+)")) or 0
+        end
+
         table.sort(temp, function(a, b)
-            return a.title < b.title
+            return chapterNumber(a.title) < chapterNumber(b.title)
         end)
 
         -- Convert to Shosetsu List
