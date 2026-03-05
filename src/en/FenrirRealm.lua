@@ -1,218 +1,177 @@
--- {"id":64531,"ver":"1.0.7","libVer":"1.0.6","author":"","repo":"","dep":[]}
-local dkjson = Require("dkjson")
---- Identification number of the extension.
---- Should be unique. Should be consistent in all references.
----
---- Required.
----
---- @type int
-local id = 64531
+-- {"id":134867,"ver":"1.0.1","libVer":"1.0.0","author":"Lev616"}
 
---- Name of extension to display to the user.
---- Should match index.
----
---- Required.
----
---- @type string
-local name = "Fenrir Realm"
-
---- Base URL of the extension. Used to open web view in Shosetsu.
----
---- Required.
----
---- @type string
 local baseURL = "https://fenrirealm.com/"
+local FenrirLogo = "https://fenrirealm.com/img/logo/fenrir-logo.png"
+local HTMLToString = Require("unhtml").HTMLToString
 
---- URL of the logo.
----
---- Optional, Default is empty.
----
---- @type string
-local imageURL = "https://fenrirealm.com/img/logo/fenrir-logo.png"
---- ChapterType provided by the extension.
----
---- Optional, Default is STRING. But please do HTML.
----
---- @type ChapterType
-local chapterType = ChapterType.HTML
-
---- Index that pages start with. For example, the first page of search is index 1.
----
---- Optional, Default is 1.
----
---- @type number
-local startIndex = 1
-
---- Shrink the website url down. This is for space saving purposes.
----
---- Required.
----
---- @param url string Full URL to shrink.
---- @param _ int Either KEY_CHAPTER_URL or KEY_NOVEL_URL.
---- @return string Shrunk URL.
-local function shrinkURL(url, _)
-    return url:gsub(".-fenrirealm.com/", "")
+local function shrinkURL(url)
+    return url:gsub(baseURL, "")
 end
 
-local function expandURL(url, _)
+local function expandURL(url)
     return baseURL .. url
 end
 
-local function attribContains(attrib, substr)
-    return function(element)
-        local className = element:attr(attrib)
-        return className ~= nil and className:find(substr) ~= nil
-    end
-end
+-- =========================
+-- LISTING (Homepage)
+-- =========================
 
---- Get a chapter passage based on its chapterURL.
----
---- Required.
----
---- @param chapterURL string The chapters shrunken URL.
---- @return string Strings in lua are byte arrays. If you are not outputting strings/html you can return a binary stream.
-local function getPassage(chapterURL)
-    local url = expandURL(chapterURL)
+local function parseListing(listingURL)
+    local doc = GETDocument(listingURL)
+    if not doc then return {} end
 
-    --- Chapter page, extract info from it.
-    local document = GETDocument(url)
-    local htmlElement = first(document:select("div[id]"), attribContains("id", "reader%-area"))
-    return pageOfElem(htmlElement, true)
-end
+    return mapNotNil(doc:select("grid.gap-5.py-5.grid-cols-1 > a.transition-all"), function(card)
+        local linkEl  = card:selectFirst("h3")
+        local titleEl = card:attr("href") or ""
+        if not (linkEl and titleEl) then return nil end
 
-local b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/' -- base64
--- encoding
-local function b64enc(data)
-    return ((data:gsub('.', function(x)
-        local r,b='',x:byte()
-        for i=8,1,-1 do r=r..(b%2^i-b%2^(i-1)>0 and '1' or '0') end
-        return r;
-    end)..'0000'):gsub('%d%d%d?%d?%d?%d?', function(x)
-        if (#x < 6) then return '' end
-        local c=0
-        for i=1,6 do c=c+(x:sub(i,i)=='1' and 2^(6-i) or 0) end
-        return b:sub(c+1,c+1)
-    end)..({ '', '==', '=' })[#data%3+1])
-end
+        local imgEl = card:selectFirst(".mdthumb img")
 
--- decoding
-local function b64dec(data)
-    data = string.gsub(data, '[^'..b..'=]', '')
-    return (data:gsub('.', function(x)
-        if (x == '=') then return '' end
-        local r,f='',(b:find(x)-1)
-        for i=6,1,-1 do r=r..(f%2^i-f%2^(i-1)>0 and '1' or '0') end
-        return r;
-    end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
-        if (#x ~= 8) then return '' end
-        local c=0
-        for i=1,8 do c=c+(x:sub(i,i)=='1' and 2^(8-i) or 0) end
-        return string.char(c)
-    end))
-end
-
---- Load info on a novel.
----
---- Required.
----
---- @param novelURL string shrunken novel url.
---- @return NovelInfo
-local function parseNovel(novelURL)
-    --- Novel page, extract info from it.
-    local data = dkjson.decode(b64dec(novelURL:match(".+#(.+)$")))
-    local chapter_data = dkjson.GET(expandURL("api/new/v2/series/" .. data.slug .. "/chapters"))
-    local raw_url = novelURL:match("(.+)#.+$")
-    local chapters = {}
-    for _, v in next, chapter_data do
-        if not v.locked or v.locked.price == 0 then
-            table.insert(chapters, NovelChapter {
-                order = v.index,
-                title = v.name or v.title,
-                link = raw_url .. "/chapter-" .. v.number
-            })
-        end
-    end
-    local tags = {}
-    for _, v in next, data.tags do
-        table.insert(tags, v.name)
-    end
-    local genres = {}
-    for _, v in next, data.genres do
-        table.insert(genres, v.name)
-    end
-    return NovelInfo({
-        title = data.title,
-        imageURL = expandURL(shrinkURL(data.cover)),
-        description = data.description,
-        alternativeTitles = data.alt_title and { data.alt_title } or nil,
-        tags = tags,
-        generes = genres,
-        user = data.user and data.user.name or nil,
-        chapters = chapters
-    })
+        return Novel {
+            title = titleEl:text(),
+            link = shrinkURL(linkEl),
+            imageURL = imgEl and imgEl:attr("src")
+        }
+    end)
 end
 
 local function getListing(data)
     local page = data[PAGE]
-    local data = dkjson.GET(expandURL("api/new/v2/series?page=" .. page .. "&per_page=25&status=any&order=latest"))
-    local chapters = {}
-    for _, v in next, data.data do
-        table.insert(chapters, Novel {
-            title = v.title,
-            link = "series/" .. v.slug .. "#" .. b64enc(dkjson.encode(v)),
-            imageURL = v.cover and expandURL(shrinkURL(v.cover)) or imageURL,
-            alternativeTitles = v.alt_title and { v.alt_title } or nil,
-            description = v.description
-        })
-    end
-    return chapters
+    local url = baseURL .. "series/?page=" .. page .. "&per_page=36&status=any&sort=latest"
+    return parseListing(url)
 end
 
-local function urlEncode(str)
-    if str then
-        str = str:gsub("\n", "\r\n")
-        str = str:gsub("([^%w %-%_%.%~])", function(c)
-            return ("%%%02X"):format(string.byte(c))
-        end)
-        str = str:gsub(" ", "+")
-    end
-    return str
-end
 
 local function search(data)
-    local query = data[QUERY]
-    local page = data[PAGE]
-    local data = dkjson.GET(expandURL("api/new/v2/series?page=" .. page .. "&per_page=25&status=any&order=latest&search=" .. urlEncode(query)))
-    local chapters = {}
-    for _, v in next, data.data do
-        table.insert(chapters, Novel {
-            title = v.title,
-            link = "series/" .. v.slug .. "#" .. b64enc(dkjson.encode(v)),
-            imageURL = expandURL(shrinkURL(v.cover)),
-            alternativeTitles = v.alt_title and { v.alt_title } or nil,
-            description = v.description
-        })
-    end
-    return chapters
+    local query = data[QUERY] or ""
+    local page  = data[PAGE] or 1
+
+    local url = page == 1
+            and (baseURL .. "?s=" .. query)
+            or  (baseURL .. "/page/" .. page .. "/?s=" .. query)
+
+    local doc = GETDocument(url)
+    return map(doc:select("div.listupd > article"), function(v)
+        return Novel {
+            title = v:selectFirst("h2 a"):text(),
+            imageURL = v:selectFirst(".mdthumb img"):attr("src"),
+            link = shrinkURL(v:selectFirst("h2 a"):attr("href"))
+        }
+    end)
 end
 
--- Return all properties in a lua table.
+
+-- =========================
+-- PARSE NOVEL
+-- =========================
+
+local function parseNovel(novelURL, loadChapters)
+    local doc = GETDocument(expandURL(novelURL))
+    local content = doc:selectFirst("main#primary") or doc  -- ensure content is not nil
+
+    -- Basic info
+    local titleElement = doc:selectFirst("h1")
+    local imageElement = doc:selectFirst("img.ts-post-image")
+    local descriptionElement = doc:selectFirst(".entry-content")
+    local genrelist = doc:selectFirst("div.sertogenre")
+
+    local s = doc:selectFirst("span.Completed") and NovelStatus.COMPLETED
+            or doc:selectFirst("span.Hiatus") and NovelStatus.PAUSED
+            or NovelStatus.PUBLISHING
+
+
+    local info = NovelInfo {
+        title = titleElement and titleElement:text() or "No Title",
+        imageURL = imageElement and imageElement:attr("src") or nil,
+        description = descriptionElement and HTMLToString(descriptionElement) or "",
+        genres = genrelist and map(genrelist:select("a[rel=tag]"), function(v) return v:text() end) or nil,
+        status = s
+    }
+
+    if loadChapters then
+        local chapterItems = content:select("li[data-id]")
+
+        local temp = map(chapterItems, function(v)
+            local a = v:selectFirst("a")
+            local title = v:selectFirst(".epl-title")
+            local number = v:selectFirst(".epl-num")
+
+            -- Check elements BEFORE using them
+            if a == nil or title == nil or number == nil then
+                return nil
+            end
+
+            -- Skip premium chapters (check from HTML element)
+            local numDiv = v:selectFirst(".epl-num")
+
+            if numDiv and numDiv:text():find("🔒") then
+                return nil
+            end
+
+            local titleDiv = number:text() .. " - " .. title:text()
+            local dateDiv = v:selectFirst(".epl-date")
+            local dataId = tonumber(v:attr("data-id")) or 0
+
+            return {
+                id = dataId,
+                title = titleDiv
+                        :gsub("%s+", " ")
+                        :gsub("^%s*(.-)%s*$", "%1"),
+                link = shrinkURL(a:attr("href")),
+                release = dateDiv and dateDiv:text() or nil
+            }
+        end)
+
+        temp = filter(temp, function(v) return v ~= nil end)
+
+        table.sort(temp, function(a, b)
+            return a.id < b.id
+        end)
+
+        local chapters = AsList(map(temp, function(v, i)
+            return NovelChapter {
+                order = i,
+                title = v.title,
+                link = v.link,
+                release = v.release
+            }
+        end))
+
+        info:setChapters(chapters)
+    end
+
+    return info
+end
+
+-- =========================
+-- GET PASSAGE
+-- =========================
+
+local function getPassage(chapterURL)
+    local htmlElement = GETDocument(expandURL(chapterURL))
+    local title = htmlElement:selectFirst("h1.entry-title"):text()
+    htmlElement = htmlElement:selectFirst("div.epcontent.entry-content")
+    htmlElement:select("#wrap-button-remove-blur"):remove()
+    htmlElement:selectFirst("div.code-block"):remove()
+    htmlElement:child(0):before("<h1>" .. title .. "</h1>");
+    return pageOfElem(htmlElement, true)
+end
+
+
 return {
-    -- Required
-    id = id,
-    name = name,
+    id = 134867,
+    name = "Fenrir Realm",
+    imageURL = FenrirLogo,
     baseURL = baseURL,
+    hasSearch = true,
     listings = {
-        Listing("Default", true, getListing)
-    }, -- Must have at least one listing
-    getPassage = getPassage,
+        Listing("Latest", true, getListing),
+    },
+    searchFilters = searchFilters,
     parseNovel = parseNovel,
+    getPassage = getPassage,
     shrinkURL = shrinkURL,
     expandURL = expandURL,
-    hasSearch = true,
-    isSearchIncrementing = true,
-    search = search,
-    imageURL = imageURL,
-    chapterType = chapterType,
-    startIndex = startIndex,
+    chapterType = ChapterType.HTML,
+    search = search
 }
