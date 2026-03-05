@@ -1,4 +1,4 @@
--- {"id":9915592,"ver":"1.0.2","libVer":"1.0.0","author":"Lev616"}
+-- {"id":9915592,"ver":"1.0.3","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://pienovels.com"
 local PieNovelsLogo = "https://pienovels.com/wp-content/uploads/2025/01/logo-pie-png.webp"
@@ -95,23 +95,15 @@ local function parseNovel(novelURL, loadChapters)
     }
 
     if loadChapters then
-        local chapterItems = content:select("ul:has(.free-span)")
+        local chapterItems = content:select("ul a:has(li.ch-ul-li .free-span)")
 
-        local temp = map(chapterItems, function(v)
-            local a = v:selectFirst("a")
-            local titleDiv = v:selectFirst("p")
+        local temp = map(chapterItems, function(a)
+            local li = a:selectFirst("li.ch-ul-li")
+            local titleDiv = li:selectFirst("p")
+            local dateDiv = li:selectFirst("span.ch-time")
+            local dataId = tonumber(li:attr("data-id")) or 0
 
-            if a == nil or titleDiv == nil then
-                return nil
-            end
-
-            -- Skip premium chapters
-            if titleDiv:selectFirst(".mycred-price") ~= nil then
-                return nil
-            end
-
-            local dateDiv = v:selectFirst("span.ch-time")
-            local dataId = tonumber(v:attr("data-id")) or 0
+            if not titleDiv then return nil end
 
             return {
                 id = dataId,
