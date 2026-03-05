@@ -1,4 +1,4 @@
--- {"id":134867,"ver":"1.0.2","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134867,"ver":"1.0.3","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://novelfire.net"
 local FenrirLogo = "https://fenrirealm.com/img/logo/fenrir-logo.png"
@@ -60,14 +60,13 @@ local function search(data)
     end)
 end
 
-
 -- =========================
 -- PARSE NOVEL
 -- =========================
 
 local function parseNovel(novelURL, loadChapters)
     local doc = GETDocument(expandURL(novelURL))
-    local content = doc:selectFirst("main#primary") or doc  -- ensure content is not nil
+    local content = doc:selectFirst("main#primary") or doc
 
     -- Basic info
     local titleElement = doc:selectFirst("div.novel-info h1")
@@ -79,65 +78,46 @@ local function parseNovel(novelURL, loadChapters)
             or doc:selectFirst("span.Hiatus") and NovelStatus.PAUSED
             or NovelStatus.PUBLISHING
 
-
     local info = NovelInfo {
         title = titleElement and titleElement:text() or "No Title",
-        imageURL = imageElement and imageElement:attr("src") or nil,
+        imageURL = imageElement and expandURL(imageElement:attr("src")) or nil,
         description = descriptionElement and HTMLToString(descriptionElement) or "",
-        genres = genrelist and map(genrelist:select("a.property-item"), function(v) return v:text() end) or nil,
+        genres = genrelist and map(genrelist:select("a.property-item"), function(v)
+            return v:text()
+        end) or nil,
         status = s
     }
 
+    -- Load chapters
     if loadChapters then
-        local chapterItems = content:select("li[data-id]")
+        local page = 1
+        local chapters = {}
 
-        local temp = map(chapterItems, function(v)
-            local a = v:selectFirst("a")
-            local title = v:selectFirst(".epl-title")
-            local number = v:selectFirst(".epl-num")
+        while true do
+            local chapterDoc = GETDocument(expandURL(novelURL) .. "/chapters?page=" .. page)
+            if not chapterDoc then break end
 
-            -- Check elements BEFORE using them
-            if a == nil or title == nil or number == nil then
-                return nil
+            local items = chapterDoc:select("li a")
+            if items:size() == 0 then break end
+
+            for i = 0, items:size() - 1 do
+                local a = items:get(i)
+
+                local titleEl = a:selectFirst(".chapter-title")
+                local dateEl = a:selectFirst("time.chapter-update")
+
+                chapters[#chapters + 1] = NovelChapter {
+                    order = #chapters + 1,
+                    title = titleEl and titleEl:text():gsub("%s+", " "):gsub("^%s*(.-)%s*$", "%1") or a:text(),
+                    link = shrinkURL(a:attr("href")),
+                    release = dateEl and dateEl:text() or nil
+                }
             end
 
-            -- Skip premium chapters (check from HTML element)
-            local numDiv = v:selectFirst(".epl-num")
+            page = page + 1
+        end
 
-            if numDiv and numDiv:text():find("🔒") then
-                return nil
-            end
-
-            local titleDiv = number:text() .. " - " .. title:text()
-            local dateDiv = v:selectFirst(".epl-date")
-            local dataId = tonumber(v:attr("data-id")) or 0
-
-            return {
-                id = dataId,
-                title = titleDiv
-                        :gsub("%s+", " ")
-                        :gsub("^%s*(.-)%s*$", "%1"),
-                link = shrinkURL(a:attr("href")),
-                release = dateDiv and dateDiv:text() or nil
-            }
-        end)
-
-        temp = filter(temp, function(v) return v ~= nil end)
-
-        table.sort(temp, function(a, b)
-            return a.id < b.id
-        end)
-
-        local chapters = AsList(map(temp, function(v, i)
-            return NovelChapter {
-                order = i,
-                title = v.title,
-                link = v.link,
-                release = v.release
-            }
-        end))
-
-        info:setChapters(chapters)
+        info:setChapters(AsList(chapters))
     end
 
     return info
