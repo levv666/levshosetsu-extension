@@ -183,9 +183,9 @@
 			"fileName": "NovelFire",
 			"imageURL": "https://novelfire.net/logo.svg?ver=6.5",
 			"lang": "en",
-			"ver": "1.0.9",
+			"ver": "1.0.1",
 			"libVer": "1.0.0",
-			"md5": "5217ff3367d2813f278f478965328f2ca1297e838f2f1556caad3a7cb8daacf3",
+			"md5": "a2bee0c6647e9a9dcce5df8412d87f662626ab2352fe7f669885ce346f9c2248",
 			"type": "LuaScript"
 		},
 		{

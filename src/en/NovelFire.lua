@@ -1,4 +1,4 @@
--- {"id":134867,"ver":"1.0.9","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134867,"ver":"1.0.1","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://novelfire.net"
 local NovelFireLogo = "https://novelfire.net/logo.svg?ver=6.5"
@@ -48,7 +48,7 @@ local function search(data)
     local url = baseURL .. "/search?keyword=" .. query .. "&type=title&page=" .. page
 
     local doc = GETDocument(url)
-    return mapNotNil(doc:select("ul.novel-list.col6 li.novel-item"), function(card)
+    return mapNotNil(doc:select("ul.novel-list.horizontal.col2.chapters li.novel-item"), function(card)
         local linkEl  = card:selectFirst("a")
         local titleEl = card:selectFirst("h4.novel-title.text2row")
         if not (linkEl and titleEl) then return nil end
