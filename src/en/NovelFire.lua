@@ -1,7 +1,7 @@
--- {"id":134867,"ver":"1.0.4","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134867,"ver":"1.0.5","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://novelfire.net"
-local NovelFireLogo = "https://github.com/shosetsuorg/extensions/raw/dev/icons/Novelfire.png"
+local NovelFireLogo = "https://i1.sndcdn.com/avatars-xx8ZDqzhgVlpzON6-dRhYiQ-t1080x1080.jpg"
 local HTMLToString = Require("unhtml").HTMLToString
 
 local function shrinkURL(url)
