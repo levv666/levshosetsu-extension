@@ -1,4 +1,4 @@
--- {"id":9915592,"ver":"1.0.1","libVer":"1.0.0","author":"Lev616"}
+-- {"id":9915592,"ver":"1.0.2","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://pienovels.com"
 local PieNovelsLogo = "https://pienovels.com/wp-content/uploads/2025/01/logo-pie-png.webp"
