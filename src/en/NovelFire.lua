@@ -1,4 +1,4 @@
--- {"id":134867,"ver":"1.0.4","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134867,"ver":"1.0.5","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://novelfire.net"
 local FenrirLogo = "https://fenrirealm.com/img/logo/fenrir-logo.png"
@@ -80,7 +80,7 @@ local function parseNovel(novelURL, loadChapters)
 
     local info = NovelInfo {
         title = titleElement and titleElement:text() or "No Title",
-        imageURL = imageElement and expandURL(imageElement:attr("src")) or nil,
+        imageURL = imageElement and imageElement:attr("src") or nil,
         description = descriptionElement and HTMLToString(descriptionElement) or "",
         genres = genrelist and map(genrelist:select("a.property-item"), function(v)
             return v:text()
