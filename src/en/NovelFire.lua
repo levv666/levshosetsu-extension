@@ -1,6 +1,6 @@
--- {"id":134867,"ver":"1.0.4","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134867,"ver":"1.0.5","libVer":"1.0.0","author":"Lev616"}
 
-local baseURL = "https://novelfire.net/"
+local baseURL = "https://novelfire.net"
 local FenrirLogo = "https://fenrirealm.com/img/logo/fenrir-logo.png"
 local HTMLToString = Require("unhtml").HTMLToString
 
@@ -37,7 +37,7 @@ end
 
 local function getListing(data)
     local page = data[PAGE]
-    local url = baseURL .. "genre-all/sort-new/status-all/all-novel?page=" .. page
+    local url = baseURL .. "/genre-all/sort-new/status-all/all-novel?page=" .. page
     return parseListing(url)
 end
 
