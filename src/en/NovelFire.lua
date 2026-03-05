@@ -1,4 +1,4 @@
--- {"id":134867,"ver":"1.0.0","libVer":"1.0.0","author":"Lev616"}
+-- {"id":134867,"ver":"1.0.1","libVer":"1.0.0","author":"Lev616"}
 
 local baseURL = "https://novelfire.net"
 local FenrirLogo = "https://fenrirealm.com/img/logo/fenrir-logo.png"
@@ -30,7 +30,7 @@ local function parseListing(listingURL)
         return Novel {
             title = titleEl:text(),
             link = linkEl:attr("href") or "",
-            imageURL = imgEl and expandURL(imgEl:attr("src")) or nil
+            imageURL = imgEl and expandURL(imgEl:attr("data-src")) or nil
         }
     end)
 end
