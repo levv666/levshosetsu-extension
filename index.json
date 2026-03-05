@@ -3,7 +3,7 @@
 		{
 			"id": -2022307394,
 			"name": "Lev616",
-			"desc": "Worked on BaiLianTales, Doby Translations, Fictioneer, Gravity Tales, Kat Reading Cafe, Lovely Blossoms, MochiStar Cafe, Novel Fire",
+			"desc": "Worked on BaiLianTales, Doby Translations, Fictioneer, Gravity Tales, Kat Reading Cafe, Lovely Blossoms, MochiStar Cafe, Pie Novels",
 			"imageURL": "",
 			"website": ""
 		},
@@ -178,17 +178,6 @@
 			"type": "LuaScript"
 		},
 		{
-			"id": 134867,
-			"name": "Novel Fire",
-			"fileName": "NovelFire",
-			"imageURL": "https://fenrirealm.com/img/logo/fenrir-logo.png",
-			"lang": "en",
-			"ver": "1.0.7",
-			"libVer": "1.0.0",
-			"md5": "ae9f0f279315ab93e1ee77d175265e7ce22d575aefbc249dcddb8bd1557dc7e9",
-			"type": "LuaScript"
-		},
-		{
 			"id": 977513,
 			"name": "Kat Reading Cafe",
 			"fileName": "KatReadingCafe",
@@ -219,6 +208,17 @@
 			"ver": "1.0.4",
 			"libVer": "1.0.0",
 			"md5": "30fe0ec94575318b9a9ac879305cdb878640cb90d975cd6b1b1ac489d85e29b9",
+			"type": "LuaScript"
+		},
+		{
+			"id": 9915592,
+			"name": "Pie Novels",
+			"fileName": "Pie Novels",
+			"imageURL": "https://pienovels.com/wp-content/uploads/2025/01/logo-pie-png.webp",
+			"lang": "en",
+			"ver": "1.0.0",
+			"libVer": "1.0.0",
+			"md5": "14f81ea8beea2a7db9ba1801fde90309ddf4ff725edd9f32d76af16721a31ebf",
 			"type": "LuaScript"
 		},
 		{
