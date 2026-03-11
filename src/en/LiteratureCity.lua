@@ -46,7 +46,7 @@ local function search(data)
     local doc = GETDocument(url)
     return map(doc:select("div.novel-list a"), function(v)
         return Novel {
-            title = v:selectFirst("p.novel-item-tittle"):text(),
+            title = v:selectFirst("p.novel-item-title"):text(),
             imageURL = v:selectFirst("img.novel-item-Cover"):attr("src"),
             link = shrinkURL(v:attr("href"))
         }
