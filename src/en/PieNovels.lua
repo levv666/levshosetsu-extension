@@ -1,0 +1,186 @@
+-- {"id":9915592,"ver":"1.1.5","libVer":"1.0.0","author":"Lev616"}
+
+local baseURL = "https://pienovels.com"
+local PieNovelsLogo = "https://pienovels.com/wp-content/uploads/2025/01/logo-pie-png.webp"
+local HTMLToString = Require("unhtml").HTMLToString
+
+local function shrinkURL(url)
+    return url:gsub(baseURL, "")
+end
+
+local function expandURL(url)
+    return baseURL .. url
+end
+
+-- =========================
+-- LISTING (Homepage)
+-- =========================
+
+local function parseListing(listingURL)
+    local doc = GETDocument(listingURL)
+    if not doc then return {} end
+
+    return mapNotNil(doc:select("div.novel-grid div.novel-item"), function(card)
+        local linkEl  = card:selectFirst("a")
+        local titleEl = card:selectFirst("div.novel-content-text h1")
+        if not (linkEl and titleEl) then return nil end
+
+        local href = linkEl:attr("href") or ""
+        local slug = href:match("/novels/([^/]+)/?")
+        local title = slug and slug:gsub("-", " ") or titleEl:text()
+        title = title:gsub("(%S)(%S*)", function(first, rest)
+            return first:upper() .. rest:lower()
+        end)
+
+        local imgEl = card:selectFirst("img")
+
+        return Novel {
+            title = title,
+            link = shrinkURL(linkEl:attr("href") or ""),
+            imageURL = imgEl and imgEl:attr("src")
+        }
+    end)
+end
+
+local function getListing(data)
+    local page = data[PAGE] or 1
+    local url = baseURL .. "/novels/?page=" .. page .. "&sort_by=latest_updated"
+    return parseListing(url)
+end
+
+
+
+local function search(data)
+    local query = data[QUERY] or ""
+    local page  = data[PAGE] or 1
+    local url = baseURL .. "/wp-admin/admin-ajax.php?action=filter_novels&search=" .. query .. "&sort_by=latest_updated&status=&language=&genre=&page=" .. page
+
+    local doc = GETDocument(url)
+    if not doc then return {} end
+
+    return mapNotNil(doc:select("div.novel-item"), function(card)
+        local linkEl  = card:selectFirst("a")
+        local titleEl = card:selectFirst("div.novel-content-text h1")
+        if not (linkEl and titleEl) then return nil end
+
+        local href = linkEl:attr("href") or ""
+        local slug = href:match("/novels/([^/]+)/?")
+        local title = slug and slug:gsub("-", " ") or titleEl:text()
+        title = title:gsub("(%S)(%S*)", function(first, rest)
+            return first:upper() .. rest:lower()
+        end)
+
+        local imgEl = card:selectFirst("img")
+
+        return Novel {
+            title = title,
+            link = shrinkURL(linkEl:attr("href") or ""),
+            imageURL = imgEl and imgEl:attr("src")
+        }
+    end)
+end
+
+
+-- =========================
+-- PARSE NOVEL
+-- =========================
+
+local function parseNovel(novelURL, loadChapters)
+    local doc = GETDocument(expandURL(novelURL))
+    local content = doc:selectFirst("main#primary") or doc  -- ensure content is not nil
+
+    -- Basic info
+    local titleElement = doc:selectFirst("h1.title")
+    local imageElement = doc:selectFirst("div.single-left-img img")
+    local descriptionElement = doc:selectFirst("div.description")
+    local genrelist = doc:selectFirst("div.single-novel-tags")
+
+    local s = doc:selectFirst("span.Completed") and NovelStatus.COMPLETED
+            or doc:selectFirst("span.Hiatus") and NovelStatus.PAUSED
+            or NovelStatus.PUBLISHING
+
+
+    local info = NovelInfo {
+        title = titleElement and titleElement:text() or "No Title",
+        imageURL = imageElement and imageElement:attr("src"):match("^[^?]+") or nil,
+        description = descriptionElement and HTMLToString(descriptionElement) or "",
+        genres = genrelist and map(genrelist:select("span.single-tags"), function(v) return v:text() end) or nil,
+        status = s
+    }
+
+    if loadChapters then
+        local chapterItems = content:select("ul a:has(li.ch-ul-li .free-span)")
+
+        local temp = map(chapterItems, function(a)
+            local li = a:selectFirst("li.ch-ul-li")
+            local titleDiv = li:selectFirst("p")
+            local dateDiv = li:selectFirst("span.ch-time")
+            local dataId = tonumber(li:attr("data-id")) or 0
+
+            if not titleDiv then return nil end
+
+            return {
+                id = dataId,
+                title = titleDiv:text(),
+                link = shrinkURL(a:attr("href")),
+                release = dateDiv and dateDiv:text() or nil
+            }
+        end)
+
+        -- Remove nils
+        temp = filter(temp, function(v) return v ~= nil end)
+
+        local function chapterNumber(title)
+            return tonumber(title:match("Chapter%s*(%d+)")) or 0
+        end
+
+        table.sort(temp, function(a, b)
+            return chapterNumber(a.title) < chapterNumber(b.title)
+        end)
+
+        -- Convert to Shosetsu List
+        local chapters = AsList(map(temp, function(v, i)
+            return NovelChapter {
+                order = i,
+                title = v.title,
+                link = v.link,
+                release = v.release
+            }
+        end))
+
+        info:setChapters(chapters)
+    end
+
+    return info
+end
+
+-- =========================
+-- GET PASSAGE
+-- =========================
+
+local function getPassage(chapterURL)
+    local htmlElement = GETDocument(expandURL(chapterURL))
+    local title = htmlElement:selectFirst("h1.chapter-title"):text()
+    htmlElement = htmlElement:selectFirst("div.chapter-text")
+    htmlElement:select("#wrap-button-remove-blur"):remove()
+    htmlElement:selectFirst("div.reccomendation"):remove()
+    htmlElement:child(0):before("<h1>" .. title .. "</h1>");
+    return pageOfElem(htmlElement, true)
+end
+
+return {
+    id = 9915592,
+    name = "Pie Novels",
+    imageURL = PieNovelsLogo,
+    baseURL = baseURL,
+    hasSearch = true,
+    listings = {
+        Listing("Latest", true, getListing)
+    },
+    parseNovel = parseNovel,
+    getPassage = getPassage,
+    shrinkURL = shrinkURL,
+    expandURL = expandURL,
+    chapterType = ChapterType.HTML,
+    search = search
+}
